@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_elevation_def">4dp</dimen>
+    <dimen name="directory_layout_addpanel_button_marginhoriz">4dp</dimen>
+    <dimen name="directory_layout_addpanel_button_marginvert">2dp</dimen>
+    <dimen name="directory_layout_addpanel_marginbot">8dp</dimen>
+    <dimen name="directory_layout_addpanel_marginend">8dp</dimen>
+
+    <dimen name="directory_layout_addpanel_button_side">96dp</dimen>
+</resources>

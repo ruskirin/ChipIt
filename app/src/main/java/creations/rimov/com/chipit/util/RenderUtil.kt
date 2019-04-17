@@ -7,48 +7,52 @@ import kotlin.math.roundToInt
 object RenderUtil {
 
     //Returns a Rect centered on the view, maintaining the image aspect ratio
-    fun getAspectRatioRect(imageW: Int, imageH: Int, viewW: Int, viewH: Int): Rect {
+    fun getAspectRatioRect(imageWidth: Int, imageHeight: Int,
+                           viewWidth: Int, viewHeight: Int): Rect {
 
-        val viewVertical = (viewW <= viewH)
+        val viewVertical = (viewWidth <= viewHeight)
         //New image dimensions adjusted according to screen dimensions
-        val modifiedHeight = (imageH.toFloat() / imageW.toFloat()) * viewW
-        val modifiedWidth = (imageW.toFloat() / imageH.toFloat()) * viewH
+        val modifiedHeight = (imageHeight / imageWidth.toFloat()) * viewWidth
+        val modifiedWidth = (imageWidth / imageHeight.toFloat()) * viewHeight
 
         if(viewVertical) {
             //Image doesn't fit horizontally
-            return if(modifiedWidth > viewW) {
-                val offsetY = ((viewH - modifiedHeight) / 2).roundToInt()
+            return if(modifiedWidth > viewWidth) {
+                val offsetY = ((viewHeight - modifiedHeight) / 2).roundToInt()
 
-                Rect(0, offsetY, viewW, viewH - offsetY)
+                Rect(0, offsetY, viewWidth, viewHeight - offsetY)
 
             } else {
-                val offsetX = ((viewW - modifiedWidth) / 2).roundToInt()
+                val offsetX = ((viewWidth - modifiedWidth) / 2).roundToInt()
 
-                Rect(offsetX, 0, viewW - offsetX, viewH)
+                Rect(offsetX, 0, viewWidth - offsetX, viewHeight)
             }
 
         } else {
             //Image doesn't fit vertically
-            return if(modifiedHeight > viewH) {
-                val offsetX = ((viewW - modifiedWidth) / 2).roundToInt()
+            return if(modifiedHeight > viewHeight) {
+                val offsetX = ((viewWidth - modifiedWidth) / 2).roundToInt()
 
-                Rect(offsetX, 0, viewW - offsetX, viewH)
+                Rect(offsetX, 0, viewWidth - offsetX, viewHeight)
 
             } else {
-                val offsetY = ((viewH - modifiedHeight) / 2).roundToInt()
+                val offsetY = ((viewHeight - modifiedHeight) / 2).roundToInt()
 
-                Rect(0, offsetY, viewW, viewH - offsetY)
+                Rect(0, offsetY, viewWidth, viewHeight - offsetY)
             }
         }
     }
 
-    fun pointNormToPx(point: Point, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int): Point {
+    fun pointNormToPx(point: Point, 
+                      viewWidth: Int, viewHeight: Int, 
+                      imageWidth: Int, imageHeight: Int): Point {
 
-        val widthOffset = (viewWidth - imageWidth).toFloat() / 2
-        val heightOffset = (viewHeight - imageHeight).toFloat() / 2
-
-        val pX = (((point.x + 1) * imageWidth.toFloat()) / 2) + widthOffset
-        val pY = (((point.y + 1) * imageHeight.toFloat()) / 2) + heightOffset
+        //Length of the surrounding empty space
+        val widthOffset = (viewWidth - imageWidth) / 2
+        val heightOffset = (viewHeight - imageHeight) / 2
+        //Inverse process of normalization
+        val pX = ((point.x + 1) * (imageWidth / 2)) + widthOffset
+        val pY = ((point.y + 1) * (imageHeight / 2)) + heightOffset
 
         return Point(pX, pY)
     }
@@ -67,20 +71,28 @@ object RenderUtil {
     }
 
     /**
-     * Coordinates in range [-1,1], unlike actual normalized coordinates y-axis is flipped (-1 on top, 1 bottom) for convenience
+     * Coordinates in range [-1,1], unlike actual normalized coordinates y-axis is flipped (-1 on top, 1 bottom) for convenience.
+     * Normalized with respect to imageWidth and imageHeight, as the placement of vertices matters relative to background image.
      */
-    fun pointToNorm(point: Point, width: Int, height: Int): Point {
-        val nX = ((point.x * 2) / width.toFloat()) - 1f
-        val nY = ((point.y * 2) / height.toFloat()) - 1f
+    fun pointToNorm(point: Point,
+                    viewWidth: Int, viewHeight: Int,
+                    imageWidth: Int, imageHeight: Int): Point {
+
+        //Subtract the empty borders surrounding the image
+        val pointX = point.x - ((viewWidth - imageWidth) / 2)
+        val pointY = point.y - ((viewHeight - imageHeight) / 2)
+
+        val nX = ((pointX * 2) / imageWidth) - 1f
+        val nY = ((pointY * 2) / imageHeight) - 1f
 
         return Point(nX, nY)
     }
 
-    fun listPxToNorm(points: List<Point>, width: Int, height: Int): List<Point> {
+    fun listPxToNorm(points: List<Point>, width: Int, height: Int, imageWidth: Int, imageHeight: Int): List<Point> {
         val list = mutableListOf<Point>()
 
         points.forEach {
-            list.add(pointToNorm(it, width, height))
+            list.add(pointToNorm(it, width, height, imageWidth, imageHeight))
         }
 
         return list

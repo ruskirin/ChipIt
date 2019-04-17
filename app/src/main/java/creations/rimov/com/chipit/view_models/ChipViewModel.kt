@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.objects.Subject
+import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 
@@ -59,6 +60,8 @@ class ChipViewModel : ViewModel() {
 
         if (childSubj != null && childSubj!!.vertices.size > 3) {
             subj.children.add(childSubj!!)
+
+            Log.i("Vertex Rendering", "saved x = ${childSubj!!.vertices[0].x}, y = ${childSubj!!.vertices[0].y}")
 
         } else {
             Log.e("ChipViewModel", "initChip: not enough vertices in childSubj")

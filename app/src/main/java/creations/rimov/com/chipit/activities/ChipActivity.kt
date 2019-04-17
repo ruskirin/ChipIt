@@ -2,6 +2,7 @@ package creations.rimov.com.chipit.activities
 
 import android.graphics.*
 import android.os.Bundle
+import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -69,8 +70,7 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
                 if (!viewModel.setSubject(parcel.getParcelable("chip"))) {
                     Toast.makeText(
-                        this, "Could not retrieve intent extras; subject not set", Toast.LENGTH_LONG
-                    ).show()
+                        this, "Could not retrieve intent extras; subject not set", Toast.LENGTH_LONG).show()
 
                     /**TODO: (FUTURE) display appropriate image and stop further processes **/
                 }
@@ -78,6 +78,16 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         }
 
         chipView.setListener(this)
+    }
+
+    private fun drawChildren(canvas: Canvas) {
+
+        viewModel.getSubject().children.forEach {
+            canvas.drawLines(
+                it.getVerticesFloatArray(
+                    true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
+                chipPaint)
+        }
     }
 
     /*----------CHIPLISTENER IMPLEMENTATION----------*/
@@ -120,6 +130,7 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun chipStart(x: Float, y: Float) {
+
         //TODO: add an image path after one has been assigned
         chipPath.moveTo(x, y)
         //set initial point
@@ -130,7 +141,9 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         pathY = y
 
         viewModel.initChip()
-        viewModel.addChipVertex(RenderUtil.pointToNorm(Point(x, y), screenW, screenH))
+        viewModel.addChipVertex(
+            RenderUtil.pointToNorm(
+                Point(x, y), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
     }
 
     override fun chipDrag(x: Float, y: Float) {
@@ -144,7 +157,9 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
             pathY = y
 
             //TODO: consider doing this conversion and save after drawing is done; can convert a whole array instead
-            viewModel.addChipVertex(RenderUtil.pointToNorm(Point(x, y), screenW, screenH))
+            viewModel.addChipVertex(
+                RenderUtil.pointToNorm(
+                    Point(x, y), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
         }
     }
 
@@ -154,7 +169,9 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         if(distance <= Constant.TOLERANCE) {
             chipPath.lineTo(pathX0, pathY0)
 
-            viewModel.addChipVertex(RenderUtil.pointToNorm(Point(pathX0, pathY0), screenW, screenH))
+            viewModel.addChipVertex(
+                RenderUtil.pointToNorm(
+                    Point(pathX0, pathY0), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
             //Save chip in main subject's children list
             viewModel.saveChip()
             //Reset object references
@@ -164,16 +181,6 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         clearPaths(chipPath)
     }
     /*-------------------------------------------*/
-
-    private fun drawChildren(canvas: Canvas) {
-
-        viewModel.getSubject().children.forEach {
-            canvas.drawLines(
-                it.getVerticesFloatArray(
-                    true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
-                chipPaint)
-        }
-    }
 
     private fun initPaint() {
 

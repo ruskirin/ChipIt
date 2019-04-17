@@ -5,16 +5,17 @@ import android.os.Parcelable
 import creations.rimov.com.chipit.util.RenderUtil
 
 class Subject(var imagePath: String = "") : Parcelable {
+
     var name: String = "DEFAULT"
     //Vertices of the mapped subject focus
-    //TODO: deal with mapping to zoomed images
-    var vertices = mutableListOf<Point>()
+    var vertices = mutableListOf<Point>() //TODO: deal with mapping to zoomed images
     //Children chips of this encompassing one
     var children = mutableListOf<Subject>()
 
     /** Return a float array version of vertices
      * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes
-     * @param pixelize: by default vertices are not pixelized, specify {@param width} and {@param height} to pixelize
+     *                  eg. vertices (a,b,c,d) will connect (a,b), (b,c), (c,d)
+     * @param pixelize: by default vertices are normalized. Specify width, height, imageWidth, and imageHeight to pixelize
      */
     fun getVerticesFloatArray(drawing: Boolean, pixelize: Boolean,
                               width: Int = 0, height: Int = 0,
@@ -27,43 +28,45 @@ class Subject(var imagePath: String = "") : Parcelable {
                 vertices.size * 2
             })
 
-        var i = 0
+        var idx = 0
 
         if(pixelize) {
-            val v = RenderUtil.listNormToPx(vertices, width, height, imageWidth, imageHeight)
+            if(width == 0 || height == 0 || imageWidth == 0 || imageHeight == 0)
+                return FloatArray(0)
+
+            val list = RenderUtil.listNormToPx(vertices, width, height, imageWidth, imageHeight)
 
             if(drawing) {
-                v.forEachIndexed { idx, point ->
 
-                    if (idx == 0 || idx == v.lastIndex) {
-                        verticesF[i] = point.x
-                        verticesF[++i] = point.y
-                        ++i
+                list.forEachIndexed { i, point ->
+                    if (i == 0 || i == list.lastIndex) {
+                        verticesF[idx] = point.x
+                        verticesF[++idx] = point.y
+                        ++idx
 
                         return@forEachIndexed
                     }
 
-                    verticesF[i] = point.x
-                    verticesF[++i] = point.y
-                    verticesF[++i] = point.x
-                    verticesF[++i] = point.y
-                    ++i
+                    verticesF[idx] = point.x
+                    verticesF[++idx] = point.y
+                    verticesF[++idx] = point.x
+                    verticesF[++idx] = point.y
+                    ++idx
                 }
 
             } else {
-                v.forEach {
-
-                    verticesF[i] = it.x
-                    verticesF[++i] = it.y
-                    ++i
+                list.forEach {
+                    verticesF[idx] = it.x
+                    verticesF[++idx] = it.y
+                    ++idx
                 }
             }
 
         } else {
             vertices.forEach {
-                verticesF[i] = it.x
-                verticesF[++i] = it.y
-                ++i
+                verticesF[idx] = it.x
+                verticesF[++idx] = it.y
+                ++idx
             }
         }
 

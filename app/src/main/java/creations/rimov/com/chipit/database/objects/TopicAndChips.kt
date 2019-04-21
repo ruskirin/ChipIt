@@ -1,13 +1,11 @@
-package creations.rimov.com.chipit.database
+package creations.rimov.com.chipit.database.objects
 
 import androidx.room.Embedded
 import androidx.room.Relation
 
-class TopicAndChips {
-
+data class TopicAndChips(
     @Embedded
-    var parent: Topic? = null
+    var parent: Topic,
 
     @Relation(parentColumn = "id", entityColumn = "parent_id", entity = Chip::class)
-    val children = mutableListOf<Chip>()
-}
+    val children: MutableList<Chip>)

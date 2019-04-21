@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.objects.Subject
 
@@ -14,11 +15,14 @@ import creations.rimov.com.chipit.objects.Subject
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering
  */
 class DirectoryRecyclerAdapter(private val context: Context,
-                               private val subjects: List<Subject>,
                                private val touchHandler: RecyclerHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
-    override fun getItemCount(): Int = subjects.size
+    private lateinit var topics: List<Topic>
+
+    fun setTopics(topics: List<Topic>) {
+        this.topics = topics
+    }
 
     /**
      * VIEW HOLDER
@@ -47,6 +51,10 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
             return false
         }
+    }
+
+    override fun getItemCount(): Int {
+        
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {

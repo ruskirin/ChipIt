@@ -10,21 +10,29 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.objects.Subject
 import creations.rimov.com.chipit.util.CameraUtil
+import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import java.io.IOException
 
 class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHandler {
 
-    private val subjects = mutableListOf<Subject>()
-    //Returned recyclerview item's position from adapter onclick
-    private var subjectPos = -1
+    //Singleton database instance
+    private val database = DatabaseApplication.database
+
+    private val dirViewModel: DirectoryViewModel by lazy {
+        ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
+    }
+
+    //private val subjects = mutableListOf<Subject>()
 
     //Flags for recyclerview's items
     private var subjectPressed = false
@@ -44,6 +52,8 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.directory_layout)
+
+        dirViewModel.getTopics().observe()
 
         gestureDetector = GestureDetector(this, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)

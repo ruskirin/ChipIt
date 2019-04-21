@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.database
+package creations.rimov.com.chipit.database.objects
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,12 +6,13 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "chips",
+    tableName = "topics",
     indices = [Index(value = ["id"], unique = true)]
 )
 
-data class Chip(
+data class Topic(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(name = "parent_chip_id") val parentId: Long,
-    var name: String?,
+
+    var name: String,
+
     @ColumnInfo(name = "image_path") var imagePath: String)

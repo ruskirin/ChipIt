@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
 )
 
 data class Topic(
+
     @PrimaryKey(autoGenerate = true) val id: Long,
 
     var name: String,

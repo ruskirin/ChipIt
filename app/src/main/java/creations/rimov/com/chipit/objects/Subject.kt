@@ -94,10 +94,10 @@ class Subject(var imagePath: String = "") : Parcelable {
     override fun describeContents(): Int = 0
 
     //TODO: handle null-receiving
-    constructor(parcel: Parcel) : this(parcel.readString()) {
-        name = parcel.readString()
+    constructor(parcel: Parcel) : this(parcel.readString()!!) {
+        name = parcel.readString()!!
         parcel.readList(vertices, Point::class.java.classLoader)
-        children = parcel.createTypedArrayList(CREATOR).toMutableList()
+        children = parcel.createTypedArrayList(CREATOR)!!.toMutableList()
     }
 
     companion object CREATOR : Parcelable.Creator<Subject> {

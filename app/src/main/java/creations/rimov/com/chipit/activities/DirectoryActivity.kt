@@ -10,33 +10,26 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.DatabaseApplication
+import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
-import creations.rimov.com.chipit.objects.Subject
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import java.io.IOException
 
 class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHandler {
 
-    //Singleton database instance
-    private val database = DatabaseApplication.database
-
-    private val dirViewModel: DirectoryViewModel by lazy {
+    private val directoryVm: DirectoryViewModel by lazy {
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
     //private val subjects = mutableListOf<Subject>()
-
-    //Flags for recyclerview's items
-    private var subjectPressed = false
-    private var subjectLongPressed = false
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -49,16 +42,15 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
     private lateinit var addChipCameraButton: ImageButton       //TODO: create a custom button
     private lateinit var addChipFilesButton: ImageButton
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.directory_layout)
 
-        dirViewModel.getTopics().observe()
-
         gestureDetector = GestureDetector(this, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        directoryRecyclerAdapter = DirectoryRecyclerAdapter(this, subjects, this)
+        directoryRecyclerAdapter = DirectoryRecyclerAdapter(this, this)
         directoryLayoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
         directoryRecyclerView = findViewById<RecyclerView>(R.id.directory_layout_recycler_main).apply {
             adapter = directoryRecyclerAdapter
@@ -74,6 +66,10 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
         addChipFab.setOnClickListener(this)
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
+
+        directoryVm.getTopics().observe(this, Observer {
+            directoryRecyclerAdapter.setTopics(it)
+        })
     }
 
     override fun onClick(view: View?) {
@@ -109,8 +105,8 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
                     addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-                    subjects.add(Subject(imageFile.storagePath))
-                    directoryRecyclerAdapter.notifyDataSetChanged()
+                    //TODO: Change passed in values to variables
+                    directoryVm.insertTopic(Topic(0, "DEFAULT", imageFile.storagePath))
                 }
             }
 
@@ -120,19 +116,19 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
         }
     }
 
+    //TODO: find a way to handle this using MVVM pattern
     //Handle recyclerview's touch events
     override fun topicTouch(position: Int, event: MotionEvent, list: Int) {
+
         gestureDetector.onTouchEvent(event)
 
-        //TODO: either send the clicked topic's identifying info to display its web, or a link to its storage location,
-        //       as the info will be persistent
-        if(subjectPressed) {
+        if(directoryVm.topicPressed.value == true) {
             val toWeb = Intent(this, WebActivity::class.java)
-            toWeb.putExtra("subject", subjects[position])
+            toWeb.putExtra("topic_id", directoryVm.getTopic(position)?.id)
 
             startActivity(toWeb)
 
-            subjectPressed = false
+            directoryVm.topicPressed.value = false
         }
     }
 
@@ -140,18 +136,19 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
 
         //According to developer website, must override onDown to return true to ensure gestures are not ignored
         override fun onDown(event: MotionEvent?): Boolean {
+
             return true
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
-            subjectPressed = true
 
+            directoryVm.handleTopicTouch(1)
             return super.onSingleTapUp(event)
         }
 
         override fun onLongPress(event: MotionEvent?) {
-            subjectLongPressed = true
-            subjectPressed = false
+
+            directoryVm.handleTopicTouch(2)
         }
     }
 }

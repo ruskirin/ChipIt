@@ -9,5 +9,5 @@ interface TopicChipDao : BaseDao {
 
     @Transaction
     @Query("SELECT * FROM topics WHERE id = :topicId")
-    fun getTopicChips(topicId: Long): LiveData<TopicAndChips>
+    fun getTopicChips(topicId: Long): TopicAndChips
 }

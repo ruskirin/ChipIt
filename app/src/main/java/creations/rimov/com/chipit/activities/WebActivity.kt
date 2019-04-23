@@ -6,18 +6,25 @@ import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.objects.Subject
+import creations.rimov.com.chipit.view_models.WebViewModel
 
 class WebActivity : AppCompatActivity(), RecyclerHandler {
 
     object Constant {
         const val HORIZONTAL_CHIP_LIST = 0
         const val VERTICAL_CHIP_LIST = 1
+    }
+
+    private val webVm: WebViewModel by lazy {
+        ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
 
     //Horizontal recycler view for "sibling" children
@@ -45,14 +52,13 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
         val parcel: Bundle? = intent.extras
 
         if(parcel != null) {
-            val subject: Subject? = parcel.getParcelable("subject")
+            val topicId: Long? = parcel.getLong("topic_id")
 
-            if(subject != null)
-                hChipList.add(subject)
+            if(topicId != null)
+                webVm.initChips(topicId)
         }
 
-        hWebRecyclerAdapter = WebRecyclerAdapter(this, hChipList,
-            Constant.HORIZONTAL_CHIP_LIST, this)
+        hWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.HORIZONTAL_CHIP_LIST, this)
         hChipLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         hChipRecyclerView = findViewById<RecyclerView>(R.id.web_layout_recycler_h_chips).apply {
             adapter = hWebRecyclerAdapter
@@ -60,8 +66,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
             setHasFixedSize(true)
         }
 
-        vWebRecyclerAdapter = WebRecyclerAdapter(this, vChipList,
-            Constant.VERTICAL_CHIP_LIST, this)
+        vWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.VERTICAL_CHIP_LIST, this)
         vChipLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         vChipRecyclerView = findViewById<RecyclerView>(R.id.web_layout_recycler_v_chips).apply {
             adapter = vWebRecyclerAdapter
@@ -71,6 +76,10 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
 
         gestureDetector = GestureDetector(this, ChipGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
+
+        webVm.getChipsHorizontal()?.observe(this, Observer {
+            hWebRecyclerAdapter.setChips(it)
+        })
     }
 
     override fun topicTouch(position: Int, event: MotionEvent, list: Int) {

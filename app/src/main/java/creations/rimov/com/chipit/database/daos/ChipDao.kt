@@ -1,8 +1,10 @@
 package creations.rimov.com.chipit.database.daos
 
+import androidx.room.Dao
 import androidx.room.Query
 import creations.rimov.com.chipit.objects.Point
 
+@Dao
 interface ChipDao {
 
     @Query("UPDATE chips SET name = :name WHERE id = :id")

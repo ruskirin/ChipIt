@@ -9,9 +9,10 @@ import creations.rimov.com.chipit.objects.Point
 )
 
 data class Chip(
+
     @PrimaryKey(autoGenerate = true) val id: Long,
 
-    @ColumnInfo(name = "parent_chip_id") val parentId: Long,
+    @ColumnInfo(name = "parent_id") val parentId: Long,
 
     var name: String?,
 

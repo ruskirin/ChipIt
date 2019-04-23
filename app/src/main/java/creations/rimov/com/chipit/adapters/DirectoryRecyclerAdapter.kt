@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
@@ -22,6 +23,8 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
     fun setTopics(topics: List<Topic>) {
         this.topics = topics
+
+        notifyDataSetChanged()
     }
 
     /**
@@ -54,24 +57,24 @@ class DirectoryRecyclerAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        
+        if(::topics.isInitialized)
+            return topics.size
+
+        return 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
         val chipHolder =
             LayoutInflater.from(context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
 
-        return DirectoryViewHolder(
-            chipHolder,
-            touchHandler
-        )
+        return DirectoryViewHolder(chipHolder, touchHandler)
     }
 
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
 
-        holder.topicName.text = subjects[position].name
+        holder.topicName.text = topics[position].name
         Glide.with(context)
-            .load(subjects[position].imagePath)
+            .load(topics[position].imagePath)
             .into(holder.topicImage)
     }
 }

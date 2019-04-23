@@ -11,7 +11,8 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.Topic
 
 //TODO: implement migration
-@Database(entities = [Topic::class, Chip::class], version = 1)
+//TODO: handle schema exportation (see: https://stackoverflow.com/a/44645943/8916812)
+@Database(entities = [Topic::class, Chip::class], version = 1, exportSchema = false)
 @TypeConverters(DbVertexConverter::class)
 abstract class TopicDatabase : RoomDatabase() {
 

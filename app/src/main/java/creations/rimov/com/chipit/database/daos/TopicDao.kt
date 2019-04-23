@@ -5,12 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import creations.rimov.com.chipit.database.objects.Topic
 
+@Dao
 interface TopicDao {
 
     @Query("SELECT * FROM topics")
     fun getAll(): LiveData<List<Topic>>
 
-    @Query("SELECT :id FROM topics")
+    @Query("SELECT * FROM topics WHERE id = :id")
     fun getOne(id: Long): LiveData<Topic>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

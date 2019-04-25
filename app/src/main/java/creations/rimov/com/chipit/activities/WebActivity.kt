@@ -3,20 +3,30 @@ package creations.rimov.com.chipit.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.objects.Subject
+import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.WebViewModel
+import java.io.IOException
 
-class WebActivity : AppCompatActivity(), RecyclerHandler {
+class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
 
     object Constant {
         const val HORIZONTAL_CHIP_LIST = 0
@@ -36,10 +46,21 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
     private lateinit var vWebRecyclerAdapter: WebRecyclerAdapter
     private lateinit var vChipLayoutManager: LinearLayoutManager
 
-    private lateinit var gestureDetector: GestureDetector
+    private val addChipFab by lazy {
+        findViewById<FloatingActionButton>(R.id.web_layout_fab_add)
+    }
+    private val addChipPanelLayout by lazy {
+        findViewById<LinearLayout>(R.id.web_layout_addpanel)
+    }
+    //TODO: create a custom button
+    private val addChipCameraButton by lazy {
+        findViewById<ImageButton>(R.id.web_layout_addpanel_camera)
+    }
+    private val addChipFilesButton by lazy {
+        findViewById<ImageButton>(R.id.web_layout_addpanel_camera)
+    }
 
-    private val hChipList = mutableListOf<Subject>()
-    private val vChipList = mutableListOf<Subject>()
+    private lateinit var gestureDetector: GestureDetector
 
     private var chipPressed = false
     private var chipLongPressed = false
@@ -74,6 +95,10 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
             setHasFixedSize(true)
         }
 
+        addChipFab.setOnClickListener(this)
+        addChipCameraButton.setOnClickListener(this)
+        addChipFilesButton.setOnClickListener(this)
+
         gestureDetector = GestureDetector(this, ChipGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
@@ -82,18 +107,65 @@ class WebActivity : AppCompatActivity(), RecyclerHandler {
         })
     }
 
+    override fun onClick(view: View?) {
+
+        when(view?.id) {
+
+            R.id.web_layout_fab_add -> {
+                Log.i("TOUCH", "Fab")
+
+                if(addChipPanelLayout.visibility == View.GONE) {
+                    addChipPanelLayout.visibility = View.VISIBLE
+                    addChipFab.hide()
+                }
+            }
+
+            R.id.web_layout_addpanel_camera -> {
+                val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                //Verifies that an application that can handle this intent exists
+                addChipCameraIntent.resolveActivity(packageManager)
+
+                //TODO: handle error
+                val imageFile = try {
+                    CameraUtil.createImageFile(this)
+
+                } catch(e: IOException) {
+                    e.printStackTrace()
+                    null
+                }
+
+                if(imageFile != null) {
+                    val imageUri = FileProvider.getUriForFile(this,
+                        CameraUtil.IMAGE_PROVIDER_AUTHORITY,
+                        imageFile.file)
+
+                    addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                    startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
+
+                    //TODO: Change passed in values to variables
+                    webVm.insertChipH(Chip(0, 0, "", imageFile.storagePath, null))
+                }
+            }
+
+            R.id.web_layout_addpanel_files -> {
+
+            }
+        }
+    }
+
     override fun topicTouch(position: Int, event: MotionEvent, list: Int) {
         gestureDetector.onTouchEvent(event)
 
         if(chipPressed) {
             val toChip = Intent(this, ChipActivity::class.java)
 
+            //TODO (FUTURE): address this ugly mess of null checks
             if(list == Constant.HORIZONTAL_CHIP_LIST) {
-                toChip.putExtra("chip", hChipList[position])
+                toChip.putExtra("chip_id", webVm.getChipsHorizontal()!!.value!![position].id)
                 startActivity(toChip)
 
             } else if(list == Constant.VERTICAL_CHIP_LIST) {
-                toChip.putExtra("chip", vChipList[position])
+                toChip.putExtra("chip_id", webVm.getChipsVertical()?.value?.get(position)?.id)
                 startActivity(toChip)
             }
 

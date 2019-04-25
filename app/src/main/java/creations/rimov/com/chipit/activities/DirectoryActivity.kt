@@ -29,8 +29,6 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
-    //private val subjects = mutableListOf<Subject>()
-
     private lateinit var gestureDetector: GestureDetector
 
     private lateinit var directoryRecyclerView: RecyclerView

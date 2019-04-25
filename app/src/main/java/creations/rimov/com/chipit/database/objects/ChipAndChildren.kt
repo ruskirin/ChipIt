@@ -12,4 +12,4 @@ data class ChipAndChildren(
     var parent: Chip,
 
     @Relation(parentColumn = "id", entityColumn = "parent_id", entity = Chip::class)
-    val children: LiveData<List<Chip>>)
+    val children: List<Chip>)

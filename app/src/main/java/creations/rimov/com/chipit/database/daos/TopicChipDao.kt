@@ -1,13 +1,17 @@
 package creations.rimov.com.chipit.database.daos
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.lifecycle.MutableLiveData
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.TopicAndChips
 
 @Dao
-interface TopicChipDao : BaseDao {
+interface TopicChipDao {
 
     @Transaction
-    @Query("SELECT * FROM topics WHERE id = :topicId")
-    fun getTopicChips(topicId: Long): TopicAndChips
+    @Query("SELECT * FROM chips WHERE parent_id = :topicId")
+    fun getTopicAndChips(topicId: Long): LiveData<List<Chip>>
 }

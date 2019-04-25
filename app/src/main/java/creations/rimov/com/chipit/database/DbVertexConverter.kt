@@ -7,8 +7,8 @@ object DbVertexConverter {
 
     @TypeConverter
     @JvmStatic
-    fun verticesToString(vertices: List<Point>): String? {
-        if(vertices.isEmpty()) return null
+    fun verticesToString(vertices: List<Point>?): String? {
+        if(vertices.isNullOrEmpty()) return null
 
         return vertices.joinToString(",") {
             it.toString()
@@ -17,8 +17,8 @@ object DbVertexConverter {
 
     @TypeConverter
     @JvmStatic
-    fun stringToVertices(vertices: String): MutableList<Point>? {
-        if(vertices.isBlank()) return null
+    fun stringToVertices(vertices: String?): MutableList<Point>? {
+        if(vertices.isNullOrBlank()) return null
 
         val list = vertices.split(",")
 

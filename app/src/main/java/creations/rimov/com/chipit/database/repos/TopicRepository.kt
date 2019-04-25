@@ -16,9 +16,8 @@ class TopicRepository(topicDb: TopicDatabase) {
 
     fun insert(topic: Topic) = AsyncTopicInsert(topicDao).execute(topic)
 
-    fun update(id: Long,
-               name: String = "",
-               imagePath: String = "") = AsyncTopicUpdate(topicDao, id, name, imagePath).execute()
+    fun update(id: Long, name: String = "", imagePath: String = "")
+            = AsyncTopicUpdate(topicDao, id, name, imagePath).execute()
 
     fun delete(topic: Topic) = AsyncTopicDelete(topicDao).execute(topic)
 

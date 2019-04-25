@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.objects.Point
@@ -51,6 +52,7 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
     //Class responsible for assigning color to vertices
     private val chipPaint = Paint()
 
+
     //Path starting points
     private var pathX0 = 0f
     private var pathY0 = 0f
@@ -63,17 +65,16 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.chip_layout)
 
-        if(viewModel.getSubject().imagePath == "") {
-
+        if(viewModel.getChip() == null) {
             val parcel = intent?.extras
+
             if (parcel != null) {
+                val chipId: Long? = parcel.getLong("chip_id")
 
-                if (!viewModel.setSubject(parcel.getParcelable("chip"))) {
-                    Toast.makeText(
-                        this, "Could not retrieve intent extras; subject not set", Toast.LENGTH_LONG).show()
-
-                    /**TODO: (FUTURE) display appropriate image and stop further processes **/
-                }
+                //TODO: check that something was returned
+                if(chipId != null)
+                    if(!viewModel.initChip(chipId))
+                        Log.e("onCreate", "Could not find chip $chipId")
             }
         }
 
@@ -82,13 +83,23 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
     private fun drawChildren(canvas: Canvas) {
 
-        viewModel.getSubject().children.forEach {
+        viewModel.getChipChildren()?.value?.forEach {
             canvas.drawLines(
                 it.getVerticesFloatArray(
                     true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
                 chipPaint)
         }
     }
+
+    /*private fun drawChildren(canvas: Canvas) {
+
+        viewModel.getChip().value {
+            canvas.drawLines(
+                it.getVerticesFloatArray(
+                    true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
+                chipPaint)
+        }
+    }*/
 
     /*----------CHIPLISTENER IMPLEMENTATION----------*/
     override fun drawScreen(canvas: Canvas) {
@@ -140,7 +151,7 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         pathX = x
         pathY = y
 
-        viewModel.initChip()
+        viewModel.initChild()
         viewModel.addChipVertex(
             RenderUtil.pointToNorm(
                 Point(x, y), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
@@ -173,9 +184,9 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
                 RenderUtil.pointToNorm(
                     Point(pathX0, pathY0), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
             //Save chip in main subject's children list
-            viewModel.saveChip()
+            viewModel.saveChild()
             //Reset object references
-            viewModel.initChip()
+            viewModel.initChild()
         }
 
         clearPaths(chipPath)

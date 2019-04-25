@@ -20,7 +20,7 @@ abstract class TopicDatabase : RoomDatabase() {
 
     abstract fun chipDao(): ChipDao
 
-    abstract fun topicChipsDao(): TopicChipDao
+    abstract fun topicChipDao(): TopicChipDao
 
     abstract fun chipChildrenDao(): ChipChildrenDao
 }

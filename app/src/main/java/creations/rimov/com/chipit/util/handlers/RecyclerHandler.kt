@@ -4,5 +4,5 @@ import android.view.MotionEvent
 
 interface RecyclerHandler {
 
-    fun topicTouch(position: Int, event: MotionEvent, list: Int = -1)
+    fun topicTouch(position: Int, event: MotionEvent, listType: Int = -1)
 }

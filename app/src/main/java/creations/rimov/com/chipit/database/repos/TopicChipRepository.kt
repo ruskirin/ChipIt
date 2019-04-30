@@ -20,16 +20,17 @@ class TopicChipRepository(topicDb: TopicDatabase) {
 
     fun insertChild(child: Chip) {
         //TODO: no parentId specified, throw some kind of warning
-        if(child.parentId == 0L)
+        if(child.parentId != 0L)
+            AsyncChipInsert(chipAndChildrenDao).execute(child)
+        else
             Log.e("TopicChipRepo", "#insertChild: child has no parent_id")
-
-        AsyncChipInsert(chipAndChildrenDao).execute(child)
     }
 
     class AsyncChipInsert(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Chip, Void, Void>() {
 
-        override fun doInBackground(vararg params: Chip): Void? {
-            chipAndChildrenDao.insertChip(params[0])
+        override fun doInBackground(vararg params: Chip?): Void? {
+            if(params[0] != null)
+                chipAndChildrenDao.insertChip(params[0]!!)
 
             return null
         }

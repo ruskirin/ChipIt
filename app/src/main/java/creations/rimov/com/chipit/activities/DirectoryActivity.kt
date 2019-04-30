@@ -116,7 +116,7 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
 
     //TODO: find a way to handle this using MVVM pattern
     //Handle recyclerview's touch events
-    override fun topicTouch(position: Int, event: MotionEvent, list: Int) {
+    override fun topicTouch(position: Int, event: MotionEvent, listType: Int) {
 
         gestureDetector.onTouchEvent(event)
 

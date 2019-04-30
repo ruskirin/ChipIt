@@ -9,6 +9,10 @@ import creations.rimov.com.chipit.database.objects.ChipAndChildren
 interface ChipChildrenDao {
 
     @Transaction
+    @Query("SELECT * FROM chips WHERE id = :parentId")
+    fun getChipAndChildren(parentId: Long): LiveData<ChipAndChildren>?
+
+    @Transaction
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")
     fun getAllChildren(parentId: Long): LiveData<List<Chip>>
 

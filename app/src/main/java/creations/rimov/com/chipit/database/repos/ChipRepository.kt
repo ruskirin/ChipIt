@@ -16,6 +16,8 @@ class ChipRepository(topicDb: TopicDatabase) {
 
     fun getChildren(parentId: Long) = chipChildrenDao.getAllChildren(parentId)
 
+    fun getChipAndChildren(parentId: Long) = chipChildrenDao.getChipAndChildren(parentId)
+
     fun updateChip(id: Long,
                    name: String?,
                    imagePath: String?,

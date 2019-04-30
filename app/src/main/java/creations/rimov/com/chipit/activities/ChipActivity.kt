@@ -4,7 +4,6 @@ import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,16 +12,8 @@ import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.view_models.ChipViewModel
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.views.ChipView
-import kotlin.math.sqrt
 
 class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
-
-    object Constant {
-        //Radius around path starting point which will autosnap an endpoint and complete the chip
-        const val TOLERANCE = 100f
-        //Minimum distance from a path vertex before another vertex is created and connected
-        const val LINE_INTERVAL = 50f
-    }
 
     private val chipView: ChipView by lazy {
         findViewById<ChipView>(R.id.chip_layout_surfaceview)
@@ -40,10 +31,10 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
     private var screenH: Int = 0
 
     //Writes/draws onto an assigned bitmap
-    private lateinit var subjectCanvas: Canvas
+    private lateinit var parentCanvas: Canvas
 
     //Aspect ratio Rect frame for subject image
-    private val subjectImageFrame: Rect by lazy {
+    private val parentImageFrame: Rect by lazy {
         Rect()
     }
 
@@ -53,60 +44,44 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
     private val chipPaint = Paint()
 
 
-    //Path starting points
-    private var pathX0 = 0f
-    private var pathY0 = 0f
-    //Path previous coordinates
-    private var pathX = 0f
-    private var pathY = 0f
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.chip_layout)
 
-        if(viewModel.getChip() == null) {
-            val parcel = intent?.extras
-
-            if (parcel != null) {
-                val chipId: Long? = parcel.getLong("chip_id")
-
-                //TODO: check that something was returned
-                if(chipId != null)
-                    if(!viewModel.initChip(chipId))
-                        Log.e("onCreate", "Could not find chip $chipId")
-            }
-        }
-
         chipView.setListener(this)
+
+        val chipId = intent?.extras?.getLong("chip_id")
+
+        if(chipId != null)
+            viewModel.setParent(chipId)
+
+        if(!viewModel.getParent().hasObservers()) {
+            viewModel.getParent().observe(this, Observer {
+
+                viewModel.setBitmap(it.imagePath)
+            })
+        }
     }
 
     private fun drawChildren(canvas: Canvas) {
 
-        viewModel.getChipChildren()?.value?.forEach {
-            canvas.drawLines(
-                it.getVerticesFloatArray(
-                    true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
-                chipPaint)
-        }
+        viewModel.getChildren().observe(this, Observer {
+            it.forEach { chip ->
+
+                canvas.drawLines(
+                    chip.getVerticesFloatArray(
+                        true, true, screenW, screenH, parentImageFrame.width(), parentImageFrame.height()),
+                    chipPaint)
+            }
+        })
     }
 
-    /*private fun drawChildren(canvas: Canvas) {
-
-        viewModel.getChip().value {
-            canvas.drawLines(
-                it.getVerticesFloatArray(
-                    true, true, screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()),
-                chipPaint)
-        }
-    }*/
-
-    /*----------CHIPLISTENER IMPLEMENTATION----------*/
+    /*----------CHIP LISTENER IMPLEMENTATION----------*/
     override fun drawScreen(canvas: Canvas) {
 
         canvas.drawPath(chipPath, chipPaint)
 
-        drawChildren(canvas)
+        viewModel.getChildren()
     }
 
     override fun initSurface() {
@@ -115,80 +90,56 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
         //Draw static images (eg. background, chip pathways)
         try {
-            subjectCanvas = chipHolder.lockCanvas(null)
+            parentCanvas = chipHolder.lockCanvas(null)
             synchronized(chipHolder) {
-                subjectCanvas.drawBitmap(viewModel.getSubjectBitmap(), null, subjectImageFrame, null)
+                //TODO (URGENT): load in a default bitmap if this one cannot be loaded!
+                parentCanvas.drawBitmap(viewModel.getBitmap()!!, null, parentImageFrame, null)
             }
             //TODO: handle error
         } catch(e: Throwable) {
             e.printStackTrace()
 
         } finally {
-            chipHolder.unlockCanvasAndPost(subjectCanvas)
+            chipHolder.unlockCanvasAndPost(parentCanvas)
         }
     }
 
-    override fun setScreenDimen(width: Int, height: Int) {
-        screenW = width
-        screenH = height
+    override fun setScreenDimen() {
+
+        screenW = chipView.measuredWidth
+        screenH = chipView.measuredHeight
     }
 
-    override fun setSubjectRect() {
-        subjectImageFrame.set(
+    override fun setBitmapRect() {
+
+        Log.i("Chip Creation", "#setBitmapRect: viewModel.width = ${viewModel.getBitmapWidth()}, " +
+                "viewModel.height = ${viewModel.getBitmapHeight()}, \nviewWidth = $screenW, viewHeight = $screenH")
+
+        parentImageFrame.set(
             RenderUtil.getAspectRatioRect(
-                viewModel.getSubjectBitmapWidth(), viewModel.getSubjectBitmapHeight(), screenW, screenH))
+                viewModel.getBitmapWidth(), viewModel.getBitmapHeight(), screenW, screenH))
     }
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun chipStart(x: Float, y: Float) {
 
-        //TODO: add an image path after one has been assigned
         chipPath.moveTo(x, y)
-        //set initial point
-        pathX0 = x
-        pathY0 = y
-        //save as previous point
-        pathX = x
-        pathY = y
 
-        viewModel.initChild()
-        viewModel.addChipVertex(
-            RenderUtil.pointToNorm(
-                Point(x, y), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
+        viewModel.startPath(Point(x, y))
     }
 
     override fun chipDrag(x: Float, y: Float) {
-        val dx = x - pathX
-        val dy = y - pathY
-        val d = sqrt(dx*dx + dy*dy)
 
-        if(d > Constant.LINE_INTERVAL) {
+        if(viewModel.dragPath(Point(x, y)))
             chipPath.lineTo(x, y)
-            pathX = x
-            pathY = y
-
-            //TODO: consider doing this conversion and save after drawing is done; can convert a whole array instead
-            viewModel.addChipVertex(
-                RenderUtil.pointToNorm(
-                    Point(x, y), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
-        }
     }
 
     override fun chipEnd(x: Float, y: Float) {
-        val distance = sqrt((x - pathX0)*(x - pathX0) + (y - pathY0)*(y - pathY0))
 
-        if(distance <= Constant.TOLERANCE) {
-            chipPath.lineTo(pathX0, pathY0)
+        viewModel.endPath(
+            Point(x, y), screenW, screenH, parentImageFrame.width(), parentImageFrame.height())
 
-            viewModel.addChipVertex(
-                RenderUtil.pointToNorm(
-                    Point(pathX0, pathY0), screenW, screenH, subjectImageFrame.width(), subjectImageFrame.height()))
-            //Save chip in main subject's children list
-            viewModel.saveChild()
-            //Reset object references
-            viewModel.initChild()
-        }
-
+        //Either path has been saved or was incomplete, regardless it is no longer necessary
         clearPaths(chipPath)
     }
     /*-------------------------------------------*/

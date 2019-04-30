@@ -88,11 +88,14 @@ object RenderUtil {
         return Point(nX, nY)
     }
 
-    fun listPxToNorm(points: List<Point>, width: Int, height: Int, imageWidth: Int, imageHeight: Int): List<Point> {
+    fun listPxToNorm(points: List<Point>,
+                     viewWidth: Int, viewHeight: Int,
+                     imageWidth: Int, imageHeight: Int): MutableList<Point> {
+
         val list = mutableListOf<Point>()
 
         points.forEach {
-            list.add(pointToNorm(it, width, height, imageWidth, imageHeight))
+            list.add(pointToNorm(it, viewWidth, viewHeight, imageWidth, imageHeight))
         }
 
         return list

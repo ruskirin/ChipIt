@@ -1,6 +1,9 @@
 package creations.rimov.com.chipit.database.objects
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.util.RenderUtil
 
@@ -13,13 +16,13 @@ data class Chip(
 
     @PrimaryKey(autoGenerate = true) val id: Long,
 
-    @ColumnInfo(name = "parent_id") var parentId: Long,
+    @ColumnInfo(name = "parent_id") val parentId: Long,
 
     var name: String?,
 
     @ColumnInfo(name = "image_path") var imagePath: String,
 
-    var vertices: MutableList<Point>?) {
+    var vertices: List<Point>? = mutableListOf()) {
 
 
     /** Return a float array version of vertices
@@ -31,7 +34,7 @@ data class Chip(
                               width: Int = 0, height: Int = 0,
                               imageWidth: Int = 0, imageHeight: Int = 0): FloatArray {
 
-        if(vertices != null) {
+        if(vertices!!.size > 3) {
 
             val verticesF = FloatArray(
                 if (drawing) {
@@ -82,8 +85,6 @@ data class Chip(
                     ++idx
                 }
             }
-
-            return verticesF
         }
 
         return floatArrayOf()

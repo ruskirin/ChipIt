@@ -19,9 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
-import creations.rimov.com.chipit.objects.Subject
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.WebViewModel
 import java.io.IOException
@@ -33,7 +31,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
         const val VERTICAL_CHIP_LIST = 1
     }
 
-    private val webVm: WebViewModel by lazy {
+    private val viewModel: WebViewModel by lazy {
         ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
 
@@ -76,7 +74,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
             val topicId: Long? = parcel.getLong("topic_id")
 
             if(topicId != null)
-                webVm.initChips(topicId)
+                viewModel.initChips(topicId)
         }
 
         hWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.HORIZONTAL_CHIP_LIST, this)
@@ -102,7 +100,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
         gestureDetector = GestureDetector(this, ChipGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        webVm.getChipsHorizontal()?.observe(this, Observer {
+        viewModel.getChipsHorizontal()?.observe(this, Observer {
             hWebRecyclerAdapter.setChips(it)
         })
     }
@@ -112,7 +110,6 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
         when(view?.id) {
 
             R.id.web_layout_fab_add -> {
-                Log.i("TOUCH", "Fab")
 
                 if(addChipPanelLayout.visibility == View.GONE) {
                     addChipPanelLayout.visibility = View.VISIBLE
@@ -143,7 +140,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     //TODO: Change passed in values to variables
-                    webVm.insertChipH(Chip(0, 0, "", imageFile.storagePath, null))
+                    viewModel.insertChipH(Chip(0, viewModel.getHorizontalTopicId(), "", imageFile.storagePath))
                 }
             }
 
@@ -153,22 +150,26 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
         }
     }
 
-    override fun topicTouch(position: Int, event: MotionEvent, list: Int) {
+    override fun topicTouch(position: Int, event: MotionEvent, listType: Int) {
         gestureDetector.onTouchEvent(event)
 
         if(chipPressed) {
             val toChip = Intent(this, ChipActivity::class.java)
 
-            //TODO (FUTURE): address this ugly mess of null checks
-            if(list == Constant.HORIZONTAL_CHIP_LIST) {
-                toChip.putExtra("chip_id", webVm.getChipsHorizontal()!!.value!![position].id)
+            val id = viewModel.getChipAtPosition(listType, position)?.id
+
+            if(id != null) {
+                Log.i("Chip Creation", "Passed chip $id")
+
+                toChip.putExtra("chip_id", id)
                 startActivity(toChip)
 
-            } else if(list == Constant.VERTICAL_CHIP_LIST) {
-                toChip.putExtra("chip_id", webVm.getChipsVertical()?.value?.get(position)?.id)
-                startActivity(toChip)
+            } else {
+                Log.e("WebActivity", "#topicTouch: chip at position $position could not be found")
+                //TODO: handle this scenario
             }
 
+            //Reset flag
             chipPressed = false
         }
     }

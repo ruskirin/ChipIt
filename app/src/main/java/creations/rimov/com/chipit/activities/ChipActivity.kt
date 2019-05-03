@@ -11,6 +11,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.view_models.ChipViewModel
 import creations.rimov.com.chipit.util.RenderUtil
+import creations.rimov.com.chipit.util.TextureUtil
 import creations.rimov.com.chipit.views.ChipView
 
 class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
@@ -50,17 +51,58 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
         chipView.setListener(this)
 
+        Log.i("ChipActivity", "#onCreate()")
+
         val chipId = intent?.extras?.getLong("chip_id")
 
-        if(chipId != null)
+        if(chipId != null && !viewModel.isParentInit())
             viewModel.setParent(chipId)
 
-        if(!viewModel.getParent().hasObservers()) {
-            viewModel.getParent().observe(this, Observer {
+        viewModel.getParent()?.observe(this, Observer {
+
+            if(it.imagePath != viewModel.imagePath) {
+                Log.i("ChipActivity", "#onCreate(): setting bitmap from ${it.imagePath}")
 
                 viewModel.setBitmap(it.imagePath)
-            })
+            }
+        })
+    }
+
+
+    //TODO (FUTURE): have this run on a separate thread, display loading bar
+    fun drawBackground() {
+
+        initPaint()
+
+        //Draw static images (eg. background, chip pathways)
+        try {
+            parentCanvas = chipHolder.lockCanvas(null)
+
+            synchronized(chipHolder) {
+                Log.i("ChipActivity", "#drawBackground(): " +
+                        "drawing bitmap sized ${viewModel.getBitmapWidth()} x ${viewModel.getBitmapHeight()}")
+
+                //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
+                parentCanvas.drawBitmap(viewModel.getBitmap()!!, null, parentImageFrame, null)
+            }
+            //TODO: handle error
+        } catch (e: Throwable) {
+            e.printStackTrace()
+
+        } finally {
+            chipHolder.unlockCanvasAndPost(parentCanvas)
+            //Reset flag
+            viewModel.backgroundChanged = false
         }
+    }
+
+    override fun drawScreen(canvas: Canvas) {
+
+        if(viewModel.backgroundChanged) drawBackground()
+
+        canvas.drawPath(chipPath, chipPaint)
+
+        //viewModel.getChildren()
     }
 
     private fun drawChildren(canvas: Canvas) {
@@ -76,48 +118,27 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         })
     }
 
-    /*----------CHIP LISTENER IMPLEMENTATION----------*/
-    override fun drawScreen(canvas: Canvas) {
-
-        canvas.drawPath(chipPath, chipPaint)
-
-        viewModel.getChildren()
-    }
-
-    override fun initSurface() {
-
-        initPaint()
-
-        //Draw static images (eg. background, chip pathways)
-        try {
-            parentCanvas = chipHolder.lockCanvas(null)
-            synchronized(chipHolder) {
-                //TODO (URGENT): load in a default bitmap if this one cannot be loaded!
-                parentCanvas.drawBitmap(viewModel.getBitmap()!!, null, parentImageFrame, null)
-            }
-            //TODO: handle error
-        } catch(e: Throwable) {
-            e.printStackTrace()
-
-        } finally {
-            chipHolder.unlockCanvasAndPost(parentCanvas)
-        }
-    }
-
     override fun setScreenDimen() {
 
         screenW = chipView.measuredWidth
         screenH = chipView.measuredHeight
+
+        viewModel.backgroundChanged = true
     }
 
-    override fun setBitmapRect() {
+    override fun setBitmapRect(): Boolean {
 
-        Log.i("Chip Creation", "#setBitmapRect: viewModel.width = ${viewModel.getBitmapWidth()}, " +
-                "viewModel.height = ${viewModel.getBitmapHeight()}, \nviewWidth = $screenW, viewHeight = $screenH")
+        val width = viewModel.getBitmapWidth()
+        val height = viewModel.getBitmapHeight()
+
+        if(width == 0 || height == 0)
+            return false
 
         parentImageFrame.set(
             RenderUtil.getAspectRatioRect(
                 viewModel.getBitmapWidth(), viewModel.getBitmapHeight(), screenW, screenH))
+
+        return true
     }
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
@@ -142,7 +163,6 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         //Either path has been saved or was incomplete, regardless it is no longer necessary
         clearPaths(chipPath)
     }
-    /*-------------------------------------------*/
 
     private fun initPaint() {
 

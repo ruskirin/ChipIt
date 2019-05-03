@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
-import android.graphics.Path
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,16 +24,19 @@ class ChipViewModel : ViewModel() {
 
     private val chipRepo = ChipRepository(DatabaseApplication.database!!)
 
-    var resetParent = MutableLiveData(false)
+    //The chip currently viewed in the background and being worked on
+    private lateinit var parent: LiveData<Chip>
 
     var parentId = -1L
 
-    //The chip currently viewed in the background and being worked on
-    private lateinit var parent: LiveData<Chip>
+    private lateinit var bitmap: Bitmap
+    //Saved image path for present bitmap
+    var imagePath: String = ""
+
+    var backgroundChanged = false
+
     //Children of the main chip
     private lateinit var children: LiveData<List<Chip>> //TODO: observe the children, notifydatasetchanged if change observed
-
-    private lateinit var bitmap: Bitmap
 
     private lateinit var pathVertices: MutableList<Point>
 
@@ -42,24 +44,31 @@ class ChipViewModel : ViewModel() {
     fun setParent(parentId: Long) {
 
         if(parentId != this.parentId) {
-            parent = chipRepo.getChip(parentId)
             this.parentId = parentId
+
+            parent = chipRepo.getChip(parentId)
+            children = chipRepo.getChildren(parentId)
         }
     }
 
-    fun getParent(): LiveData<Chip> = parent
+    fun getParent(): LiveData<Chip>? =
+        if(isParentInit()) parent
+        else null
 
-    fun getChildren() = chipRepo.getChildren(parentId)
+    fun isParentInit() = ::parent.isInitialized
 
     fun setBitmap(imagePath: String) {
+        this.imagePath = imagePath
 
         try {
             bitmap = TextureUtil.convertPathToBitmap(imagePath)!!
 
         } catch(e: Exception) {
-            //TODO: handle the exception from null return
-            Log.e("ChipViewModel", "#setChips: could not set background Bitmap")
+            Log.e("ChipViewModel", "#setBitmap(): could not create bitmap from passed image path!")
             e.printStackTrace()
+
+        } finally {
+            backgroundChanged = true
         }
     }
 
@@ -78,6 +87,8 @@ class ChipViewModel : ViewModel() {
     fun startPath(point: Point) {
         pathVertices = mutableListOf(point)
     }
+
+    fun getChildren(): LiveData<List<Chip>> = children
 
     /**
      * @return true if point is valid and should be drawn, false if invalid and should be ignored

@@ -1,16 +1,12 @@
 package creations.rimov.com.chipit.database.daos
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipAndChildren
 
 @Dao
 interface ChipChildrenDao {
-
-    @Transaction
-    @Query("SELECT * FROM chips WHERE id = :parentId")
-    fun getChipAndChildren(parentId: Long): LiveData<ChipAndChildren>?
 
     @Transaction
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")

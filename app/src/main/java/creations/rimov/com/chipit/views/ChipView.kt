@@ -19,24 +19,23 @@ class ChipView(cont: Context, attribs: AttributeSet)
     private lateinit var chipListener: ChipListener
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.i("ChipView Life", "surfaceCreated!")
+        Log.i("ChipView", "#surfaceCreated()")
 
         chipListener.setScreenDimen()
         chipListener.setBitmapRect()
-        chipListener.initSurface()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        Log.i("ChipView Life", "surfaceChanged!")
+        Log.i("ChipView", "#surfaceChanged()")
 
         chipListener.setScreenDimen()
         chipListener.setBitmapRect()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        Log.i("ChipView Life", "surfaceDestroyed!")
+        Log.i("ChipView", "#surfaceDestroyed()")
 
-        /**TODO: Save data**/
+        //TODO (FUTURE): wrap up work
     }
 
     /**
@@ -44,6 +43,8 @@ class ChipView(cont: Context, attribs: AttributeSet)
      */
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
+
+        Log.i("ChipView", "#dispatchDraw()")
 
         if(canvas != null)
             chipListener.drawScreen(canvas)
@@ -87,8 +88,6 @@ class ChipView(cont: Context, attribs: AttributeSet)
 
         fun setScreenDimen()
 
-        fun setBitmapRect()
-
-        fun initSurface()
+        fun setBitmapRect(): Boolean
     }
 }

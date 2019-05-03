@@ -3,12 +3,9 @@ package creations.rimov.com.chipit.database.repos
 import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import creations.rimov.com.chipit.database.TopicDatabase
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipAndChildren
-import creations.rimov.com.chipit.database.objects.TopicAndChips
 
 class TopicChipRepository(topicDb: TopicDatabase) {
 

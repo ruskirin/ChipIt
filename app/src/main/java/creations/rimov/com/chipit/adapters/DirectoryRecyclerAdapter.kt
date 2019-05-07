@@ -4,13 +4,11 @@ import android.content.Context
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
-import creations.rimov.com.chipit.objects.Subject
 
 /**
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering

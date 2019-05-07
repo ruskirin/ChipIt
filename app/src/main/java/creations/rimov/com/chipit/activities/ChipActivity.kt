@@ -4,6 +4,8 @@ import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,6 +22,19 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         findViewById<ChipView>(R.id.chip_layout_surfaceview)
     }
 
+    //TODO NOW: the layout for the path creation panel was created, now it must be displayed once a path is created;
+    //           figure out the best approach to having it displayed
+    private val pathPanelLayout: LinearLayout by lazy {
+        findViewById<LinearLayout>(R.id.chip_layout_pathpanel)
+    }
+    private val pathPanelCamera: ImageButton by lazy {
+        findViewById<ImageButton>(R.id.chip_layout_pathpanel_camera)
+    }
+    private val pathPanelPhotos: ImageButton by lazy {
+        findViewById<ImageButton>(R.id.chip_layout_pathpanel_photos)
+    }
+
+
     private val chipHolder: SurfaceHolder by lazy {
         chipView.holder
     }
@@ -28,17 +43,16 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
         ViewModelProviders.of(this).get(ChipViewModel::class.java)
     }
 
+
     private var screenW: Int = 0
     private var screenH: Int = 0
 
     //Writes/draws onto an assigned bitmap
     private lateinit var parentCanvas: Canvas
-
     //Aspect ratio Rect frame for subject image
     private val parentImageFrame: Rect by lazy {
         Rect()
     }
-
     //Class encapsulating geometric paths; used for vertex mapping
     private val chipPath = Path()
     //Class responsible for assigning color to vertices
@@ -66,6 +80,10 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
                 viewModel.setBitmap(it.imagePath)
             }
         })
+
+        viewModel.getChildren().observe(this, Observer {
+            chipView.invalidate()
+        })
     }
 
 
@@ -74,14 +92,13 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
         initPaint()
 
+        parentCanvas = Canvas(viewModel.getBitmap()!!.copy(Bitmap.Config.ARGB_8888, true))
+
         //Draw static images (eg. background, chip pathways)
         try {
             parentCanvas = chipHolder.lockCanvas(null)
 
             synchronized(chipHolder) {
-                Log.i("ChipActivity", "#drawBackground(): " +
-                        "drawing bitmap sized ${viewModel.getBitmapWidth()} x ${viewModel.getBitmapHeight()}")
-
                 //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
                 parentCanvas.drawBitmap(viewModel.getBitmap()!!, null, parentImageFrame, null)
             }
@@ -98,24 +115,30 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
     override fun drawScreen(canvas: Canvas) {
 
-        if(viewModel.backgroundChanged) drawBackground()
+        if(viewModel.backgroundChanged)
+            drawBackground()
 
         canvas.drawPath(chipPath, chipPaint)
 
-        //viewModel.getChildren()
+        drawChildren(canvas)
     }
 
     private fun drawChildren(canvas: Canvas) {
 
-        viewModel.getChildren().observe(this, Observer {
-            it.forEach { chip ->
+        if(screenW == 0 || screenH == 0 || parentImageFrame.width() == 0 || parentImageFrame.height() == 0)
+            return
 
-                canvas.drawLines(
-                    chip.getVerticesFloatArray(
-                        true, true, screenW, screenH, parentImageFrame.width(), parentImageFrame.height()),
-                    chipPaint)
-            }
-        })
+        //TODO (FUTURE): should be off UI thread
+        viewModel.getChildren().value?.forEach { chip ->
+
+            if(chip.vertices.isNullOrEmpty() || chip.vertices!!.size <= 3)
+                return@forEach
+
+            canvas.drawLines(
+                chip.getVerticesFloatArray(
+                    true, screenW, screenH, parentImageFrame.width(), parentImageFrame.height())!!,
+                chipPaint)
+        }
     }
 
     override fun setScreenDimen() {
@@ -157,8 +180,9 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener {
 
     override fun chipEnd(x: Float, y: Float) {
 
-        viewModel.endPath(
-            Point(x, y), screenW, screenH, parentImageFrame.width(), parentImageFrame.height())
+        if(viewModel.endPath(
+                Point(x, y), screenW, screenH, parentImageFrame.width(), parentImageFrame.height()))
+            chipPath.lineTo(x, y)
 
         //Either path has been saved or was incomplete, regardless it is no longer necessary
         clearPaths(chipPath)

@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
-import creations.rimov.com.chipit.objects.Subject
 
 //TODO: (FUTURE) images can be linked through either a file path or as bitmap, both have pros and cons
 

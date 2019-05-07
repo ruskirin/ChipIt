@@ -3,13 +3,11 @@ package creations.rimov.com.chipit.view_models
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.repos.ChipRepository
 import creations.rimov.com.chipit.objects.Point
-import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 
@@ -17,7 +15,7 @@ class ChipViewModel : ViewModel() {
 
     private object Constant {
         //Radius around path starting point which will autosnap an endpoint and complete the chip
-        const val TOLERANCE = 100f
+        const val TOLERANCE = 70f
         //Minimum distance from a path vertex before another vertex is created and connected
         const val LINE_INTERVAL = 50f
     }
@@ -57,6 +55,8 @@ class ChipViewModel : ViewModel() {
 
     fun isParentInit() = ::parent.isInitialized
 
+    fun getChildren(): LiveData<List<Chip>> = children
+
     fun setBitmap(imagePath: String) {
         this.imagePath = imagePath
 
@@ -84,11 +84,13 @@ class ChipViewModel : ViewModel() {
         if(::bitmap.isInitialized) bitmap.height
         else 0
 
-    fun startPath(point: Point) {
-        pathVertices = mutableListOf(point)
-    }
 
-    fun getChildren(): LiveData<List<Chip>> = children
+    fun startPath(point: Point) {
+        Log.i("Path Creation", "#startPath(): point x = ${point.x}, y = ${point.y}")
+        pathVertices = mutableListOf()
+        //Save the starting point
+        pathVertices.add(point)
+    }
 
     /**
      * @return true if point is valid and should be drawn, false if invalid and should be ignored
@@ -104,7 +106,7 @@ class ChipViewModel : ViewModel() {
         return true
     }
 
-    fun endPath(point: Point, width: Int, height: Int, frameWidth: Int, frameHeight: Int) {
+    fun endPath(point: Point, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int): Boolean {
 
         val displacement = point.distanceTo(pathVertices.first())
 
@@ -113,10 +115,14 @@ class ChipViewModel : ViewModel() {
             //Path will complete at the first point
             pathVertices.add(pathVertices.first())
             //Convert the pixel points to normalized
-            pathVertices = RenderUtil.listPxToNorm(pathVertices, width, height, frameWidth, frameHeight)
+            pathVertices = Point.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
 
-            chipRepo.insertChip(
-                Chip(0, parent.value!!.id, "", "", pathVertices))
+            val chip = Chip(0, parentId, "", "", pathVertices)
+            chipRepo.insertChip(chip)
+
+            return true
         }
+
+        return false
     }
 }

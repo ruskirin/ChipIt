@@ -7,7 +7,7 @@
     <dimen name="directory_layout_addpanel_marginend">8dp</dimen>
     <dimen name="directory_layout_addpanel_button_side">96dp</dimen>
 
-    <dimen name="chip_layout_pathpanel_button_side">36dp</dimen>
+    <dimen name="chip_layout_pathpanel_button_side">48dp</dimen>
     <dimen name="chip_layout_pathpanel_button_marginhoriz">4dp</dimen>
     <dimen name="chip_layout_pathpanel_button_marginvert">2dp</dimen>
 </resources>

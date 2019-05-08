@@ -3,6 +3,7 @@ package creations.rimov.com.chipit.view_models
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
@@ -11,7 +12,7 @@ import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 
-class ChipViewModel : ViewModel() {
+class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
 
     private object Constant {
         //Radius around path starting point which will autosnap an endpoint and complete the chip
@@ -20,23 +21,27 @@ class ChipViewModel : ViewModel() {
         const val LINE_INTERVAL = 50f
     }
 
-    private val chipRepo = ChipRepository(DatabaseApplication.database!!)
+    private val chipRepo = ChipRepository(DatabaseApplication.database!!, this)
 
     //The chip currently viewed in the background and being worked on
     private lateinit var parent: LiveData<Chip>
-
-    var parentId = -1L
-
-    private lateinit var bitmap: Bitmap
-    //Saved image path for present bitmap
-    var imagePath: String = ""
-
-    var backgroundChanged = false
-
     //Children of the main chip
     private lateinit var children: LiveData<List<Chip>> //TODO: observe the children, notifydatasetchanged if change observed
 
+    var parentId = -1L
+    //id of a newly inserted chip, used to update chip information
+    var newChipId = -1L
+
+    private lateinit var bitmap: Bitmap
+    //Saved image path for present bitmap
+    private var imgLocation: String = ""
+
     private lateinit var pathVertices: MutableList<Point>
+
+    //Flag to redraw background bitmap
+    var backgroundChanged = false
+    //Flag to toggle path creation panel
+    var pathCreated = MutableLiveData(false)
 
 
     fun setParent(parentId: Long) {
@@ -57,11 +62,11 @@ class ChipViewModel : ViewModel() {
 
     fun getChildren(): LiveData<List<Chip>> = children
 
-    fun setBitmap(imagePath: String) {
-        this.imagePath = imagePath
+    fun setBitmap(imgLocation: String) {
+        this.imgLocation = imgLocation
 
         try {
-            bitmap = TextureUtil.convertPathToBitmap(imagePath)!!
+            bitmap = TextureUtil.convertPathToBitmap(imgLocation)!!
 
         } catch(e: Exception) {
             Log.e("ChipViewModel", "#setBitmap(): could not create bitmap from passed image path!")
@@ -83,6 +88,20 @@ class ChipViewModel : ViewModel() {
     fun getBitmapHeight() =
         if(::bitmap.isInitialized) bitmap.height
         else 0
+
+    fun getImagePath() = imgLocation
+
+    fun getPathVertices() = pathVertices
+
+    fun updateChip(id: Long, name: String?, imgLocation: String?, vertices: List<Point>?) {
+        chipRepo.updateChip(id, name, imgLocation, vertices)
+    }
+
+    fun saveChip(name: String?, imgLocation: String?, vertices: List<Point>?) {
+        val chip = Chip(0, parentId, name, imgLocation ?: "", vertices)
+
+        chipRepo.insertChip(chip)
+    }
 
 
     fun startPath(point: Point) {
@@ -117,12 +136,16 @@ class ChipViewModel : ViewModel() {
             //Convert the pixel points to normalized
             pathVertices = Point.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
 
-            val chip = Chip(0, parentId, "", "", pathVertices)
-            chipRepo.insertChip(chip)
+            pathCreated.postValue(true)
 
             return true
         }
 
         return false
+    }
+
+    //Method from ChipRepoCommunication interface
+    override fun returnChipId(id: Long) {
+        newChipId = id
     }
 }

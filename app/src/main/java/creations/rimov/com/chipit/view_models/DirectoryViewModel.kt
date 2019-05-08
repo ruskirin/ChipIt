@@ -44,8 +44,8 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.update(id, name)
     }
 
-    fun updateTopicImage(id: Long, imagePath: String) {
-        topicRepo.update(id, "", imagePath)
+    fun updateTopicImage(id: Long, imgLocation: String) {
+        topicRepo.update(id, "", imgLocation)
     }
 
     fun deleteTopic(topic: Topic) {

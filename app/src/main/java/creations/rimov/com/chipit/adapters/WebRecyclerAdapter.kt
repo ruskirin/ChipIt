@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 
 //TODO: (FUTURE) images can be linked through either a file path or as bitmap, both have pros and cons
@@ -19,10 +20,10 @@ class WebRecyclerAdapter(private val context: Context,
                          private val touchHandler: RecyclerHandler)
     : RecyclerView.Adapter<WebRecyclerAdapter.ChipImageHolder>() {
 
-    private lateinit var chips: List<Chip>
+    private lateinit var chips: List<ChipCard>
 
 
-    fun setChips(chips: List<Chip>) {
+    fun setChips(chips: List<ChipCard>) {
         this.chips = chips
 
         notifyDataSetChanged()
@@ -77,7 +78,7 @@ class WebRecyclerAdapter(private val context: Context,
 
         //TODO: (QUICK) load a default image if none can be found
         Glide.with(context)
-            .load(chips[position].imagePath)
+            .load(chips[position].imgLocation)
             .into(holder.chipImage)
     }
 }

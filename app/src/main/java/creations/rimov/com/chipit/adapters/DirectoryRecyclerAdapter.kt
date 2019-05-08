@@ -72,7 +72,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
         holder.topicName.text = topics[position].name
         Glide.with(context)
-            .load(topics[position].imagePath)
+            .load(topics[position].imgLocation)
             .into(holder.topicImage)
     }
 }

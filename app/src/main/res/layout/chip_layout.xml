@@ -26,6 +26,7 @@
                 android:layout_marginEnd="@dimen/chip_layout_pathpanel_button_marginhoriz"
                 android:layout_marginBottom="@dimen/chip_layout_pathpanel_button_marginvert"
                 android:layout_marginTop="@dimen/chip_layout_pathpanel_button_marginvert"
+                android:scaleType="fitXY"
                 android:src="@mipmap/ic_add_camera"/>
 
         <ImageButton
@@ -36,7 +37,19 @@
                 android:layout_marginEnd="@dimen/chip_layout_pathpanel_button_marginhoriz"
                 android:layout_marginBottom="@dimen/chip_layout_pathpanel_button_marginvert"
                 android:layout_marginTop="@dimen/chip_layout_pathpanel_button_marginvert"
+                android:scaleType="fitXY"
                 android:src="@mipmap/ic_add_files"/>
+
+        <ImageButton
+                android:id="@+id/chip_layout_pathpanel_cancel"
+                android:layout_width="@dimen/chip_layout_pathpanel_button_side"
+                android:layout_height="@dimen/chip_layout_pathpanel_button_side"
+                android:layout_marginStart="@dimen/chip_layout_pathpanel_button_marginhoriz"
+                android:layout_marginEnd="@dimen/chip_layout_pathpanel_button_marginhoriz"
+                android:layout_marginBottom="@dimen/chip_layout_pathpanel_button_marginvert"
+                android:layout_marginTop="@dimen/chip_layout_pathpanel_button_marginvert"
+                android:scaleType="fitXY"
+                android:src="@mipmap/ic_cancel"/>
 
     </LinearLayout>
 

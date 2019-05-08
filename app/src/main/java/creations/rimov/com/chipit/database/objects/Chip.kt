@@ -20,7 +20,7 @@ data class Chip(
 
     var name: String?,
 
-    @ColumnInfo(name = "image_path") var imagePath: String,
+    @ColumnInfo(name = "image_location") var imgLocation: String,
 
     var vertices: List<Point>? = mutableListOf()) {
 

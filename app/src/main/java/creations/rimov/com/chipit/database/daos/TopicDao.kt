@@ -17,8 +17,8 @@ interface TopicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTopic(topic: Topic)
 
-    @Query("UPDATE topics SET image_path = :imagePath WHERE id = :id")
-    fun updateImage(id: Long, imagePath: String): Int
+    @Query("UPDATE topics SET image_location = :imgLocation WHERE id = :id")
+    fun updateImage(id: Long, imgLocation: String): Int
 
     @Query("UPDATE topics SET name = :name WHERE id = :id")
     fun updateName(id: Long, name: String): Int

@@ -16,4 +16,4 @@ data class Topic(
 
     var name: String,
 
-    @ColumnInfo(name = "image_path") var imagePath: String)
+    @ColumnInfo(name = "image_location") var imgLocation: String)

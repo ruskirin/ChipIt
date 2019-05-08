@@ -63,6 +63,7 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
     private var chipPressed = false
     private var chipLongPressed = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.web_layout)
@@ -100,8 +101,12 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
         gestureDetector = GestureDetector(this, ChipGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        viewModel.getChipsHorizontal()?.observe(this, Observer {
-            hWebRecyclerAdapter.setChips(it)
+        viewModel.getChipsHorizontal()?.observe(this, Observer { chips ->
+            hWebRecyclerAdapter.setChips(chips)
+        })
+
+        viewModel.getChipsVertical()?.observe(this, Observer { chips ->
+            vWebRecyclerAdapter.setChips(chips)
         })
     }
 
@@ -116,7 +121,6 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
                     addChipFab.hide()
                 }
             }
-
             R.id.web_layout_addpanel_camera -> {
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists
@@ -139,8 +143,8 @@ class WebActivity : AppCompatActivity(), RecyclerHandler, View.OnClickListener {
                     addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-                    //TODO: Change passed in values to variables
-                    viewModel.insertChipH(Chip(0, viewModel.getHorizontalTopicId(), "", imageFile.storagePath))
+                    if(imageFile.storagePath.isNotEmpty())
+                        viewModel.saveChip("", imageFile.storagePath)
                 }
             }
 

@@ -29,9 +29,17 @@ class WebViewModel : ViewModel() {
     fun getParentId() = parentId
 
     //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
-    fun getChipsHorizontal(): LiveData<List<ChipCard>>? = chipsHorizontal
+    fun getChipsHorizontal(): LiveData<List<ChipCard>>? =
+        if(::chipsHorizontal.isInitialized)
+            chipsHorizontal
+        else
+            null
 
-    fun getChipsVertical(): LiveData<List<ChipCard>>? = chipsVertical
+    fun getChipsVertical(): LiveData<List<ChipCard>>? =
+        if(::chipsVertical.isInitialized)
+            chipsVertical
+        else
+            null
 
     /**Insert child into horizontal chip row**/
     fun saveChip(name: String?, imgLocation: String?) {

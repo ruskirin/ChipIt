@@ -213,7 +213,7 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchLis
                     MotionEvent.ACTION_DOWN -> {
 
                         //TODO (NOW): set up a flag in VM that will trigger visibility of an "editor" FAB
-                        if(event.rawX )
+                        //if(event.rawX )
                     }
                     MotionEvent.ACTION_MOVE -> {
 

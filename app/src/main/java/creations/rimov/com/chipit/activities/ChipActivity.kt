@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.objects.Point
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.ChipViewModel
@@ -25,12 +25,13 @@ import java.io.IOException
 
 class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchListener {
 
-    private val chipView: ChipView by lazy {
-        findViewById<ChipView>(R.id.chip_layout_surfaceview)
+    private object Constant {
+        //Buffer around surfaceview edge to trigger gesture swipe events
+        const val EDGE_TOUCH_BUFFER = 5f
     }
 
-    private val pathPanelLayout: LinearLayout by lazy {
-        findViewById<LinearLayout>(R.id.chip_layout_pathpanel)
+    private val chipView: ChipView by lazy {
+        findViewById<ChipView>(R.id.chip_layout_surfaceview)
     }
 
     private val chipHolder: SurfaceHolder by lazy {
@@ -61,7 +62,11 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchLis
         super.onCreate(savedInstanceState)
         setContentView(R.layout.chip_layout)
 
+        val pathPanelLayout: LinearLayout = findViewById(R.id.chip_layout_pathpanel)
+        val editFab: FloatingActionButton = findViewById(R.id.chip_layout_fab)
+
         chipView.setListener(this)
+        chipView.setOnTouchListener(this)
 
         Log.i("ChipActivity", "#onCreate()")
 
@@ -90,6 +95,16 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchLis
 
             } else {
                 pathPanelLayout.visibility = View.GONE
+            }
+        })
+
+        viewModel.needEdit.observe(this, Observer { needEdit ->
+
+            if(needEdit) {
+                editFab.show()
+
+            } else {
+                editFab.hide()
             }
         })
 
@@ -180,6 +195,10 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchLis
         return true
     }
 
+    override fun surfaceTouch(event: MotionEvent) {
+        //TODO NOW: let viewmodel handle touch actions
+    }
+
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun chipStart(x: Float, y: Float) {
 
@@ -204,24 +223,14 @@ class ChipActivity : AppCompatActivity(), ChipView.ChipListener, View.OnTouchLis
         clearPaths(chipPath)
     }
 
+    //TODO NOW: CHANGE TO ONCLICK, TOUCH HANDLED BY VIEW ITSELF
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         when(view?.id) {
             R.id.chip_layout_surfaceview -> {
 
-                when(event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-
-                        //TODO (NOW): set up a flag in VM that will trigger visibility of an "editor" FAB
-                        //if(event.rawX )
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-
-                    }
-                    MotionEvent.ACTION_UP -> {
-
-                    }
-                }
+                //TODO NOW: handle null check here
+                viewModel.gestureAction(event?.action ?: -1, Point(event!!.rawX, event.rawY))
             }
             R.id.chip_layout_pathpanel_camera -> {
 

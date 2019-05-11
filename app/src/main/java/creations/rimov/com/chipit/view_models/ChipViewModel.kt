@@ -2,6 +2,7 @@ package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
 import android.util.Log
+import android.view.MotionEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,10 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
         const val TOLERANCE = 70f
         //Minimum distance from a path vertex before another vertex is created and connected
         const val LINE_INTERVAL = 50f
+        //Buffer zone around the edge to trigger touch events
+        const val EDGE_TOUCH_BUFFER = 10f
+        //Swipe distance to trigger event
+        const val SWIPE_BUFFER = 150f
     }
 
     private val chipRepo = ChipRepository(DatabaseApplication.database!!, this)
@@ -42,6 +47,8 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
     var backgroundChanged = false
     //Flag to toggle path creation panel
     var pathCreated = MutableLiveData(false)
+    //Flag to toggle edit FAB visibility
+    var needEdit = MutableLiveData(false)
 
 
     fun setParent(parentId: Long) {
@@ -130,18 +137,42 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
         val displacement = point.distanceTo(pathVertices.first())
 
         //Does the path return to its starting point?
-        if(displacement < Constant.TOLERANCE) {
-            //Path will complete at the first point
-            pathVertices.add(pathVertices.first())
-            //Convert the pixel points to normalized
-            pathVertices = Point.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
+        if(pathVertices.size <= 3 || displacement > Constant.TOLERANCE)
+            return false
 
-            pathCreated.postValue(true)
+        //Path will complete at the first point
+        pathVertices.add(pathVertices.first())
+        //Convert the pixel points to normalized
+        pathVertices = Point.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
 
-            return true
+        pathCreated.postValue(true)
+
+        return true
+    }
+
+    private var yi = 0f
+
+    fun gestureAction(event: Int, point: Point) {
+
+        when(event) {
+            MotionEvent.ACTION_DOWN -> {
+
+                //TODO NOW: figure out how and where you'll differentiate between gesture events and path drawing
+                if((/*screenH - */point.y) > Constant.EDGE_TOUCH_BUFFER)
+                    needEdit.postValue(false)
+
+                yi = point.y
+            }
+            MotionEvent.ACTION_MOVE -> {
+
+                if((yi - point.y) > Constant.SWIPE_BUFFER)
+                    needEdit.postValue(true)
+            }
+            MotionEvent.ACTION_UP -> {
+
+                yi = 0f //Reset
+            }
         }
-
-        return false
     }
 
     //Method from ChipRepoCommunication interface

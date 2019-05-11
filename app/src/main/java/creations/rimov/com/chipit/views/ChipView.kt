@@ -51,7 +51,11 @@ class ChipView(cont: Context, attribs: AttributeSet)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when(event?.action) {
+
+        if(event != null)
+            chipListener.surfaceTouch(event)
+
+        /*when(event?.action) {
 
             MotionEvent.ACTION_DOWN -> {
                 chipListener.chipStart(event.x, event.y)
@@ -67,7 +71,7 @@ class ChipView(cont: Context, attribs: AttributeSet)
                 chipListener.chipEnd(event.x, event.y)
                 invalidate()
             }
-        }
+        }*/
 
         return true
     }
@@ -89,5 +93,7 @@ class ChipView(cont: Context, attribs: AttributeSet)
         fun setScreenDimen()
 
         fun setBitmapRect(): Boolean
+
+        fun surfaceTouch(event: MotionEvent)
     }
 }

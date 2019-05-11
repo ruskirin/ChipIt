@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph" app:startDestination="@+id/directoryActivity">
+
+    <activity android:id="@+id/directoryActivity" android:name="creations.rimov.com.chipit.activities.DirectoryActivity"
+              android:label="DirectoryActivity"/>
+    <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.fragments.WebFragment"
+              android:label="WebFragment">
+        <action android:id="@+id/action_webFragment_to_placeholder" app:destination="@id/placeholder"/>
+    </fragment>
+    <fragment android:id="@+id/placeholder"/>
+</navigation>

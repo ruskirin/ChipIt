@@ -21,12 +21,16 @@ import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
+import creations.rimov.com.chipit.view_models.WebViewModel
 import java.io.IOException
 
 class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHandler {
 
-    private val directoryVm: DirectoryViewModel by lazy {
+    private val dirViewModel: DirectoryViewModel by lazy {
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
+    }
+    private val webViewModel: WebViewModel by lazy {
+        ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
 
     private lateinit var gestureDetector: GestureDetector
@@ -65,7 +69,7 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
 
-        directoryVm.getTopics().observe(this, Observer {
+        dirViewModel.getTopics().observe(this, Observer {
             directoryRecyclerAdapter.setTopics(it)
         })
     }
@@ -104,7 +108,7 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     //TODO: Change passed in values to variables
-                    directoryVm.insertTopic(Topic(0, "DEFAULT", imageFile.storagePath))
+                    dirViewModel.insertTopic(Topic(0, "DEFAULT", imageFile.storagePath))
                 }
             }
 
@@ -120,13 +124,13 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
 
         gestureDetector.onTouchEvent(event)
 
-        if(directoryVm.topicPressed.value == true) {
+        if(dirViewModel.topicPressed.value == true) {
             val toWeb = Intent(this, WebActivity::class.java)
-            toWeb.putExtra("topic_id", directoryVm.getTopic(position)?.id)
+            toWeb.putExtra("topic_id", dirViewModel.getTopic(position)?.id)
 
             startActivity(toWeb)
 
-            directoryVm.topicPressed.value = false
+            dirViewModel.topicPressed.value = false
         }
     }
 
@@ -140,13 +144,13 @@ class DirectoryActivity : AppCompatActivity(), View.OnClickListener, RecyclerHan
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
 
-            directoryVm.handleTopicTouch(1)
+            dirViewModel.handleTopicTouch(1)
             return super.onSingleTapUp(event)
         }
 
         override fun onLongPress(event: MotionEvent?) {
 
-            directoryVm.handleTopicTouch(2)
+            dirViewModel.handleTopicTouch(2)
         }
     }
 }

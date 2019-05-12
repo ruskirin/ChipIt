@@ -1,11 +1,13 @@
 package creations.rimov.com.chipit.view_models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.database.repos.TopicRepository
+import creations.rimov.com.chipit.objects.DirectoryTouchFlag
 
 class DirectoryViewModel : ViewModel() {
 
@@ -13,23 +15,8 @@ class DirectoryViewModel : ViewModel() {
 
     private val topics: LiveData<List<Topic>> = topicRepo.getAll()
 
-    //TODO: if no LiveData-esque use is found, change to regular bool variables
-    val topicPressed = MutableLiveData<Boolean>(false)
-    val topicLongPressed = MutableLiveData<Boolean>(false)
+    val touchFlag = MutableLiveData<DirectoryTouchFlag>()
 
-
-    fun handleTopicTouch(type: Int) {
-
-        when(type) {
-            1 -> {
-                topicPressed.value = true
-            }
-            2 -> {
-                topicLongPressed.value = true
-                topicPressed.value = false
-            }
-        }
-    }
 
     /** Repository functions **/
     fun getTopics() = topics
@@ -50,5 +37,17 @@ class DirectoryViewModel : ViewModel() {
 
     fun deleteTopic(topic: Topic) {
         topicRepo.delete(topic)
+    }
+
+    fun setTopicTouch(touched: Boolean) {
+        touchFlag.postValue(DirectoryTouchFlag(true))
+    }
+
+    fun setTopicLongTouch(touched: Boolean) {
+        touchFlag.postValue(DirectoryTouchFlag(false, true, false))
+    }
+
+    fun setFabTouch(touched: Boolean) {
+        touchFlag.postValue(DirectoryTouchFlag(false, false, true))
     }
 }

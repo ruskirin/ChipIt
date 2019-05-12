@@ -13,4 +13,15 @@
             app:navGraph="@navigation/nav_graph"
             app:defaultNavHost="true"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/directory_layout_fab_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/directory_layout_addpanel_marginbot"
+            android:layout_marginEnd="@dimen/directory_layout_addpanel_marginend"
+            app:fabSize="normal"
+            app:elevation="@dimen/fab_elevation_def"
+            android:src="@drawable/ic_add_fab_image"/>
+
 </FrameLayout>

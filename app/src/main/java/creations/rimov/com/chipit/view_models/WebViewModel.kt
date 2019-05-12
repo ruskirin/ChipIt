@@ -19,6 +19,7 @@ class WebViewModel : ViewModel() {
 
 
     fun initChips(parentId: Long) {
+
         this.parentId = parentId
         chipsHorizontal = topicChipRepo.getTopicChipCards(parentId)
     }

@@ -30,9 +30,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         const val VERTICAL_CHIP_LIST = 1
     }
 
-    private val viewModel: WebViewModel by lazy {
-        ViewModelProviders.of(this).get(WebViewModel::class.java)
-    }
+    private lateinit var viewModel: WebViewModel
 
     //Horizontal recycler view for "sibling" children
     private lateinit var hChipRecyclerView: RecyclerView
@@ -58,10 +56,12 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         //TODO NOW: set up a shared viewmodel between activity and this and then instantiate the recyclerviews
 
         activity?.run {
-            hWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.HORIZONTAL_CHIP_LIST, this)
+            ViewModelProviders.of(this).get(WebViewModel::class.java)
+
+            hWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.HORIZONTAL_CHIP_LIST, this@WebFragment)
             hChipLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
 
-            vWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.VERTICAL_CHIP_LIST, this)
+            vWebRecyclerAdapter = WebRecyclerAdapter(this, Constant.VERTICAL_CHIP_LIST, this@WebFragment)
             vChipLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         }
 
@@ -79,19 +79,21 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        addChipFab = activity!!.findViewById(R.id.web_layout_fab_add)
-        addChipPanelLayout = activity!!.findViewById(R.id.web_layout_addpanel)
+        val view = inflater.inflate(R.layout.web_layout, container, false)
+
+        addChipFab = view.findViewById(R.id.web_layout_fab_add)
+        addChipPanelLayout = view.findViewById(R.id.web_layout_addpanel)
 
         //TODO: create a custom button
-        val addChipCameraButton: ImageButton = activity!!.findViewById(R.id.web_layout_addpanel_camera)
-        val addChipFilesButton: ImageButton = activity!!.findViewById(R.id.web_layout_addpanel_files)
+        val addChipCameraButton: ImageButton = view.findViewById(R.id.web_layout_addpanel_camera)
+        val addChipFilesButton: ImageButton = view.findViewById(R.id.web_layout_addpanel_files)
 
-        hChipRecyclerView = activity!!.findViewById<RecyclerView>(R.id.web_layout_recycler_h_chips).apply {
+        hChipRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_h_chips).apply {
             adapter = hWebRecyclerAdapter
             layoutManager = hChipLayoutManager
             setHasFixedSize(true)
         }
-        vChipRecyclerView = activity!!.findViewById<RecyclerView>(R.id.web_layout_recycler_v_chips).apply {
+        vChipRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_v_chips).apply {
             adapter = vWebRecyclerAdapter
             layoutManager = vChipLayoutManager
             setHasFixedSize(true)
@@ -101,7 +103,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
 
-        return inflater.inflate(R.layout.web_layout, container, false)
+        return view
     }
 
     override fun onClick(view: View?) {
@@ -118,11 +120,11 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
             R.id.web_layout_addpanel_camera -> {
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists
-                addChipCameraIntent.resolveActivity(packageManager)
+                addChipCameraIntent.resolveActivity(activity!!.packageManager)
 
                 //TODO: handle error
                 val imageFile = try {
-                    CameraUtil.createImageFile(this)
+                    CameraUtil.createImageFile(activity!!)
 
                 } catch(e: IOException) {
                     e.printStackTrace()
@@ -130,7 +132,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
                 }
 
                 if(imageFile != null) {
-                    val imageUri = FileProvider.getUriForFile(this,
+                    val imageUri = FileProvider.getUriForFile(activity!!,
                         CameraUtil.IMAGE_PROVIDER_AUTHORITY,
                         imageFile.file)
 
@@ -152,7 +154,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         gestureDetector.onTouchEvent(event)
 
         if(chipPressed) {
-            val toChip = Intent(this, ChipActivity::class.java)
+            val toChip = Intent(activity!!, ChipActivity::class.java)
 
             val id = viewModel.getChipAtPosition(listType, position)?.id
 

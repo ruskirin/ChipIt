@@ -1,13 +1,12 @@
 package creations.rimov.com.chipit.view_models
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.database.repos.TopicRepository
-import creations.rimov.com.chipit.objects.DirectoryTouchFlag
+import creations.rimov.com.chipit.objects.RecyclerTouchFlag
 
 class DirectoryViewModel : ViewModel() {
 
@@ -15,7 +14,7 @@ class DirectoryViewModel : ViewModel() {
 
     private val topics: LiveData<List<Topic>> = topicRepo.getAll()
 
-    val touchFlag = MutableLiveData<DirectoryTouchFlag>()
+    val topicTouch = MutableLiveData<RecyclerTouchFlag>()
 
 
     /** Repository functions **/
@@ -39,15 +38,11 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.delete(topic)
     }
 
-    fun setTopicTouch(touched: Boolean) {
-        touchFlag.postValue(DirectoryTouchFlag(true))
+    fun setTopicTouch() {
+        topicTouch.postValue(RecyclerTouchFlag(true))
     }
 
-    fun setTopicLongTouch(touched: Boolean) {
-        touchFlag.postValue(DirectoryTouchFlag(false, true, false))
-    }
-
-    fun setFabTouch(touched: Boolean) {
-        touchFlag.postValue(DirectoryTouchFlag(false, false, true))
+    fun setTopicLongTouch() {
+        topicTouch.postValue(RecyclerTouchFlag(false, true))
     }
 }

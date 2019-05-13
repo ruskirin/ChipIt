@@ -1,12 +1,14 @@
 package creations.rimov.com.chipit.view_models
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.activities.WebActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.repos.TopicChipRepository
+import creations.rimov.com.chipit.fragments.WebFragment
+import creations.rimov.com.chipit.objects.RecyclerTouchFlag
 
 class WebViewModel : ViewModel() {
 
@@ -16,6 +18,8 @@ class WebViewModel : ViewModel() {
 
     private lateinit var chipsHorizontal: LiveData<List<ChipCard>>
     private lateinit var chipsVertical: LiveData<List<ChipCard>>
+
+    val chipTouch = MutableLiveData<RecyclerTouchFlag>()
 
 
     fun initChips(parentId: Long) {
@@ -51,8 +55,16 @@ class WebViewModel : ViewModel() {
 
     /**Return the chip in the specified listType at the specified position**/
     fun getChipAtPosition(listType: Int, position: Int) =
-        if(listType == WebActivity.Constant.HORIZONTAL_CHIP_LIST)
+        if(listType == WebFragment.Constant.HORIZONTAL_CHIP_LIST)
             chipsHorizontal.value?.get(position)
         else
             null
+
+    fun setChipTouch() {
+        chipTouch.postValue(RecyclerTouchFlag(true))
+    }
+
+    fun setChipLongTouch() {
+        chipTouch.postValue(RecyclerTouchFlag(false, true))
+    }
 }

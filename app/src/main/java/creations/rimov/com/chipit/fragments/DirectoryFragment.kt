@@ -20,22 +20,20 @@ import creations.rimov.com.chipit.database.objects.Topic
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
-import creations.rimov.com.chipit.view_models.WebViewModel
+import creations.rimov.com.chipit.view_models.GlobalViewModel
 import java.io.IOException
 
 class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
 
-    //Shared ViewModel with DirectoryActivity
-    private lateinit var dirViewModel: DirectoryViewModel
+    private lateinit var globalViewModel: GlobalViewModel
 
-    //Shared ViewModel with WebFragment
-    private val webViewModel: WebViewModel by lazy {
-        ViewModelProviders.of(this).get(WebViewModel::class.java)
+    //Fragment's own ViewModel
+    private val dirViewModel: DirectoryViewModel by lazy {
+        ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
     private lateinit var dirRecyclerView: RecyclerView
     private lateinit var dirRecyclerAdapter: DirectoryRecyclerAdapter
-    private lateinit var dirLayoutManager: StaggeredGridLayoutManager
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -48,14 +46,13 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activity?.run {
+        Log.i("Life Event", "DirectoryFragment#onCreate()")
 
-            dirViewModel = ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
+        activity?.let {
+            globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            dirRecyclerAdapter = DirectoryRecyclerAdapter(this, this@DirectoryFragment)
-            dirLayoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+            dirRecyclerAdapter = DirectoryRecyclerAdapter(it, this@DirectoryFragment)
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,7 +61,7 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
         dirRecyclerView = view.findViewById<RecyclerView>(R.id.directory_layout_recycler_main)
             .apply {
                 adapter = dirRecyclerAdapter
-                layoutManager = dirLayoutManager
+                layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
                 setHasFixedSize(true)
         }
 
@@ -78,37 +75,35 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
 
+        globalViewModel.fabTouched.observe(this, Observer { touched ->
+
+            if(touched) {
+                addChipPanelLayout.visibility = View.VISIBLE
+
+            } else {
+                addChipPanelLayout.visibility = View.GONE
+            }
+        })
 
         dirViewModel.getTopics().observe(this, Observer { topics ->
             dirRecyclerAdapter.setTopics(topics)
         })
 
-        dirViewModel.touchFlag.observe(this, Observer { flag ->
+        dirViewModel.topicTouch.observe(this, Observer { flag ->
 
             if(touchTopicId == -1L)
                 return@Observer
 
-            if(flag.topicTouched) {
-                webViewModel.initChips(touchTopicId)
+            when {
+                flag.chipTouched -> {
+                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(touchTopicId)
+                    findNavController().navigate(directions)
+                }
 
-                findNavController().navigate(R.id.action_directoryFragment_to_webFragment)
-
-                dirViewModel.setTopicTouch(false) //Reset flag
-
-            } else if(flag.topicLongTouched) {
-
-                //TODO FUTURE: implement long touch feature
-
+                flag.chipLongTouched -> {
+                    //TODO FUTURE: implement long touch feature
+                }
             }
-
-            //TODO NOW: ADD A SEPARATE FAB TO EACH FRAGMENT
-            //           a single fab is just not practical to implement, as it requires constant 2 way monitoring
-
-            if(flag.fabTouched) {
-                addChipPanelLayout.visibility = View.VISIBLE
-
-            } else
-                addChipPanelLayout.visibility = View.GONE
         })
 
         return view
@@ -119,7 +114,7 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
 
         gestureDetector.onTouchEvent(event)
 
-        touchTopicId = dirViewModel.getTopic(position)?.id ?: -1
+        touchTopicId = dirViewModel.getTopic(position)?.id ?: -1L
     }
 
     override fun onClick(view: View?) {
@@ -171,7 +166,7 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "onSingleTapUp()!")
 
-            dirViewModel.setTopicTouch(true)
+            dirViewModel.setTopicTouch()
 
             return super.onSingleTapUp(event)
         }
@@ -179,7 +174,7 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
         override fun onLongPress(event: MotionEvent?) {
             Log.i("Touch Event", "onLongPress()!")
 
-            dirViewModel.setTopicLongTouch(true)
+            dirViewModel.setTopicLongTouch()
         }
     }
 }

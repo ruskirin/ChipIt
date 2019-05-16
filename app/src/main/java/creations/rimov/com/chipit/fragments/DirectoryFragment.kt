@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
-import creations.rimov.com.chipit.database.objects.Topic
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
@@ -98,10 +98,13 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
                 flag.chipTouched -> {
                     val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(touchTopicId)
                     findNavController().navigate(directions)
-                }
 
+                    dirViewModel.resetFlags()
+                }
                 flag.chipLongTouched -> {
                     //TODO FUTURE: implement long touch feature
+
+                    dirViewModel.resetFlags()
                 }
             }
         })
@@ -144,7 +147,7 @@ class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     //TODO: Change passed in values to variables
-                    dirViewModel.insertTopic(Topic(0, "DEFAULT", imageFile.storagePath))
+                    dirViewModel.insertTopic(Chip(0L, 0L, true, "TOPIC", imageFile.storagePath))
                 }
             }
 

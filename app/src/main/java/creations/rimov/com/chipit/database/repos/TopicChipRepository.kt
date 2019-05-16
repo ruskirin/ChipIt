@@ -1,33 +1,44 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
-import android.util.Log
-import androidx.lifecycle.LiveData
-import creations.rimov.com.chipit.database.TopicDatabase
-import creations.rimov.com.chipit.database.daos.ChipChildrenDao
+import creations.rimov.com.chipit.database.ChipDatabase
+import creations.rimov.com.chipit.database.daos.TopicChipDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
 
-class TopicChipRepository(topicDb: TopicDatabase) {
+class TopicChipRepository(chipDb: ChipDatabase) {
 
-    private val topicAndChipsDao = topicDb.topicChipDao()
-    private val chipAndChildrenDao = topicDb.chipChildrenDao()
+    private val topicDao = chipDb.topicDao()
 
-    fun getTopicChipCards(topicId: Long): LiveData<List<ChipCard>> = topicAndChipsDao.getTopicChipCards(topicId)
-    fun getChipChildrenCards(parentId: Long): LiveData<List<ChipCard>> = chipAndChildrenDao.getChipChildrenCards(parentId)
 
-    fun insertChip(chip: Chip) {
-        //TODO: no parentId specified, throw some kind of warning
-        if(chip.parentId != 0L)
-            AsyncChipInsert(chipAndChildrenDao).execute(chip)
-        else
-            Log.e("TopicChipRepo", "#insertChip: chip has no parent_id")
+    fun getTopic(id: Long) = topicDao.getTopicChip(id)
+
+    fun getTopics() = topicDao.getTopicChips()
+
+    fun update(id: Long,
+                   name: String?,
+                   imgLocation: String?) = AsyncChipUpdate(topicDao, name, imgLocation).execute(id)
+
+    fun insert(topic: Chip) = AsyncChipInsert(topicDao).execute(topic)
+
+
+    class AsyncChipUpdate(private val topicDao: TopicChipDao,
+                          private val name: String?,
+                          private val imgLocation: String?)
+        : AsyncTask<Long, Void, Void>() {
+
+        override fun doInBackground(vararg params: Long?): Void? {
+
+            if(!name.isNullOrBlank()) topicDao.updateName(params[0]!!, name)
+            if(!imgLocation.isNullOrBlank()) topicDao.updateImage(params[0]!!, imgLocation)
+
+            return null
+        }
     }
 
-    class AsyncChipInsert(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Chip, Void, Void>() {
+    class AsyncChipInsert(private val topicDao: TopicChipDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
-            chipAndChildrenDao.insertChip(params[0])
+            topicDao.insertTopic(params[0])
 
             return null
         }

@@ -18,12 +18,13 @@ data class Chip(
 
     @ColumnInfo(name = "parent_id") val parentId: Long,
 
+    @ColumnInfo(name = "is_topic") val isTopic: Boolean,
+
     var name: String?,
 
     @ColumnInfo(name = "image_location") var imgLocation: String,
 
     var vertices: List<Point>? = mutableListOf()) {
-
 
     /**
      * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes

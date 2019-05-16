@@ -7,13 +7,13 @@ class DatabaseApplication : Application() {
 
     companion object {
 
-        var database: TopicDatabase? = null
+        var database: ChipDatabase? = null
     }
 
     override fun onCreate() {
         super.onCreate()
 
         database = Room.databaseBuilder(
-            this, TopicDatabase::class.java, "topic-db").build()
+            this, ChipDatabase::class.java, "topic-db").build()
     }
 }

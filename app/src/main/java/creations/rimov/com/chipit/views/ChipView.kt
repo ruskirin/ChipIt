@@ -21,8 +21,6 @@ class ChipView(cont: Context, attribs: AttributeSet)
     override fun surfaceCreated(holder: SurfaceHolder?) {
         Log.i("ChipView", "#surfaceCreated()")
 
-        chipListener.setScreenDimen()
-        chipListener.setBitmapRect()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -92,7 +90,7 @@ class ChipView(cont: Context, attribs: AttributeSet)
 
         fun setScreenDimen()
 
-        fun setBitmapRect(): Boolean
+        fun setBitmapRect()
 
         fun surfaceTouch(event: MotionEvent)
     }

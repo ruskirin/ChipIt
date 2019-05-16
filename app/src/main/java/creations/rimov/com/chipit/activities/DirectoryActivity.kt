@@ -1,26 +1,16 @@
 package creations.rimov.com.chipit.activities
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Topic
-import creations.rimov.com.chipit.util.CameraUtil
-import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import creations.rimov.com.chipit.view_models.WebViewModel
-import java.io.IOException
 
 class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -46,9 +36,10 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
 
         navController.addOnDestinationChangedListener(this)
 
-        addChipFab.setOnClickListener {
+        addChipFab.setOnClickListener { view ->
 
-            globalViewModel.setFabTouched(true)
+            if(addChipFab.isOrWillBeShown)
+                globalViewModel.setFabTouched(true)
 
             addChipFab.hide()
         }
@@ -59,6 +50,8 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
         when(destination.id) {
 
             R.id.directoryFragment -> {
+                Log.i("Navigation", "Destination: Directory")
+
                 globalViewModel.setFabTouched(false)
 
                 addChipFab.setImageDrawable(
@@ -67,6 +60,8 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
                 addChipFab.show()
             }
             R.id.webFragment -> {
+                Log.i("Navigation", "Destination: Web")
+
                 globalViewModel.setFabTouched(false)
 
                 addChipFab.setImageDrawable(
@@ -75,12 +70,34 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
                 addChipFab.show()
             }
             R.id.chipFragment -> {
+                Log.i("Navigation", "Destination: Chip")
+
                 globalViewModel.setFabTouched(false)
 
                 addChipFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.mipmap.ic_edit, null))
 
                 addChipFab.show()
+            }
+        }
+    }
+
+    //
+    override fun onBackPressed() {
+
+        when(navController.currentDestination?.id) {
+
+            R.id.webFragment -> {
+                globalViewModel.setFabTouched(false)
+
+                navController.navigate(R.id.action_webFragment_to_directoryFragment)
+
+            }
+            R.id.chipFragment -> {
+                globalViewModel.setFabTouched(false)
+
+                navController.navigate(R.id.action_chipFragment_to_webFragment)
+
             }
         }
     }

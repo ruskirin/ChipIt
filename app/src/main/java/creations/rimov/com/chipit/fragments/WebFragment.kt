@@ -3,7 +3,6 @@ package creations.rimov.com.chipit.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -14,11 +13,13 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
+import creations.rimov.com.chipit.util.handlers.WebRecyclerSnapHandler
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import java.io.IOException
@@ -32,31 +33,34 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
 
     private lateinit var globalViewModel: GlobalViewModel
 
-    private val webViewModel: WebViewModel by lazy {
+    private val localViewModel: WebViewModel by lazy {
         ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
-    private lateinit var hWebRecyclerAdapter: WebRecyclerAdapter
-    private lateinit var vWebRecyclerAdapter: WebRecyclerAdapter
+    private lateinit var hRecyclerAdapter: WebRecyclerAdapter
+    private lateinit var vRecyclerAdapter: WebRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
 
-    private var chipTouchId: Long = -1
+    private var chipTouchId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webViewModel.initChips(passedArgs.parentId)
-
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            hWebRecyclerAdapter = WebRecyclerAdapter(it, Constant.HORIZONTAL_CHIP_LIST, this@WebFragment)
-            vWebRecyclerAdapter = WebRecyclerAdapter(it, Constant.VERTICAL_CHIP_LIST, this@WebFragment)
+            hRecyclerAdapter = WebRecyclerAdapter(it, Constant.HORIZONTAL_CHIP_LIST, this@WebFragment)
+            vRecyclerAdapter = WebRecyclerAdapter(it, Constant.VERTICAL_CHIP_LIST, this@WebFragment)
         }
+
+        if(passedArgs.parentId != -1L)
+            localViewModel.initChips(passedArgs.parentId)
+        else
+            localViewModel.initChips(globalViewModel.chipFragParentId)
 
         gestureDetector = GestureDetector(activity, ChipGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
@@ -72,17 +76,22 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         val addChipFilesButton: ImageButton = view.findViewById(R.id.web_layout_addpanel_files)
 
         //Horizontal recycler view for "sibling" children
-        val hChipRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_h_chips).apply {
-            adapter = hWebRecyclerAdapter
+        val hRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_h_chips).apply {
+            adapter = hRecyclerAdapter
             layoutManager = LinearLayoutManager(view.context, RecyclerView.HORIZONTAL, false)
             setHasFixedSize(true)
         }
         //Vertical recycler view for "children" children
-        val vChipRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_v_chips).apply {
-            adapter = vWebRecyclerAdapter
+        val vRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_v_chips).apply {
+            adapter = vRecyclerAdapter
             layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
             setHasFixedSize(true)
         }
+
+        val recyclerSnapHandler = WebRecyclerSnapHandler()
+        recyclerSnapHandler.attachToRecyclerView(hRecyclerView)
+
+        //TODO NOW: override WebRecyclerSnapHandler's findSnapView, and use that to load vertical recyclerview items
 
         globalViewModel.fabTouched.observe(this, Observer { touched ->
 
@@ -94,15 +103,15 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
             }
         })
 
-        webViewModel.getChipsHorizontal()?.observe(this, Observer { chips ->
-            hWebRecyclerAdapter.setChips(chips)
+        localViewModel.getChipsHorizontal()?.observe(this, Observer { chips ->
+            hRecyclerAdapter.setChips(chips)
         })
 
-        webViewModel.getChipsVertical()?.observe(this, Observer { chips ->
-            vWebRecyclerAdapter.setChips(chips)
+        localViewModel.getChipsVertical()?.observe(this, Observer { chips ->
+            vRecyclerAdapter.setChips(chips)
         })
 
-        webViewModel.chipTouch.observe(this, Observer { flag ->
+        localViewModel.chipTouch.observe(this, Observer { flag ->
 
             if(chipTouchId == -1L)
                 return@Observer
@@ -111,6 +120,8 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
                 flag.chipTouched -> {
                     val directions = WebFragmentDirections.actionWebFragmentToChipFragment(chipTouchId)
                     findNavController().navigate(directions)
+
+                    globalViewModel.saveChipFragParentId(localViewModel.getParentId())
                 }
 
                 flag.chipLongTouched -> {
@@ -152,7 +163,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     if(imageFile.storagePath.isNotEmpty())
-                        webViewModel.saveChip("", imageFile.storagePath)
+                        localViewModel.saveChip("", imageFile.storagePath)
                 }
             }
 
@@ -165,7 +176,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
     override fun topicTouch(position: Int, event: MotionEvent, listType: Int) {
         gestureDetector.onTouchEvent(event)
 
-        chipTouchId = webViewModel.getChipAtPosition(listType, position)?.id ?: -1L
+        chipTouchId = localViewModel.getChipAtPosition(listType, position)?.id ?: -1L
     }
 
     //According to developer website, must override onDown to return true to ensure gestures are not ignored
@@ -176,13 +187,13 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerHandler {
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
-            webViewModel.setChipTouch()
+            localViewModel.setChipTouch()
 
             return super.onSingleTapUp(event)
         }
 
         override fun onLongPress(event: MotionEvent?) {
-            webViewModel.setChipLongTouch()
+            localViewModel.setChipLongTouch()
 
         }
     }

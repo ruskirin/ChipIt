@@ -1,17 +1,17 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
-import creations.rimov.com.chipit.database.TopicDatabase
+import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.objects.Point
 
-class ChipRepository(topicDb: TopicDatabase,
+class ChipRepository(chipDb: ChipDatabase,
                      private val chipComm: ChipRepoCommunication) {
 
-    private val chipDao = topicDb.chipDao()
-    private val chipChildrenDao = topicDb.chipChildrenDao()
+    private val chipDao = chipDb.chipDao()
+    private val chipChildrenDao = chipDb.chipChildrenDao()
 
     fun getChip(id: Long) = chipDao.getChip(id)
 

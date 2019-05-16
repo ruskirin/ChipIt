@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Topic
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.handlers.RecyclerHandler
 
 /**
@@ -17,9 +17,9 @@ class DirectoryRecyclerAdapter(private val context: Context,
                                private val touchHandler: RecyclerHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
-    private lateinit var topics: List<Topic>
+    private lateinit var topics: List<Chip>
 
-    fun setTopics(topics: List<Topic>) {
+    fun setTopics(topics: List<Chip>) {
         this.topics = topics
 
         notifyDataSetChanged()

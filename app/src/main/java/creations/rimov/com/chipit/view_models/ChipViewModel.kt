@@ -86,7 +86,9 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
     }
 
     fun saveChip(name: String?, imgLocation: String?, vertices: List<Point>?) {
-        val chip = Chip(0, parentId, name, imgLocation ?: "", vertices)
+        val chip = Chip(0, parentId, false, name, imgLocation ?: "", vertices)
+
+        Log.i("Chip Creation", "ChipViewModel#saveChip(): saving chip under parent $parentId")
 
         chipRepo.insertChip(chip)
     }

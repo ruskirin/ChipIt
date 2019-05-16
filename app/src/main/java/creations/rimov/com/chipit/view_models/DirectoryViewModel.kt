@@ -4,15 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
-import creations.rimov.com.chipit.database.objects.Topic
-import creations.rimov.com.chipit.database.repos.TopicRepository
+import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.repos.TopicChipRepository
 import creations.rimov.com.chipit.objects.RecyclerTouchFlag
 
 class DirectoryViewModel : ViewModel() {
 
-    private val topicRepo: TopicRepository = TopicRepository(DatabaseApplication.database!!)
+    private val topicRepo: TopicChipRepository = TopicChipRepository(DatabaseApplication.database!!)
 
-    private val topics: LiveData<List<Topic>> = topicRepo.getAll()
+    private val topics: LiveData<List<Chip>> = topicRepo.getTopics()
 
     val topicTouch = MutableLiveData<RecyclerTouchFlag>()
 
@@ -22,20 +22,16 @@ class DirectoryViewModel : ViewModel() {
 
     fun getTopic(position: Int) = topics.value?.get(position)
 
-    fun insertTopic(topic: Topic) {
+    fun insertTopic(topic: Chip) {
         topicRepo.insert(topic)
     }
 
     fun updateTopicName(id: Long, name: String) {
-        topicRepo.update(id, name)
+        topicRepo.update(id, name, null)
     }
 
     fun updateTopicImage(id: Long, imgLocation: String) {
         topicRepo.update(id, "", imgLocation)
-    }
-
-    fun deleteTopic(topic: Topic) {
-        topicRepo.delete(topic)
     }
 
     fun setTopicTouch() {
@@ -44,5 +40,9 @@ class DirectoryViewModel : ViewModel() {
 
     fun setTopicLongTouch() {
         topicTouch.postValue(RecyclerTouchFlag(false, true))
+    }
+
+    fun resetFlags() {
+        topicTouch.postValue(RecyclerTouchFlag())
     }
 }

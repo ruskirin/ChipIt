@@ -1,18 +1,19 @@
 package creations.rimov.com.chipit.view_models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.repos.TopicChipRepository
+import creations.rimov.com.chipit.database.repos.ChipChildrenRepository
 import creations.rimov.com.chipit.fragments.WebFragment
 import creations.rimov.com.chipit.objects.RecyclerTouchFlag
 
 class WebViewModel : ViewModel() {
 
-    private val topicChipRepo = TopicChipRepository(DatabaseApplication.database!!)
+    private val chipChildrenRepo = ChipChildrenRepository(DatabaseApplication.database!!)
 
     private var parentId: Long = 0L
 
@@ -25,11 +26,9 @@ class WebViewModel : ViewModel() {
     fun initChips(parentId: Long) {
 
         this.parentId = parentId
-        chipsHorizontal = topicChipRepo.getTopicChipCards(parentId)
-    }
 
-    //TODO (NOW): change the layout of the web, then work on registering the middle item in the recyclerview
-    //             for caching of content for the bottom recyclerview
+        chipsHorizontal = chipChildrenRepo.getChipChildrenCards(parentId)
+    }
 
     fun getParentId() = parentId
 
@@ -48,9 +47,9 @@ class WebViewModel : ViewModel() {
 
     /**Insert child into horizontal chip row**/
     fun saveChip(name: String?, imgLocation: String?) {
-        val chip = Chip(0, parentId, name, imgLocation ?: "", null)
+        val chip = Chip(0, parentId, false, name, imgLocation ?: "", null)
 
-        topicChipRepo.insertChip(chip)
+        chipChildrenRepo.insertChip(chip)
     }
 
     /**Return the chip in the specified listType at the specified position**/

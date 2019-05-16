@@ -1,22 +1,27 @@
 package creations.rimov.com.chipit.database.daos
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.TopicAndChips
 
 @Dao
 interface TopicChipDao {
 
-    @Transaction
-    @Query("SELECT * FROM chips WHERE parent_id = :topicId")
-    fun getTopicChips(topicId: Long): LiveData<List<Chip>>
+    @Query("SELECT * FROM chips WHERE id = :id AND is_topic")
+    fun getTopicChip(id: Long): LiveData<Chip>
 
-    @Transaction
-    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :topicId")
-    fun getTopicChipCards(topicId: Long): LiveData<List<ChipCard>>
+    @Query("SELECT * FROM chips WHERE is_topic")
+    fun getTopicChips(): LiveData<List<Chip>>
+
+    @Query("UPDATE chips SET name = :name WHERE id = :id")
+    fun updateName(id: Long, name: String): Int
+
+    @Query("UPDATE chips SET image_location = :imgLocation WHERE id = :id")
+    fun updateImage(id: Long, imgLocation: String): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTopic(topic: Chip): Long
+
+    @Delete
+    fun deleteTopic(vararg topic: Chip): Int
 }

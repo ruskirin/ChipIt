@@ -60,10 +60,6 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     private var screenH: Int = 0
 
 
-    //TODO NOW: Find a fix for this back navigation issue, primary concern before moving on with other things, as it will
-    //           potentially only get more and more problematic
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -71,16 +67,15 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
 
+        chipViewModel.setParent(passedArgs.parentId)
+
         chipViewModel.getParent()?.observe(this, Observer { parent ->
 
             if(parent.imgLocation != chipViewModel.getImagePath()) {
-                Log.i("ChipActivity", "#onCreate(): setting bitmap from ${parent.imgLocation}")
-
                 chipViewModel.setBitmap(parent.imgLocation)
+                setBitmapRect()
             }
         })
-
-        chipViewModel.setParent(passedArgs.parentId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -184,19 +179,17 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
         chipViewModel.backgroundChanged = true
     }
 
-    override fun setBitmapRect(): Boolean {
+    override fun setBitmapRect() {
 
         val width = chipViewModel.getBitmapWidth()
         val height = chipViewModel.getBitmapHeight()
 
         if(width == 0 || height == 0)
-            return false
+            return
 
         parentImageFrame.set(
             RenderUtil.getAspectRatioRect(
                 chipViewModel.getBitmapWidth(), chipViewModel.getBitmapHeight(), screenW, screenH))
-
-        return true
     }
 
     override fun surfaceTouch(event: MotionEvent) {
@@ -205,8 +198,6 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun chipStart(x: Float, y: Float) {
-
-        Log.i("Touch Event", "#chipStart()")
 
         chipPath.moveTo(x, y)
 
@@ -220,8 +211,6 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     }
 
     override fun chipEnd(x: Float, y: Float) {
-
-        Log.i("Touch Event", "#chipEnd()")
 
         if(chipTouchViewModel.endPath(
                 Point(x, y), screenW, screenH, parentImageFrame.width(), parentImageFrame.height()))

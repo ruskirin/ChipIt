@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.util.handlers.RecyclerHandler
+import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 
 /**
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering
  */
 class DirectoryRecyclerAdapter(private val context: Context,
-                               private val touchHandler: RecyclerHandler)
+                               private val touchTouchHandler: RecyclerTouchHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
     private lateinit var topics: List<Chip>
@@ -27,9 +27,9 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
     /**
      * VIEW HOLDER
-     * @param: touchHandler = interface for communicating touch events' information to activity
+     * @param: touchTouchHandler = interface for communicating touch events' information to activity
      */
-    class DirectoryViewHolder(itemView: View, private val touchHandler: RecyclerHandler)
+    class DirectoryViewHolder(itemView: View, private val touchTouchHandler: RecyclerTouchHandler)
         : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val topicName: TextView = itemView.findViewById(R.id.directory_recycler_topic_name)
@@ -42,7 +42,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
             if(event != null) {
-                touchHandler.topicTouch(adapterPosition, event)
+                touchTouchHandler.topicTouch(adapterPosition, event)
 
                 if(event.action == MotionEvent.ACTION_UP)
                     view?.performClick()
@@ -65,7 +65,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
         val chipHolder =
             LayoutInflater.from(context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
 
-        return DirectoryViewHolder(chipHolder, touchHandler)
+        return DirectoryViewHolder(chipHolder, touchTouchHandler)
     }
 
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {

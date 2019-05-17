@@ -18,12 +18,12 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
-import creations.rimov.com.chipit.util.handlers.RecyclerHandler
+import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import java.io.IOException
 
-class DirectoryFragment : Fragment(), RecyclerHandler, View.OnClickListener {
+class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener {
 
     private lateinit var globalViewModel: GlobalViewModel
 

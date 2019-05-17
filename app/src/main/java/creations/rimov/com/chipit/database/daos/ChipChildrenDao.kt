@@ -17,6 +17,10 @@ interface ChipChildrenDao {
     @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipChildrenCards(parentId: Long): LiveData<List<ChipCard>>
 
+    @Transaction
+    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
+    fun getChipChildrenCardsTwo(parentId: Long): List<ChipCard>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChip(chip: Chip): Long
 

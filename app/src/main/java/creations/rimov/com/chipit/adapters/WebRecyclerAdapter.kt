@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -9,15 +10,14 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.util.handlers.RecyclerHandler
+import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 
 //TODO: (FUTURE) images can be linked through either a file path or as bitmap, both have pros and cons
 
 class WebRecyclerAdapter(private val context: Context,
                          private val listType: Int,
-                         private val touchHandler: RecyclerHandler)
+                         private val touchTouchHandler: RecyclerTouchHandler)
     : RecyclerView.Adapter<WebRecyclerAdapter.ChipImageHolder>() {
 
     private lateinit var chips: List<ChipCard>
@@ -26,16 +26,18 @@ class WebRecyclerAdapter(private val context: Context,
     fun setChips(chips: List<ChipCard>) {
         this.chips = chips
 
+        Log.i("RecyclerView", "Adapter#setChips(): setting chip size: ${chips.size}")
+
         notifyDataSetChanged()
     }
 
     /**
      * VIEW HOLDER
      */
-    class ChipImageHolder(private val listType: Int,
-                          itemView: View,
-                          private val touchHandler: RecyclerHandler)
-        : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    class ChipImageHolder(
+        itemView: View,
+        private val listType: Int,
+        private val touchHandler: RecyclerTouchHandler) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val chipImage: ImageView = itemView.findViewById(R.id.web_layout_recycler_chip_image)
 
@@ -71,7 +73,7 @@ class WebRecyclerAdapter(private val context: Context,
         val chipHolder = LayoutInflater.from(context)
             .inflate(R.layout.web_recycler_chip_layout, parent, false)
 
-        return ChipImageHolder(listType, chipHolder, touchHandler)
+        return ChipImageHolder(chipHolder, listType, touchTouchHandler)
     }
 
     override fun onBindViewHolder(holder: ChipImageHolder, position: Int) {

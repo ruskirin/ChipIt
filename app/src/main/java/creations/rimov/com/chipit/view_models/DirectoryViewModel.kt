@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.repos.TopicChipRepository
-import creations.rimov.com.chipit.objects.RecyclerTouchFlag
 
 class DirectoryViewModel : ViewModel() {
 

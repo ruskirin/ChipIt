@@ -3,5 +3,7 @@
         android:id="@+id/web_layout_recycler_chip_image"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:layout_marginStart="@dimen/web_layout_l_chips_marginside"
+        android:layout_marginEnd="@dimen/web_layout_l_chips_marginside"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"/>

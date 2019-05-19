@@ -2,7 +2,6 @@ package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
 import android.util.Log
-import androidx.lifecycle.LiveData
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.objects.Chip
@@ -13,11 +12,9 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
     private val chipAndChildrenDao = chipDb.chipChildrenDao()
 
-    fun getChipChildrenCards(parentId: Long): LiveData<List<ChipCard>> = chipAndChildrenDao.getChipChildrenCards(parentId)
+    fun getChipChildrenCards(parentId: Long, type: Int) {
 
-    fun getChipChildrenCardsTwo(parentId: Long) {
-
-        AsyncChipGet(chipAndChildrenDao, chipComm).execute(parentId)
+        AsyncChipGet(chipAndChildrenDao, chipComm, type).execute(parentId)
     }
 
     fun insertChip(chip: Chip) {
@@ -30,13 +27,15 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
         AsyncChipInsert(chipAndChildrenDao).execute(chip)
     }
 
-    class AsyncChipGet(private val chipAndChildrenDao: ChipChildrenDao,
-                       private val chipComm: RepoChipRetriever) : AsyncTask<Long, Void, Void>() {
+    class AsyncChipGet(
+        private val chipAndChildrenDao: ChipChildrenDao,
+        private val chipComm: RepoChipRetriever,
+        private val type: Int) : AsyncTask<Long, Void, Void>() {
 
         override fun doInBackground(vararg params: Long?): Void? {
 
             if(params[0] != null)
-                chipComm.setChipList(chipAndChildrenDao.getChipChildrenCardsTwo(params[0]!!))
+                chipComm.setChipList(chipAndChildrenDao.getChipChildrenCardsTwo(params[0]!!), type)
 
             return null
         }
@@ -53,6 +52,6 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
     interface RepoChipRetriever {
 
-        fun setChipList(chips: List<ChipCard>)
+        fun setChipList(chips: List<ChipCard>, type: Int)
     }
 }

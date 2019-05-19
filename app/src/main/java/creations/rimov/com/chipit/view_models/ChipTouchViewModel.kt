@@ -73,7 +73,7 @@ class ChipTouchViewModel : ViewModel() {
         when(event) {
             MotionEvent.ACTION_DOWN -> {
 
-                //TODO NOW: figure out how and where you'll differentiate between gesture events and path drawing
+                //TODO: figure out how and where you'll differentiate between gesture events and path drawing
                 if((/*screenH - */point.y) > Constant.EDGE_TOUCH_BUFFER)
                 //needEdit.postValue(false)
 
@@ -81,7 +81,7 @@ class ChipTouchViewModel : ViewModel() {
             }
             MotionEvent.ACTION_MOVE -> {
 
-                //if((yi - point.y) > Constant.SWIPE_BUFFER)
+                //if((yi - point.y) > Constants.SWIPE_BUFFER)
                 //needEdit.postValue(true)
             }
             MotionEvent.ACTION_UP -> {

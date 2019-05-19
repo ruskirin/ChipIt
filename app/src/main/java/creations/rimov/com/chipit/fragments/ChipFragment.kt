@@ -193,7 +193,7 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     }
 
     override fun surfaceTouch(event: MotionEvent) {
-        //TODO NOW: let viewmodel handle touch actions
+
     }
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
@@ -220,13 +220,11 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
         clearPaths(chipPath)
     }
 
-    //TODO NOW: CHANGE TO ONCLICK, TOUCH HANDLED BY VIEW ITSELF
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         when(view?.id) {
             R.id.chip_layout_surfaceview -> {
 
-                //TODO NOW: handle null check here
                 chipTouchViewModel.gestureAction(event?.action ?: -1, Point(event!!.rawX, event.rawY))
             }
             R.id.chip_layout_pathpanel_camera -> {

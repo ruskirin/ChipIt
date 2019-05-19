@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.view_models
 
 import android.util.Log
+import android.view.MotionEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,7 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.repos.ChipChildrenRepository
 import creations.rimov.com.chipit.fragments.WebFragment
-import creations.rimov.com.chipit.objects.RecyclerTouchFlag
+import creations.rimov.com.chipit.objects.WebViewModelPrompts
 
 class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
 
@@ -17,39 +18,37 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
 
     private var parentId: Long = 0L
 
-    private lateinit var chipsHorizontal: LiveData<List<ChipCard>>
-    private val chipsVertical: MutableLiveData<List<ChipCard>> = MutableLiveData()
+    private val listUpper: MutableLiveData<List<ChipCard>> = MutableLiveData()
+    private val listLower: MutableLiveData<List<ChipCard>> = MutableLiveData()
 
-    val chipTouch = MutableLiveData<RecyclerTouchFlag>()
+    val prompts = MutableLiveData<WebViewModelPrompts>()
 
 
-    fun initHorizontalChips(parentId: Long) {
+    fun setUpperList(parentId: Long) {
         this.parentId = parentId
 
-        chipsHorizontal = chipChildrenRepo.getChipChildrenCards(parentId)
+        chipChildrenRepo.getChipChildrenCards(parentId, WebFragment.Constants.LIST_UPPER)
     }
 
-    fun initVerticalChips(parentId: Long) {
-        Log.i("RecyclerView", "WebVM#initVerticalChips(): initializing children of $parentId")
+    fun setLowerList(parentId: Long) {
+        Log.i("RecyclerView", "WebVM#setLowerList(): initializing children of $parentId")
 
-        chipChildrenRepo.getChipChildrenCardsTwo(parentId)
+        chipChildrenRepo.getChipChildrenCards(parentId, WebFragment.Constants.LIST_LOWER)
     }
 
     fun getParentId() = parentId
 
     //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
-    fun getChipsHorizontal(): LiveData<List<ChipCard>>? =
-        if(::chipsHorizontal.isInitialized)
-            chipsHorizontal
+    fun getListUpper(): LiveData<List<ChipCard>>? = listUpper
+
+    fun getListLower(): LiveData<List<ChipCard>>? = listLower
+
+    /**Return the chip in the specified listType at the specified position**/
+    fun getChipAtPosition(listType: Int, position: Int) =
+        if(listType == WebFragment.Constants.LIST_UPPER)
+            listUpper.value?.get(position)
         else
             null
-
-    fun getChipsVertical(): LiveData<List<ChipCard>>? = chipsVertical
-
-    /*if(::chipsVertical.isInitialized)
-            chipsVertical
-        else
-            null*/
 
     /**Insert child into horizontal chip row**/
     fun saveChip(name: String?, imgLocation: String?) {
@@ -58,23 +57,31 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
         chipChildrenRepo.insertChip(chip)
     }
 
-    /**Return the chip in the specified listType at the specified position**/
-    fun getChipAtPosition(listType: Int, position: Int) =
-        if(listType == WebFragment.Constant.HORIZONTAL_CHIP_LIST)
-            chipsHorizontal.value?.get(position)
+    fun handleTouchEvent(chipAdapterPos: Int, chipId: Long) {
+
+        //TODO NOW: continue with this
+    }
+
+    fun handleChipGesture(gesture: Int) {
+
+        when(gesture) {
+
+            WebFragment.Constants.GESTURE_TOUCH -> {
+
+
+            }
+            WebFragment.Constants.GESTURE_LONG_TOUCH -> {
+
+
+            }
+        }
+    }
+
+    override fun setChipList(chips: List<ChipCard>, type: Int) {
+
+        if(type == WebFragment.Constants.LIST_UPPER)
+            listUpper.postValue(chips)
         else
-            null
-
-    fun setChipTouch() {
-        chipTouch.postValue(RecyclerTouchFlag(true))
-    }
-
-    fun setChipLongTouch() {
-        chipTouch.postValue(RecyclerTouchFlag(false, true))
-    }
-
-    //TODO NOW: vertical chips are now displayed. Change the layout to the new version
-    override fun setChipList(chips: List<ChipCard>) {
-        chipsVertical.postValue(chips)
+            listLower.postValue(chips)
     }
 }

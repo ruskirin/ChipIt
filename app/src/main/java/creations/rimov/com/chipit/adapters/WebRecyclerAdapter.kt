@@ -17,7 +17,7 @@ import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 
 class WebRecyclerAdapter(private val context: Context,
                          private val listType: Int,
-                         private val touchTouchHandler: RecyclerTouchHandler)
+                         private val touchHandler: RecyclerTouchHandler)
     : RecyclerView.Adapter<WebRecyclerAdapter.ChipImageHolder>() {
 
     private lateinit var chips: List<ChipCard>
@@ -26,18 +26,13 @@ class WebRecyclerAdapter(private val context: Context,
     fun setChips(chips: List<ChipCard>) {
         this.chips = chips
 
-        Log.i("RecyclerView", "Adapter#setChips(): setting chip size: ${chips.size}")
-
         notifyDataSetChanged()
     }
 
     /**
      * VIEW HOLDER
      */
-    class ChipImageHolder(
-        itemView: View,
-        private val listType: Int,
-        private val touchHandler: RecyclerTouchHandler) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    inner class ChipImageHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val chipImage: ImageView = itemView.findViewById(R.id.web_layout_recycler_chip_image)
 
@@ -47,11 +42,10 @@ class WebRecyclerAdapter(private val context: Context,
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
-            if(event != null) {
-                touchHandler.topicTouch(adapterPosition, event, listType)
+            if(event?.action == MotionEvent.ACTION_UP) {
+                touchHandler.topicTouch(adapterPosition, chips[adapterPosition].id, event, listType)
 
-                if(event.action == MotionEvent.ACTION_UP)
-                    view?.performClick()
+                view?.performClick()
 
                 return true
             }
@@ -73,7 +67,7 @@ class WebRecyclerAdapter(private val context: Context,
         val chipHolder = LayoutInflater.from(context)
             .inflate(R.layout.web_recycler_chip_layout, parent, false)
 
-        return ChipImageHolder(chipHolder, listType, touchTouchHandler)
+        return ChipImageHolder(chipHolder)
     }
 
     override fun onBindViewHolder(holder: ChipImageHolder, position: Int) {

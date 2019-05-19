@@ -13,22 +13,24 @@
             tools:context=".activities.WebActivity">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/web_layout_recycler_h_chips"
+                android:id="@+id/web_layout_recycler_u_chips"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="@dimen/web_layout_u_chips_margintop"
+                android:clipToPadding="false"
                 app:layout_constraintHeight_default="percent"
-                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintHeight_percent="0.6"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/web_layout_recycler_v_chips"
+                android:id="@+id/web_layout_recycler_l_chips"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent="0.5"
-                app:layout_constraintTop_toBottomOf="@id/web_layout_recycler_h_chips"
+                app:layout_constraintHeight_default="percent"
+                app:layout_constraintHeight_percent="0.25"
+                app:layout_constraintTop_toBottomOf="@id/web_layout_recycler_u_chips"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>

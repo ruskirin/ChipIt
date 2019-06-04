@@ -21,10 +21,10 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
     /**Get a ChipIdentity object and assign it as the parentChip in WebFragment
      * @param chipId: id of the object
-     * @param getParent: true to use the parent of the chip whose id was passed, false to use the chip itself
+     * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
-    fun setParentIdentity(chipId: Long, getParent: Boolean) {
-        AsyncGetChipIdentity(chipAndChildrenDao, webComms, this, getParent).execute(chipId)
+    fun setParentIdentity(chipId: Long, useParent: Boolean) {
+        AsyncGetChipIdentity(chipAndChildrenDao, webComms, this, useParent).execute(chipId)
     }
 
     fun getChipChildrenCardsLive(parentId: Long) = chipAndChildrenDao.getChipChildrenCardsLive(parentId)

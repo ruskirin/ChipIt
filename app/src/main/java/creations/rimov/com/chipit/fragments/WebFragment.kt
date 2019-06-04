@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -62,10 +64,13 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
         Log.i("Life Event", "WebFragment#onCreate(): passed parent id: ${passedArgs.parentId}")
 
-        if(passedArgs.parentId != -1L)
-            localViewModel.setParent(passedArgs.parentId)
-        else
-            localViewModel.setParent(globalViewModel.chipFragParentId)
+        when {
+            localViewModel.getParentId() != -1L -> localViewModel.setParent(localViewModel.getParentId())
+
+            passedArgs.parentId != -1L -> localViewModel.setParent(passedArgs.parentId)
+
+            else -> localViewModel.setParent(globalViewModel.chipFragParentId)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -102,14 +107,19 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
             }
         })
 
-        localViewModel.getListUpper().observe(this, Observer { chips ->
-            Log.i("Life Event", "WebFragment#ListUpperObserver: view model's parent id: ${localViewModel.getParentId()}")
+        val chipObserver: Observer<List<ChipCard>> = Observer { chips ->
 
             uRecyclerAdapter.setChips(chips)
             //Clear the lower list
             lRecyclerAdapter.setChips(listOf())
+        }
 
-            if(localViewModel.isParentTopic())
+        localViewModel.getParent().observe(this, Observer { parent ->
+            //Parent changed: remove old observer, replace with new one
+            localViewModel.getListUpper().removeObserver(chipObserver)
+            localViewModel.getListUpper().observe(this, chipObserver)
+
+            if(parent.isTopic)
                 upBranchButton.visibility = View.GONE
             else
                 upBranchButton.visibility = View.VISIBLE
@@ -151,6 +161,8 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
+
+        upBranchButton.setOnClickListener(this)
 
         return view
     }

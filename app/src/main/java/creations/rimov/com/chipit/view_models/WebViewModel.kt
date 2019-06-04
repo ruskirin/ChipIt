@@ -17,7 +17,7 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
 
     private val chipChildrenRepo = ChipChildrenRepository(DatabaseApplication.database!!, this)
 
-    private lateinit var upperParent: ChipIdentity
+    private val upperParent = MutableLiveData<ChipIdentity>()
 
     private val listLower = MutableLiveData<List<ChipCard>>()
 
@@ -25,8 +25,6 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
 
 
     fun setParent(parentId: Long) {
-
-        Log.i("Life Event", "WebViewModel#setParent(): passed parent id: $parentId")
 
         if(parentId == -1L) {
             Log.e("WebViewModel", "#setParent(): passed parentId == -1L")
@@ -36,11 +34,11 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
         chipChildrenRepo.setParentIdentity(parentId, false)
     }
 
-    fun isParentTopic() = upperParent.isTopic
+    fun getParent() = upperParent
 
-    fun getParentId() =
-        if(::upperParent.isInitialized) upperParent.id
-        else -1L
+    fun getParentId() = upperParent.value?.id ?: -1L
+
+    fun getParentIdOfParent() = upperParent.value?.parentId ?: -1L
 
     fun setListLower(parentId: Long) {
         chipChildrenRepo.getChipChildrenCards(parentId, WebFragment.ListType.LOWER)
@@ -49,7 +47,7 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
     //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
     fun getListUpper(): LiveData<List<ChipCard>> = chipChildrenRepo.getChipChildrenCardsLive(getParentId())
 
-    fun getListLower() = listLower
+    fun getListLower(): MutableLiveData<List<ChipCard>> = listLower
 
     /**Insert child into horizontal chip row**/
     fun saveChip(name: String?, imgLocation: String?) {
@@ -91,9 +89,10 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
         chipChildrenRepo.setParentIdentity(chipId, true)
     }
 
+    /**Get the parent of upperParent and set it as the current parent (sorry for the description); navigate up the "branch" of chips**/
     fun navigateUpBranch() {
 
-//        chipChildrenRepo.setParentIdentity(getParentId(), )
+        chipChildrenRepo.setParentIdentity(getParentIdOfParent(), false)
     }
 
     fun setChipTouchGesture(gesture: Int) {
@@ -105,7 +104,7 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
     }
 
     override fun updateParent(parent: ChipIdentity) {
-        upperParent = parent
+        upperParent.postValue(parent)
     }
 
     override fun setChipList(chips: List<ChipCard>, type: Int) {

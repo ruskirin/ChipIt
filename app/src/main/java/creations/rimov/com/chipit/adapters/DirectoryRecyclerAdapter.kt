@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,10 +15,15 @@ import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering
  */
 class DirectoryRecyclerAdapter(private val context: Context,
-                               private val touchTouchHandler: RecyclerTouchHandler)
+                               private val touchHandler: RecyclerTouchHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
     private lateinit var topics: List<Chip>
+
+    init {
+        //Adapter does not return proper id from overriden #getItemId() otherwise
+        setHasStableIds(true)
+    }
 
     fun setTopics(topics: List<Chip>) {
         this.topics = topics
@@ -27,10 +33,9 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
     /**
      * VIEW HOLDER
-     * @param: touchTouchHandler = interface for communicating touch events' information to activity
+     * @param: touchHandler = interface for communicating touch events' information to activity
      */
-    class DirectoryViewHolder(itemView: View, private val touchTouchHandler: RecyclerTouchHandler)
-        : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val topicName: TextView = itemView.findViewById(R.id.directory_recycler_topic_name)
         val topicImage: ImageView = itemView.findViewById(R.id.directory_recycler_topic_image)
@@ -41,16 +46,14 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
-            if(event != null) {
-                touchTouchHandler.topicTouch(adapterPosition, event)
+            if(event == null)
+                return false
 
-                if(event.action == MotionEvent.ACTION_UP)
-                    view?.performClick()
+            touchHandler.topicTouch(adapterPosition, itemId, event)
+            Log.i("Touch Event", "DirectoryRecyclerAdapter#onTouch(): pos: $adapterPosition, topic id: ${topics[adapterPosition].id}, returned id: $itemId")
+            view?.performClick()
 
-                return true
-            }
-
-            return false
+            return true
         }
     }
 
@@ -61,11 +64,13 @@ class DirectoryRecyclerAdapter(private val context: Context,
         return 0
     }
 
+    override fun getItemId(position: Int) = topics[position].id
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
         val chipHolder =
             LayoutInflater.from(context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
 
-        return DirectoryViewHolder(chipHolder, touchTouchHandler)
+        return DirectoryViewHolder(chipHolder)
     }
 
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {

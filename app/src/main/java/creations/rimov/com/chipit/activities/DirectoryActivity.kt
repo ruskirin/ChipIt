@@ -14,6 +14,12 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 
 class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
+    object Constants {
+        const val GESTURE_DOWN = 400
+        const val GESTURE_UP = 401
+        const val GESTURE_LONG_TOUCH = 402
+    }
+
     private val globalViewModel: GlobalViewModel by lazy {
         ViewModelProviders.of(this).get(GlobalViewModel::class.java)
     }

@@ -81,7 +81,7 @@ class ChipTouchViewModel : ViewModel() {
             }
             MotionEvent.ACTION_MOVE -> {
 
-                //if((yi - point.y) > Constants.SWIPE_BUFFER)
+                //if((yi - point.y) > ListType.SWIPE_BUFFER)
                 //needEdit.postValue(true)
             }
             MotionEvent.ACTION_UP -> {

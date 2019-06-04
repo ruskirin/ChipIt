@@ -3,9 +3,11 @@ package creations.rimov.com.chipit.view_models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.repos.TopicChipRepository
+import creations.rimov.com.chipit.objects.ViewModelPrompts
 
 class DirectoryViewModel : ViewModel() {
 
@@ -13,7 +15,7 @@ class DirectoryViewModel : ViewModel() {
 
     private val topics: LiveData<List<Chip>> = topicRepo.getTopics()
 
-    val topicTouch = MutableLiveData<RecyclerTouchFlag>()
+    val prompts = MutableLiveData<ViewModelPrompts>()
 
 
     /** Repository functions **/
@@ -33,15 +35,25 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.update(id, "", imgLocation)
     }
 
-    fun setTopicTouch() {
-        topicTouch.postValue(RecyclerTouchFlag(true))
-    }
 
-    fun setTopicLongTouch() {
-        topicTouch.postValue(RecyclerTouchFlag(false, true))
+    var chipTouchPos: Int = -1
+    var chipTouchId: Long = -1L
+
+    fun handleChipGesture(gesture: Int) {
+
+        when(gesture) {
+            DirectoryActivity.Constants.GESTURE_UP -> {
+
+                prompts.postValue(ViewModelPrompts(false, true))
+            }
+            DirectoryActivity.Constants.GESTURE_LONG_TOUCH -> {
+
+
+            }
+        }
     }
 
     fun resetFlags() {
-        topicTouch.postValue(RecyclerTouchFlag())
+        prompts.postValue(ViewModelPrompts())
     }
 }

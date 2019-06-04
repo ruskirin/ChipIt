@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
@@ -28,7 +29,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
     private lateinit var globalViewModel: GlobalViewModel
 
     //Fragment's own ViewModel
-    private val dirViewModel: DirectoryViewModel by lazy {
+    private val localViewModel: DirectoryViewModel by lazy {
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
@@ -41,7 +42,6 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
     private lateinit var addChipCameraButton: ImageButton       //TODO: create a custom button
     private lateinit var addChipFilesButton: ImageButton
 
-    private var touchTopicId: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,39 +85,32 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
             }
         })
 
-        dirViewModel.getTopics().observe(this, Observer { topics ->
+        localViewModel.getTopics().observe(this, Observer { topics ->
             dirRecyclerAdapter.setTopics(topics)
         })
 
-        dirViewModel.topicTouch.observe(this, Observer { flag ->
+        localViewModel.prompts.observe(this, Observer { prompt ->
 
-            if(touchTopicId == -1L)
+            val id = localViewModel.chipTouchId
+            if(id == -1L)
                 return@Observer
 
             when {
-                flag.chipTouched -> {
-                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(touchTopicId)
+                prompt.selectChip -> {
+
+
+                    localViewModel.resetFlags()
+                }
+                prompt.toNextScreen -> {
+                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(id)
                     findNavController().navigate(directions)
 
-                    dirViewModel.resetFlags()
-                }
-                flag.chipLongTouched -> {
-                    //TODO FUTURE: implement long touch feature
-
-                    dirViewModel.resetFlags()
+                    localViewModel.resetFlags()
                 }
             }
         })
 
         return view
-    }
-
-    //Handle recyclerview's touch events
-    override fun topicTouch(position: Int, event: MotionEvent, listType: Int) {
-
-        gestureDetector.onTouchEvent(event)
-
-        touchTopicId = dirViewModel.getTopic(position)?.id ?: -1L
     }
 
     override fun onClick(view: View?) {
@@ -147,7 +140,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     //TODO: Change passed in values to variables
-                    dirViewModel.insertTopic(Chip(0L, 0L, true, "TOPIC", imageFile.storagePath))
+                    localViewModel.insertTopic(Chip(0L, 0L, true, "TOPIC", imageFile.storagePath))
                 }
             }
 
@@ -155,6 +148,14 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
 
             }
         }
+    }
+
+    //Handle recyclerview's touch events
+    override fun topicTouch(position: Int, chipId: Long, event: MotionEvent, listType: Int) {
+        localViewModel.chipTouchPos = position
+        localViewModel.chipTouchId = chipId
+
+        gestureDetector.onTouchEvent(event)
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
@@ -169,7 +170,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "onSingleTapUp()!")
 
-            dirViewModel.setTopicTouch()
+            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_UP)
 
             return super.onSingleTapUp(event)
         }
@@ -177,7 +178,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         override fun onLongPress(event: MotionEvent?) {
             Log.i("Touch Event", "onLongPress()!")
 
-            dirViewModel.setTopicLongTouch()
+            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_LONG_TOUCH)
         }
     }
 }

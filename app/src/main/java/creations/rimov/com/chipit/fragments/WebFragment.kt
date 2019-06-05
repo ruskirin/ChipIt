@@ -213,11 +213,17 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
         if(position == -1)
             return
 
-        when(listType) {
+        if(event.action == MotionEvent.ACTION_UP) {
 
-            ListType.LOWER -> localViewModel.handleLowerChipsTouch(chipId)
-            ListType.UPPER -> localViewModel.handleUpperChipsTouch(position, chipId)
+            if(listType == ListType.LOWER)
+                localViewModel.handleLowerChipsTouch(chipId)
+            else
+                localViewModel.handleUpperChipsTouch(position, chipId)
         }
+    }
+
+    override fun topicDelete(chipId: Long) {
+        localViewModel.deleteChip(chipId)
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

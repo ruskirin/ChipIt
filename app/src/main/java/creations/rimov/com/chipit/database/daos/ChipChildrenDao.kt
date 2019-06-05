@@ -22,6 +22,9 @@ interface ChipChildrenDao {
     @Query("SELECT id, parent_id, name, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipChildrenCards(parentId: Long): List<ChipCard>
 
+    @Query("SELECT * FROM chips WHERE id = :id")
+    fun getChip(id: Long): Chip
+
     @Query("SELECT id, parent_id, is_topic FROM chips WHERE id = :id")
     fun getChipIdentity(id: Long): ChipIdentity
 

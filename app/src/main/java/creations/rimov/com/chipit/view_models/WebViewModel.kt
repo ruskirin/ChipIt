@@ -56,6 +56,10 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
         chipChildrenRepo.insertChip(chip)
     }
 
+    fun deleteChip(chipId: Long) {
+        chipChildrenRepo.deleteChip(chipId)
+    }
+
     var chipTouchPos: Int = -1
     var chipTouchId: Long = -1L
     private var gesture: Int = -1

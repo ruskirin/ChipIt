@@ -158,6 +158,10 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         gestureDetector.onTouchEvent(event)
     }
 
+    override fun topicDelete(chipId: Long) {
+
+    }
+
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
 
         //According to developer website, must override onDown to return true to ensure gestures are not ignored

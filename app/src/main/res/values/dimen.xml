@@ -5,7 +5,7 @@
     <dimen name="directory_layout_addpanel_button_marginvert">2dp</dimen>
     <dimen name="directory_layout_addpanel_marginbot">8dp</dimen>
     <dimen name="directory_layout_addpanel_marginend">8dp</dimen>
-    <dimen name="directory_layout_addpanel_button_side">96dp</dimen>
+    <dimen name="directory_layout_addpanel_button_side">64dp</dimen>
 
     <dimen name="chip_layout_pathpanel_button_side">48dp</dimen>
     <dimen name="chip_layout_pathpanel_button_marginhoriz">4dp</dimen>
@@ -16,4 +16,7 @@
     <dimen name="web_layout_l_chips_marginbot">16dp</dimen>
     <dimen name="web_layout_l_chips_marginside">4dp</dimen>
     <dimen name="web_layout_button_branchup_width">60dp</dimen>
+
+    <dimen name="web_recycler_button_delete_margin">8dp</dimen>
+    <dimen name="web_recycler_button_delete_side">32dp</dimen>
 </resources>

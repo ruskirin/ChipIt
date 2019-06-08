@@ -26,4 +26,11 @@ object CameraUtil {
 
         return ImageFile(file, file.absolutePath)
     }
+
+    //TODO: consider adding a verification method to ensure no unnecessary files are somehow deleted
+    @JvmStatic
+    fun deleteImageFile(imagePath: String): Boolean {
+
+        return File(imagePath).delete()
+    }
 }

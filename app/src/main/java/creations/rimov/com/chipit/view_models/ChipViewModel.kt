@@ -2,14 +2,15 @@ package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
 import android.util.Log
-import android.view.MotionEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.ChipRepository
-import creations.rimov.com.chipit.objects.Point
+import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 
@@ -17,10 +18,12 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
 
     private val chipRepo = ChipRepository(DatabaseApplication.database!!, this)
 
+    //Is the parent of the current parent a topic? Used to toggle branch up navigation
+    private var parentOfParentIsTopic: Boolean = false
     //The chip currently viewed in the background and being worked on
-    private lateinit var parent: LiveData<Chip>
+    private val parent: MutableLiveData<ChipIdentity> = MutableLiveData()
     //Children of the main chip
-    private lateinit var children: LiveData<List<Chip>>
+    private lateinit var children: LiveData<List<ChipPath>>
 
     var parentId = -1L
     //id of a newly inserted chip, used to update chip information
@@ -39,18 +42,33 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
         if(parentId != this.parentId) {
             this.parentId = parentId
 
-            parent = chipRepo.getChip(parentId)
+            chipRepo.setParentIdentity(parentId)
             children = chipRepo.getChildren(parentId)
         }
     }
 
-    fun getParent(): LiveData<Chip>? =
-        if(isParentInit()) parent
+    fun getParent(): MutableLiveData<ChipIdentity>? = parent
+
+    fun getParentIdOfParent() = parent.value?.parentId ?: -1L
+
+    fun isParentOfParentTopic() = parentOfParentIsTopic
+
+    fun getChildren(): LiveData<List<ChipPath>>? =
+        if(::children.isInitialized) children
         else null
 
-    fun isParentInit() = ::parent.isInitialized
+    /**Check if point landed inside one of the children**/
+    fun getTouchedChip(point: CoordPoint): ChipPath? {
 
-    fun getChildren(): LiveData<List<Chip>> = children
+        children.value?.forEach { chip ->
+
+            if(chip.isInside(point)) {
+                return chip
+            }
+        }
+
+        return null
+    }
 
     fun setBitmap(imgLocation: String) {
         this.imgLocation = imgLocation
@@ -79,13 +97,15 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
         if(::bitmap.isInitialized) bitmap.height
         else 0
 
-    fun getImagePath() = imgLocation
+    fun updateChip(id: Long,
+                   name: String? = null,
+                   imgLocation: String? = null,
+                   vertices: List<CoordPoint>? = null) {
 
-    fun updateChip(id: Long, name: String?, imgLocation: String?, vertices: List<Point>?) {
         chipRepo.updateChip(id, name, imgLocation, vertices)
     }
 
-    fun saveChip(name: String?, imgLocation: String?, vertices: List<Point>?) {
+    fun saveChip(name: String?, imgLocation: String?, vertices: List<CoordPoint>?) {
         val chip = Chip(0, parentId, false, name, imgLocation ?: "", vertices)
 
         Log.i("Chip Creation", "ChipViewModel#saveChip(): saving chip under parent $parentId")
@@ -94,7 +114,17 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
     }
 
     //Method from ChipRepoCommunication interface
-    override fun returnChipId(id: Long) {
+    override fun setChipId(id: Long) {
         newChipId = id
+    }
+
+    override fun updateParent(parent: ChipIdentity) {
+        this.parent.postValue(parent)
+
+        chipRepo.isChipTopic(parent.parentId)
+    }
+
+    override fun isParentTopic(isTopic: Boolean) {
+        this.parentOfParentIsTopic = isTopic
     }
 }

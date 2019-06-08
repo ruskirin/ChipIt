@@ -2,16 +2,16 @@ package creations.rimov.com.chipit.objects
 
 import kotlin.math.sqrt
 
-class Point(val x: Float, val y: Float) {
+class CoordPoint(val x: Float, val y: Float) {
 
     companion object {
 
         @JvmStatic
-        fun normalizeList(vertices: List<Point>,
+        fun normalizeList(vertices: List<CoordPoint>,
                           viewWidth: Int, viewHeight: Int,
-                          imageWidth: Int, imageHeight: Int): MutableList<Point> {
+                          imageWidth: Int, imageHeight: Int): MutableList<CoordPoint> {
 
-            val converted = mutableListOf<Point>()
+            val converted = mutableListOf<CoordPoint>()
 
             vertices.forEach {
                 converted.add(it.normalize(viewWidth, viewHeight, imageWidth, imageHeight))
@@ -21,11 +21,11 @@ class Point(val x: Float, val y: Float) {
         }
 
         @JvmStatic
-        fun pixelizeList(vertices: List<Point>,
+        fun pixelizeList(vertices: List<CoordPoint>,
                          viewWidth: Int, viewHeight: Int,
-                         imageWidth: Int, imageHeight: Int): MutableList<Point> {
+                         imageWidth: Int, imageHeight: Int): MutableList<CoordPoint> {
 
-            val converted = mutableListOf<Point>()
+            val converted = mutableListOf<CoordPoint>()
 
             vertices.forEach {
                 converted.add(it.pixelize(viewWidth, viewHeight, imageWidth, imageHeight))
@@ -40,20 +40,20 @@ class Point(val x: Float, val y: Float) {
      */
     override fun toString() = x.toString().plus(',').plus(y.toString())
 
-    fun distanceTo(point: Point): Float = sqrt((point.x - x)*(point.x - x) + (point.y - y)*(point.y - y))
+    fun distanceTo(coordPoint: CoordPoint): Float = sqrt((coordPoint.x - x)*(coordPoint.x - x) + (coordPoint.y - y)*(coordPoint.y - y))
 
     /**
      * @see NOTE unlike regular normalization, top left of screen is considered (-1, -1)
      * @return point with x and y values ranging [-1, 1]
      */
     fun normalize(viewWidth: Int, viewHeight: Int,
-                     imageWidth: Int, imageHeight: Int): Point {
+                     imageWidth: Int, imageHeight: Int): CoordPoint {
 
         //Subtract the empty borders surrounding the image
         val nX = x - ((viewWidth - imageWidth) / 2)
         val nY = y - ((viewHeight - imageHeight) / 2)
 
-        return Point(
+        return CoordPoint(
             ((nX * 2) / imageWidth) - 1f,
             ((nY * 2) / imageHeight) - 1f)
     }
@@ -63,14 +63,14 @@ class Point(val x: Float, val y: Float) {
      * @return point with (x,y) scaled to view size
      */
     fun pixelize(viewWidth: Int, viewHeight: Int,
-                 imageWidth: Int, imageHeight: Int): Point {
+                 imageWidth: Int, imageHeight: Int): CoordPoint {
 
         //Difference between start of image and view border
         val dx = (viewWidth - imageWidth) / 2
         val dy = (viewHeight - imageHeight) / 2
 
         //Inverse of normalization transformation
-        return Point(
+        return CoordPoint(
             ((x + 1) * (imageWidth / 2)) + dx,
             ((y + 1) * (imageHeight / 2)) + dy)
     }

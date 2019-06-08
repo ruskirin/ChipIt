@@ -16,7 +16,7 @@ class ChipView(cont: Context, attribs: AttributeSet)
     }
 
     //Interface instance implemented in ChipActivity
-    private lateinit var chipListener: ChipListener
+    private lateinit var chipHandler: ChipHandler
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
         Log.i("ChipView", "#surfaceCreated()")
@@ -26,8 +26,8 @@ class ChipView(cont: Context, attribs: AttributeSet)
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         Log.i("ChipView", "#surfaceChanged()")
 
-        chipListener.setScreenDimen()
-        chipListener.setBitmapRect()
+        chipHandler.setScreenDimen()
+        chipHandler.setBitmapRect()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
@@ -45,28 +45,27 @@ class ChipView(cont: Context, attribs: AttributeSet)
         Log.i("ChipView", "#dispatchDraw()")
 
         if(canvas != null)
-            chipListener.drawScreen(canvas)
+            chipHandler.drawScreen(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
-        /*if(event != null)
-            chipListener.surfaceTouch(event)*/
-
         when(event?.action) {
 
             MotionEvent.ACTION_DOWN -> {
-                chipListener.chipStart(event.x, event.y)
+                chipHandler.setAction(event.x, event.y)
+
+                chipHandler.touchDown(event.x, event.y)
                 invalidate()
             }
 
             MotionEvent.ACTION_MOVE -> {
-                chipListener.chipDrag(event.x, event.y)
+                chipHandler.touchDrag(event.x, event.y)
                 invalidate()
             }
 
             MotionEvent.ACTION_UP -> {
-                chipListener.chipEnd(event.x, event.y)
+                chipHandler.touchUp(event.x, event.y)
                 invalidate()
             }
         }
@@ -74,24 +73,24 @@ class ChipView(cont: Context, attribs: AttributeSet)
         return true
     }
 
-    fun setListener(listener: ChipListener) {
-        chipListener = listener
+    fun setHandler(handler: ChipHandler) {
+        chipHandler = handler
     }
 
-    interface ChipListener {
+    interface ChipHandler {
 
-        fun chipStart(x: Float, y: Float)
+        fun setAction(x: Float, y: Float)
 
-        fun chipDrag(x: Float, y: Float)
+        fun touchDown(x: Float, y: Float)
 
-        fun chipEnd(x: Float, y: Float)
+        fun touchDrag(x: Float, y: Float)
+
+        fun touchUp(x: Float, y: Float)
 
         fun drawScreen(canvas: Canvas)
 
         fun setScreenDimen()
 
         fun setBitmapRect()
-
-        fun surfaceTouch(event: MotionEvent)
     }
 }

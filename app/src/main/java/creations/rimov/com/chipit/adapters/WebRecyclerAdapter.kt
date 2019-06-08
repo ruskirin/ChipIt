@@ -60,19 +60,16 @@ class WebRecyclerAdapter(private val context: Context,
                 return true
             }
 
-            //TODO NOW: occasionally an ArrayIndexOutOfBoundsException is thrown when deleting, triggered at this location; fix
-            if(view?.id == R.id.web_recycler_chip_delete) {
-                touchHandler.topicDelete(getItemId(adapterPosition))
-
-                Log.i("Touch Event", "WebRecyclerAdapter#onTouch(): set chip ${getItemId(adapterPosition)} for deletion")
-
-                return true
-            }
-
-            //Visual changes to indicate selection
             if(event.action == MotionEvent.ACTION_UP) {
                 val chipId = getItemId(adapterPosition)
 
+                if(view?.id == R.id.web_recycler_chip_delete) {
+                    touchHandler.topicDelete(chipId)
+
+                    return true
+                }
+
+                /**Visual changes to indicate selection**/
                 //Selected chip is different from previous
                 if(chipId != prevChip.getId()) {
                     //Undo the changes to the previous chip

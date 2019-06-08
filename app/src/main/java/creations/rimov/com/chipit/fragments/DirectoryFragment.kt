@@ -75,9 +75,9 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
 
-        globalViewModel.fabTouched.observe(this, Observer { touched ->
+        globalViewModel.getFabFlag().observe(this, Observer { flag ->
 
-            if(touched) {
+            if(flag.touched) {
                 addChipPanelLayout.visibility = View.VISIBLE
 
             } else {
@@ -150,7 +150,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         }
     }
 
-    //Handle recyclerview's touch events
+    //Handle recyclerview's touched events
     override fun topicTouch(position: Int, chipId: Long, event: MotionEvent, listType: Int) {
         localViewModel.chipTouchPos = position
         localViewModel.chipTouchId = chipId

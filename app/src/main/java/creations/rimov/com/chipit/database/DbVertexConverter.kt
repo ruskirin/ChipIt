@@ -1,13 +1,13 @@
 package creations.rimov.com.chipit.database
 
 import androidx.room.TypeConverter
-import creations.rimov.com.chipit.objects.Point
+import creations.rimov.com.chipit.objects.CoordPoint
 
 object DbVertexConverter {
 
     @TypeConverter
     @JvmStatic
-    fun verticesToString(vertices: List<Point>?): String? {
+    fun verticesToString(vertices: List<CoordPoint>?): String? {
         if(vertices.isNullOrEmpty()) return null
 
         return vertices.joinToString(",") {
@@ -17,15 +17,15 @@ object DbVertexConverter {
 
     @TypeConverter
     @JvmStatic
-    fun stringToVertices(vertices: String?): MutableList<Point>? {
+    fun stringToVertices(vertices: String?): MutableList<CoordPoint>? {
         if(vertices.isNullOrBlank()) return null
 
         val list = vertices.split(",")
 
-        val points = mutableListOf<Point>()
+        val points = mutableListOf<CoordPoint>()
 
         for(i in list.indices step 2) {
-            points.add(Point(list[i].toFloat(), list[i+1].toFloat()))
+            points.add(CoordPoint(list[i].toFloat(), list[i+1].toFloat()))
         }
 
         return points

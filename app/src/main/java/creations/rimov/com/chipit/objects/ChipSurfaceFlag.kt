@@ -1,3 +1,7 @@
 package creations.rimov.com.chipit.objects
 
-class ChipSurfaceFlag(val pathComplete: Boolean = false)
+/** Flags for ChipFragment to observe and react to appropriately
+ */
+class ChipSurfaceFlag(
+    val surfaceRedraw: Boolean = false,
+    val pathComplete: Boolean = false)

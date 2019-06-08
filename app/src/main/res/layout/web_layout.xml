@@ -37,15 +37,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageButton
-            android:id="@+id/web_layout_button_branchup"
-            android:layout_width="@dimen/web_layout_button_branchup_width"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:background="@android:color/darker_gray"
-            android:src="@drawable/ic_web_up"
-            android:visibility="gone"/>
-
     <LinearLayout
             android:id="@+id/web_layout_addpanel"
             android:layout_width="wrap_content"

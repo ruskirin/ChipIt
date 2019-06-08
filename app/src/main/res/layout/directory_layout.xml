@@ -13,6 +13,15 @@
             app:navGraph="@navigation/nav_graph"
             app:defaultNavHost="true"/>
 
+    <ImageButton
+            android:id="@+id/directory_layout_button_branchup"
+            android:layout_width="@dimen/directory_layout_button_branchup_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:background="@android:color/darker_gray"
+            android:src="@drawable/ic_web_up"
+            android:visibility="gone"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/directory_layout_fab_action"
             android:layout_width="wrap_content"

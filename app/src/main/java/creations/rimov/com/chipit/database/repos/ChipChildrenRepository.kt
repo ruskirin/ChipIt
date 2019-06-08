@@ -7,6 +7,7 @@ import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.util.CameraUtil
 
 class ChipChildrenRepository(chipDb: ChipDatabase,
                              private val webComms: RepoChipRetriever) {
@@ -106,6 +107,8 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
         override fun doInBackground(vararg params: Chip): Void? {
             chipAndChildrenDao.deleteChip(params[0])
+            //Delete from internal storage
+            CameraUtil.deleteImageFile(params[0].imgLocation)
 
             return null
         }

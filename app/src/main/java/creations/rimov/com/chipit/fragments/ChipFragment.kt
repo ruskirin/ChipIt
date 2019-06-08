@@ -14,7 +14,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.objects.Point
+import creations.rimov.com.chipit.database.objects.ChipPath
+import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipTouchViewModel
@@ -23,11 +24,17 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipView
 import java.io.IOException
 
-class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
+class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
     private object Constant {
         //Buffer around surfaceview edge to trigger gesture swipe events
-        const val EDGE_TOUCH_BUFFER = 5f
+        const val EDGE_TOUCH_BUFFER = 30f
+        //Swipe distance to trigger event
+        const val SWIPE_BUFFER = 150f
+
+        const val DRAW_PATH = 300
+        const val SWIPE_EDGE = 400
+        const val NAV_CHIP = 500
     }
 
     private lateinit var globalViewModel: GlobalViewModel
@@ -38,10 +45,10 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     private lateinit var chipView: ChipView
     private lateinit var chipHolder: SurfaceHolder
 
-    private val chipViewModel: ChipViewModel by lazy {
+    private val localViewModel: ChipViewModel by lazy {
         ViewModelProviders.of(this).get(ChipViewModel::class.java)
     }
-    private val chipTouchViewModel: ChipTouchViewModel by lazy {
+    private val localTouchViewModel: ChipTouchViewModel by lazy {
         ViewModelProviders.of(this).get(ChipTouchViewModel::class.java)
     }
 
@@ -51,13 +58,11 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     private val parentImageFrame: Rect by lazy {
         Rect()
     }
-    //Class encapsulating geometric paths; used for vertex mapping
-    private val chipPath = Path()
-    //Class responsible for assigning color to vertices
-    private val chipPaint = Paint()
 
-    private var screenW: Int = 0
-    private var screenH: Int = 0
+    private var viewWidth: Int = 0
+    private var viewHeight: Int = 0
+    //Current touch action
+    private var surfaceAction: Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,13 +72,14 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
 
-        chipViewModel.setParent(passedArgs.parentId)
+        localViewModel.setParent(passedArgs.parentId)
 
-        chipViewModel.getParent()?.observe(this, Observer { parent ->
+        globalViewModel.getUpFlag().observe(this, Observer { flag ->
+            //Navigate up to the parent of the currently displayed chip
+            if(flag.touched) {
+                val id = localViewModel.getParentIdOfParent()
 
-            if(parent.imgLocation != chipViewModel.getImagePath()) {
-                chipViewModel.setBitmap(parent.imgLocation)
-                setBitmapRect()
+                localViewModel.setParent(id)
             }
         })
     }
@@ -84,23 +90,33 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
         chipView = view.findViewById(R.id.chip_layout_surfaceview)
         chipHolder = chipView.holder
 
+        val childObserver: Observer<List<ChipPath>> = Observer {
+            chipView.invalidate()
+        }
+
         val pathPanelLayout: LinearLayout = view.findViewById(R.id.chip_layout_pathpanel)
         val pathPanelCamera: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_camera)
         val pathPanelPhotos: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_photos)
         val pathPanelCancel: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_cancel)
 
-        chipView.setListener(this)
+        chipView.setHandler(this)
         chipView.setOnTouchListener(this)
 
         pathPanelCamera.setOnTouchListener(this)
         pathPanelPhotos.setOnTouchListener(this)
         pathPanelCancel.setOnTouchListener(this)
 
-        chipViewModel.getChildren().observe(this, Observer {
-            chipView.invalidate()
+        localViewModel.getParent()?.observe(this, Observer { parent ->
+            Log.i("Life Event", "ChipFragment#parentObserver: triggered!")
+
+            localViewModel.setBitmap(parent.imgLocation)
+            setBitmapRect()
+            //Children changed with parent, replace old observer with new one
+            localViewModel.getChildren()?.removeObserver(childObserver)
+            localViewModel.getChildren()?.observe(this, childObserver)
         })
 
-        chipTouchViewModel.pathCreated.observe(this, Observer { created ->
+        localTouchViewModel.pathCreated.observe(this, Observer { created ->
 
             if(created) {
                 pathPanelLayout.visibility = View.VISIBLE
@@ -117,12 +133,12 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
     //TODO (FUTURE): have this run on a separate thread, display loading bar
     private fun drawBackground() {
 
-        if(chipViewModel.getBitmap() == null)
+        if(localViewModel.getBitmap() == null)
             return
 
-        initPaint()
+        localTouchViewModel.initPaint()
 
-        parentCanvas = Canvas(chipViewModel.getBitmap()!!.copy(Bitmap.Config.ARGB_8888, true))
+        parentCanvas = Canvas(localViewModel.getBitmap()!!.copy(Bitmap.Config.ARGB_8888, true))
 
         //Draw static images (eg. background, chip pathways)
         try {
@@ -130,7 +146,7 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
 
             synchronized(chipHolder) {
                 //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
-                parentCanvas.drawBitmap(chipViewModel.getBitmap()!!, null, parentImageFrame, null)
+                parentCanvas.drawBitmap(localViewModel.getBitmap()!!, null, parentImageFrame, null)
             }
             //TODO: handle error
         } catch (e: Throwable) {
@@ -139,94 +155,144 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
         } finally {
             chipHolder.unlockCanvasAndPost(parentCanvas)
             //Reset flag
-            chipViewModel.backgroundChanged = false
+            localViewModel.backgroundChanged = false
         }
     }
 
     override fun drawScreen(canvas: Canvas) {
 
-        if(chipViewModel.backgroundChanged)
+        if(localViewModel.backgroundChanged)
             drawBackground()
 
-        canvas.drawPath(chipPath, chipPaint)
+        canvas.drawPath(localTouchViewModel.getDrawPath(), localTouchViewModel.getDrawPaint())
 
         drawChildren(canvas)
     }
 
     private fun drawChildren(canvas: Canvas) {
 
-        if(screenW == 0 || screenH == 0 || parentImageFrame.width() == 0 || parentImageFrame.height() == 0)
+        if(viewWidth == 0 || viewHeight == 0 || parentImageFrame.width() == 0 || parentImageFrame.height() == 0)
             return
 
         //TODO (FUTURE): should be off UI thread
-        chipViewModel.getChildren().value?.forEach { chip ->
+        localViewModel.getChildren()?.value?.forEach { chip ->
 
-            if(chip.vertices.isNullOrEmpty() || chip.vertices!!.size <= 3)
+            if(chip.vertices.isNullOrEmpty() || chip.vertices.size <= 3)
                 return@forEach
 
             canvas.drawLines(
                 chip.getVerticesFloatArray(
-                    true, screenW, screenH, parentImageFrame.width(), parentImageFrame.height())!!,
-                chipPaint)
+                    true, viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height())!!,
+                localTouchViewModel.getDrawPaint())
         }
     }
 
     override fun setScreenDimen() {
 
-        screenW = chipView.measuredWidth
-        screenH = chipView.measuredHeight
+        viewWidth = chipView.measuredWidth
+        viewHeight = chipView.measuredHeight
 
-        chipViewModel.backgroundChanged = true
+        localViewModel.backgroundChanged = true
     }
 
     override fun setBitmapRect() {
 
-        val width = chipViewModel.getBitmapWidth()
-        val height = chipViewModel.getBitmapHeight()
+        val width = localViewModel.getBitmapWidth()
+        val height = localViewModel.getBitmapHeight()
 
         if(width == 0 || height == 0)
             return
 
         parentImageFrame.set(
             RenderUtil.getAspectRatioRect(
-                chipViewModel.getBitmapWidth(), chipViewModel.getBitmapHeight(), screenW, screenH))
+                localViewModel.getBitmapWidth(), localViewModel.getBitmapHeight(), viewWidth, viewHeight))
     }
 
-    override fun surfaceTouch(event: MotionEvent) {
+    //Initial point of contact
+    private lateinit var point0: CoordPoint
 
+    /**Identify surface touched intention (draw, swipe, etc)**/
+    override fun setAction(x: Float, y: Float) {
+        point0 = CoordPoint(x, y)
+
+        if((viewHeight - y) < Constant.EDGE_TOUCH_BUFFER) {
+            surfaceAction = Constant.SWIPE_EDGE
+
+            return
+        }
+
+        val touchedChip = localViewModel.getTouchedChip(
+            point0.normalize(viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height()))
+
+        if(touchedChip != null) {
+            surfaceAction = Constant.NAV_CHIP
+
+            Log.i("Touch Event", "ChipFragment#setAction(): touched chip: ${touchedChip.id}")
+
+            return
+        }
+
+        surfaceAction = Constant.DRAW_PATH
     }
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
-    override fun chipStart(x: Float, y: Float) {
+    override fun touchDown(x: Float, y: Float) {
+        globalViewModel.displayFab(false)
+        globalViewModel.displayUp(false)
 
-        chipPath.moveTo(x, y)
+        when(surfaceAction) {
 
-        chipTouchViewModel.startPath(Point(x, y))
+            Constant.DRAW_PATH -> {
+                localTouchViewModel.startPath(CoordPoint(x, y))
+            }
+        }
     }
 
-    override fun chipDrag(x: Float, y: Float) {
+    override fun touchDrag(x: Float, y: Float) {
 
-        if(chipTouchViewModel.dragPath(Point(x, y)))
-            chipPath.lineTo(x, y)
+        when(surfaceAction) {
+
+            Constant.DRAW_PATH -> {
+                localTouchViewModel.dragPath(CoordPoint(x, y))
+            }
+
+            Constant.SWIPE_EDGE -> {
+                if((point0.y - y) > Constant.SWIPE_BUFFER) {
+                    globalViewModel.displayFab(true)
+
+                    if(!localViewModel.isParentOfParentTopic())
+                        globalViewModel.displayUp(true)
+
+                } else {
+                    globalViewModel.displayFab(false)
+                    globalViewModel.displayUp(false)
+                }
+            }
+        }
     }
 
-    override fun chipEnd(x: Float, y: Float) {
+    override fun touchUp(x: Float, y: Float) {
 
-        if(chipTouchViewModel.endPath(
-                Point(x, y), screenW, screenH, parentImageFrame.width(), parentImageFrame.height()))
-            chipPath.lineTo(x, y)
+        when(surfaceAction) {
 
-        //Either path has been saved or was incomplete, regardless it is no longer necessary
-        clearPaths(chipPath)
+            Constant.DRAW_PATH -> {
+                localTouchViewModel.endPath(
+                    CoordPoint(x, y), viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height())
+            }
+
+            Constant.NAV_CHIP -> {
+                val touchedChip = localViewModel.getTouchedChip(
+                    CoordPoint(x, y).normalize(viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height()))
+
+                if(touchedChip != null)
+                    localViewModel.setParent(touchedChip.id)
+            }
+        }
     }
 
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         when(view?.id) {
-            R.id.chip_layout_surfaceview -> {
-
-                chipTouchViewModel.gestureAction(event?.action ?: -1, Point(event!!.rawX, event.rawY))
-            }
             R.id.chip_layout_pathpanel_camera -> {
 
                 if(event?.action != MotionEvent.ACTION_DOWN)
@@ -257,9 +323,9 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
 
                     //TODO (FUTURE): verify that the id exists (here or elsewhere)
                     if (imageFile.storagePath.isNotEmpty()) {
-                        chipViewModel.saveChip(null, imageFile.storagePath, chipTouchViewModel.getPathVertices())
+                        localViewModel.saveChip(null, imageFile.storagePath, localTouchViewModel.getPathVertices())
                         //Toggle flag
-                        chipTouchViewModel.pathCreated.postValue(false)
+                        localTouchViewModel.pathCreated.postValue(false)
 
                         Log.i("Chip Creation",
                             "ChipActivity#onTouch(): new chip inserted! Image location: ${imageFile.storagePath}")
@@ -280,32 +346,11 @@ class ChipFragment : Fragment(), ChipView.ChipListener, View.OnTouchListener {
                 if(event?.action != MotionEvent.ACTION_DOWN)
                     return false
 
-                chipTouchViewModel.pathCreated.postValue(false)
+                localTouchViewModel.pathCreated.postValue(false)
                 return true
             }
         }
 
         return false
-    }
-
-
-    private fun initPaint() {
-
-        chipPaint.apply {
-            isAntiAlias = true
-            color = Color.CYAN
-            style = Paint.Style.STROKE
-            strokeJoin = Paint.Join.ROUND
-            strokeWidth = 4f
-        }
-    }
-
-    /**
-     * Reset path objects
-     */
-    private fun clearPaths(vararg paths: Path) {
-        paths.forEach {
-            it.reset()
-        }
     }
 }

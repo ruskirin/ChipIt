@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.fragments
 
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -20,7 +19,6 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -71,6 +69,12 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
             else -> localViewModel.setParent(globalViewModel.chipFragParentId)
         }
+
+        globalViewModel.getUpFlag().observe(this, Observer { flag ->
+
+            if(flag.touched)
+                localViewModel.navigateUpBranch()
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -81,8 +85,6 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
         //TODO: create a custom button
         val addChipCameraButton: ImageButton = view.findViewById(R.id.web_layout_addpanel_camera)
         val addChipFilesButton: ImageButton = view.findViewById(R.id.web_layout_addpanel_files)
-
-        val upBranchButton: ImageButton = view.findViewById(R.id.web_layout_button_branchup)
 
         //Horizontal recycler view for "sibling" children
         val uRecyclerView = view.findViewById<RecyclerView>(R.id.web_layout_recycler_u_chips).apply {
@@ -97,9 +99,9 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
             setHasFixedSize(true)
         }
 
-        globalViewModel.fabTouched.observe(this, Observer { touched ->
+        globalViewModel.getFabFlag().observe(this, Observer { flag ->
 
-            if(touched) {
+            if(flag.touched) {
                 addChipPanelLayout.visibility = View.VISIBLE
 
             } else {
@@ -120,9 +122,9 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
             localViewModel.getListUpper().observe(this, chipObserver)
 
             if(parent.isTopic)
-                upBranchButton.visibility = View.GONE
+                globalViewModel.displayUp(false)
             else
-                upBranchButton.visibility = View.VISIBLE
+                globalViewModel.displayUp(true)
         })
 
         localViewModel.getListLower().observe(this, Observer { chips ->
@@ -162,8 +164,6 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
 
-        upBranchButton.setOnClickListener(this)
-
         return view
     }
 
@@ -171,10 +171,6 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
         when(view?.id) {
 
-            R.id.web_layout_button_branchup -> {
-                localViewModel.navigateUpBranch()
-
-            }
             R.id.web_layout_addpanel_camera -> {
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists

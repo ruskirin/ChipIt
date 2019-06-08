@@ -33,7 +33,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
     /**
      * VIEW HOLDER
-     * @param: touchHandler = interface for communicating touch events' information to activity
+     * @param: touchHandler = interface for communicating touched events' information to activity
      */
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
@@ -73,6 +73,8 @@ class DirectoryRecyclerAdapter(private val context: Context,
         return DirectoryViewHolder(chipHolder)
     }
 
+    //TODO (IMPORTANT): might be a memory leak with TextView here, check logs for the message, then follow:
+    //                   https://stackoverflow.com/questions/49513726/android-memory-leak-with-fragments
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
 
         holder.topicName.text = topics[position].name

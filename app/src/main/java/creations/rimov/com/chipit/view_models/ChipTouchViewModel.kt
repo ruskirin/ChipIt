@@ -1,10 +1,13 @@
 package creations.rimov.com.chipit.view_models
 
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.util.Log
 import android.view.MotionEvent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.objects.Point
+import creations.rimov.com.chipit.objects.CoordPoint
 
 class ChipTouchViewModel : ViewModel() {
 
@@ -13,81 +16,85 @@ class ChipTouchViewModel : ViewModel() {
         const val TOLERANCE = 70f
         //Minimum distance from a path vertex before another vertex is created and connected
         const val LINE_INTERVAL = 50f
-        //Buffer zone around the edge to trigger touch events
-        const val EDGE_TOUCH_BUFFER = 10f
-        //Swipe distance to trigger event
-        const val SWIPE_BUFFER = 150f
     }
 
+    private val path: Path = Path()
+    private val paint: Paint = Paint()
     //Flag to toggle path creation panel
     var pathCreated = MutableLiveData(false)
 
-    private lateinit var pathVertices: MutableList<Point>
+    private lateinit var pathVertices: MutableList<CoordPoint>
 
+
+    fun getDrawPath() = path
+
+    fun getDrawPaint() = paint
 
     fun getPathVertices() = pathVertices
 
-    fun startPath(point: Point) {
-        Log.i("Path Creation", "#startPath(): point x = ${point.x}, y = ${point.y}")
+    fun startPath(coordPoint: CoordPoint) {
+
+        Log.i("Path Creation", "#startPath(): coordPoint x = ${coordPoint.x}, y = ${coordPoint.y}")
+
+        path.moveTo(coordPoint.x, coordPoint.y)
+
         pathVertices = mutableListOf()
-        //Save the starting point
-        pathVertices.add(point)
+        //Save the starting coordPoint
+        pathVertices.add(coordPoint)
     }
 
-    /**
-     * @return true if point is valid and should be drawn, false if invalid and should be ignored
-     */
-    fun dragPath(point: Point): Boolean {
+    fun dragPath(coordPoint: CoordPoint) {
 
-        val distance = point.distanceTo(pathVertices.last())
+        val distance = coordPoint.distanceTo(pathVertices.last())
 
         if(distance < Constant.LINE_INTERVAL)
-            return false
+            return
 
-        pathVertices.add(point)
-        return true
+        path.lineTo(coordPoint.x, coordPoint.y)
+
+        pathVertices.add(coordPoint)
     }
 
-    fun endPath(point: Point, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int): Boolean {
+    fun endPath(coordPoint: CoordPoint, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int) {
 
-        val displacement = point.distanceTo(pathVertices.first())
+        val displacement = coordPoint.distanceTo(pathVertices.first())
 
-        //Does the path return to its starting point?
-        if(pathVertices.size <= 3 || displacement > Constant.TOLERANCE)
-            return false
+        //Does the path return to its starting coordPoint?
+        if(pathVertices.size <= 3 || displacement > Constant.TOLERANCE) {
+            //Either path has been saved or was incomplete, regardless it is no longer necessary
+            clearPaths(path)
+            return
+        }
 
-        //Path will complete at the first point
+        path.lineTo(coordPoint.x, coordPoint.y)
+        //Path will complete at the first coordPoint
         pathVertices.add(pathVertices.first())
         //Convert the pixel points to normalized
-        pathVertices = Point.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
+        pathVertices = CoordPoint.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)
 
         pathCreated.postValue(true)
 
-        return true
+        //Either path has been saved or was incomplete, regardless it is no longer necessary
+        clearPaths(path)
     }
 
-    private var yi = 0f
+    fun initPaint() {
 
-    fun gestureAction(event: Int, point: Point) {
+        paint.apply {
+            isAntiAlias = true
+            color = Color.CYAN
+            style = Paint.Style.STROKE
+            strokeJoin = Paint.Join.ROUND
+            strokeWidth = 4f
+        }
+    }
 
-        when(event) {
-            MotionEvent.ACTION_DOWN -> {
-
-                //TODO: figure out how and where you'll differentiate between gesture events and path drawing
-                if((/*screenH - */point.y) > Constant.EDGE_TOUCH_BUFFER)
-                //needEdit.postValue(false)
-
-                    yi = point.y
-            }
-            MotionEvent.ACTION_MOVE -> {
-
-                //if((yi - point.y) > ListType.SWIPE_BUFFER)
-                //needEdit.postValue(true)
-            }
-            MotionEvent.ACTION_UP -> {
-
-                yi = 0f //Reset
-            }
+    /**
+     * Reset path objects
+     */
+    private fun clearPaths(vararg paths: Path) {
+        paths.forEach {
+            it.reset()
         }
     }
 }

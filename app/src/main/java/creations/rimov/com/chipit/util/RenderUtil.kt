@@ -1,8 +1,6 @@
 package creations.rimov.com.chipit.util
 
 import android.graphics.Rect
-import android.util.Log
-import creations.rimov.com.chipit.objects.Point
 import kotlin.math.roundToInt
 
 object RenderUtil {

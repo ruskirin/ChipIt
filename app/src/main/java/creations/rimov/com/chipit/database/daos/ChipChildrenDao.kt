@@ -6,6 +6,7 @@ import androidx.room.*
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.database.objects.ChipPath
 
 @Dao
 interface ChipChildrenDao {
@@ -16,16 +17,20 @@ interface ChipChildrenDao {
 
     @Transaction
     @Query("SELECT id, parent_id, name, image_location FROM chips WHERE parent_id = :parentId")
-    fun getChipChildrenCardsLive(parentId: Long): LiveData<List<ChipCard>>
+    fun getChipChildrenCards(parentId: Long): List<ChipCard>
 
     @Transaction
     @Query("SELECT id, parent_id, name, image_location FROM chips WHERE parent_id = :parentId")
-    fun getChipChildrenCards(parentId: Long): List<ChipCard>
+    fun getChipChildrenCardsLive(parentId: Long): LiveData<List<ChipCard>>
+
+    @Transaction
+    @Query("SELECT id, image_location, vertices FROM chips WHERE parent_id = :parentId")
+    fun getChipChildrenPaths(parentId: Long): LiveData<List<ChipPath>>
 
     @Query("SELECT * FROM chips WHERE id = :id")
     fun getChip(id: Long): Chip
 
-    @Query("SELECT id, parent_id, is_topic FROM chips WHERE id = :id")
+    @Query("SELECT id, parent_id, is_topic, image_location FROM chips WHERE id = :id")
     fun getChipIdentity(id: Long): ChipIdentity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

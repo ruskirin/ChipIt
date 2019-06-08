@@ -27,7 +27,7 @@ class WebViewModel : ViewModel(), ChipChildrenRepository.RepoChipRetriever {
     fun setParent(parentId: Long) {
 
         if(parentId == -1L) {
-            Log.e("WebViewModel", "#setParent(): passed parentId == -1L")
+            Log.e("WebViewModel", "#setParentIdentity(): passed parentId == -1L")
             return
         }
 

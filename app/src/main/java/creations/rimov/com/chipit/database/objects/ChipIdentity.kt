@@ -5,4 +5,5 @@ import androidx.room.ColumnInfo
 data class ChipIdentity(
     val id: Long,
     @ColumnInfo(name = "parent_id") val parentId: Long,
+    @ColumnInfo(name = "image_location") val imgLocation: String,
     @ColumnInfo(name = "is_topic") val isTopic: Boolean)

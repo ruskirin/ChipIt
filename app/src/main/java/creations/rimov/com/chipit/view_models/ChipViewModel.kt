@@ -2,9 +2,7 @@ package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
@@ -14,20 +12,19 @@ import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 
-class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
+class ChipViewModel : ViewModel(), ChipRepository.ChipRepoHandler {
 
-    private val chipRepo = ChipRepository(DatabaseApplication.database!!, this)
+    private val repository = ChipRepository(DatabaseApplication.database!!, this)
 
-    //Is the parent of the current parent a topic? Used to toggle branch up navigation
-    private var parentOfParentIsTopic: Boolean = false
+    private val parentId: MutableLiveData<Long> = MutableLiveData()
     //The chip currently viewed in the background and being worked on
-    private val parent: MutableLiveData<ChipIdentity> = MutableLiveData()
+    private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
+        repository.getChipIdentity(it)
+    }
     //Children of the main chip
-    private lateinit var children: LiveData<List<ChipPath>>
-
-    var parentId = -1L
-    //id of a newly inserted chip, used to update chip information
-    var newChipId = -1L
+    private val children: LiveData<List<ChipPath>> = Transformations.switchMap(parentId) {
+        repository.getChildrenPaths(it)
+    }
 
     private lateinit var bitmap: Bitmap
     //Saved image path for present bitmap
@@ -35,33 +32,33 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
 
     //Flag to redraw background bitmap
     var backgroundChanged = false
+    //Is the parent of the current parent a topic? Used to toggle branch up navigation
+    var canNavigateUp = false
 
 
-    fun setParent(parentId: Long) {
+    fun setParentId(parentId: Long) {
 
-        if(parentId != this.parentId) {
-            this.parentId = parentId
-
-            chipRepo.setParentIdentity(parentId)
-            children = chipRepo.getChildren(parentId)
+        if(parentId != this.parentId.value) {
+            this.parentId.postValue(parentId)
         }
     }
 
-    fun getParent(): MutableLiveData<ChipIdentity>? = parent
+    fun getParentId() = parentId.value
 
     fun getParentIdOfParent() = parent.value?.parentId ?: -1L
 
-    fun isParentOfParentTopic() = parentOfParentIsTopic
+    fun getParent(): LiveData<ChipIdentity>? = parent
 
-    fun getChildren(): LiveData<List<ChipPath>>? =
-        if(::children.isInitialized) children
-        else null
+    fun getChildren(): LiveData<List<ChipPath>>? = children
+
+    fun checkUpNavigation() {
+        repository.isChipTopic(parent.value?.parentId ?: -1L)
+    }
 
     /**Check if point landed inside one of the children**/
     fun getTouchedChip(point: CoordPoint): ChipPath? {
 
         children.value?.forEach { chip ->
-
             if(chip.isInside(point)) {
                 return chip
             }
@@ -102,29 +99,20 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoCommunication {
                    imgLocation: String? = null,
                    vertices: List<CoordPoint>? = null) {
 
-        chipRepo.updateChip(id, name, imgLocation, vertices)
+        repository.updateChip(id, name, imgLocation, vertices)
     }
 
     fun saveChip(name: String?, imgLocation: String?, vertices: List<CoordPoint>?) {
-        val chip = Chip(0, parentId, false, name, imgLocation ?: "", vertices)
+        val chip = Chip(0, parentId.value ?: -1L, false, name, imgLocation ?: "", vertices)
 
         Log.i("Chip Creation", "ChipViewModel#saveChip(): saving chip under parent $parentId")
 
-        chipRepo.insertChip(chip)
-    }
-
-    //Method from ChipRepoCommunication interface
-    override fun setChipId(id: Long) {
-        newChipId = id
-    }
-
-    override fun updateParent(parent: ChipIdentity) {
-        this.parent.postValue(parent)
-
-        chipRepo.isChipTopic(parent.parentId)
+        repository.insertChip(chip)
     }
 
     override fun isParentTopic(isTopic: Boolean) {
-        this.parentOfParentIsTopic = isTopic
+
+
+        this.canNavigateUp = !isTopic
     }
 }

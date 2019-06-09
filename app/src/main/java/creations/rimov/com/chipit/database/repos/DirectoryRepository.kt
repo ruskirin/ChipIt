@@ -4,8 +4,9 @@ import android.os.AsyncTask
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.TopicChipDao
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.util.CameraUtil
 
-class TopicChipRepository(chipDb: ChipDatabase) {
+class DirectoryRepository(chipDb: ChipDatabase) {
 
     private val topicDao = chipDb.topicDao()
 
@@ -18,7 +19,11 @@ class TopicChipRepository(chipDb: ChipDatabase) {
                    name: String?,
                    imgLocation: String?) = AsyncChipUpdate(topicDao, name, imgLocation).execute(id)
 
-    fun insert(topic: Chip) = AsyncChipInsert(topicDao).execute(topic)
+    fun insert(topic: Chip) = DbAsyncTasks.InsertChip(topicDao).execute(topic)
+
+    fun delete(chips: List<Chip>) {
+
+    }
 
 
     class AsyncChipUpdate(private val topicDao: TopicChipDao,
@@ -35,10 +40,15 @@ class TopicChipRepository(chipDb: ChipDatabase) {
         }
     }
 
-    class AsyncChipInsert(private val topicDao: TopicChipDao) : AsyncTask<Chip, Void, Void>() {
+    class AsyncDeleteChip(private val topicDao: TopicChipDao) : AsyncTask<Long, Void, Void>() {
 
-        override fun doInBackground(vararg params: Chip): Void? {
-            topicDao.insertTopic(params[0])
+        override fun doInBackground(vararg params: Long?): Void? {
+
+            val chip = topicDao.getChip(params[0] ?: return null)
+
+            topicDao.deleteChip(chip)
+
+            CameraUtil.deleteImageFile(chip.imgLocation)
 
             return null
         }

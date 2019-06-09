@@ -7,13 +7,20 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
+import creations.rimov.com.chipit.objects.CoordPoint
 
 @Dao
-interface ChipChildrenDao {
+interface ChipChildrenDao : BaseChipDao {
+
+    @Query("SELECT id, parent_id, is_topic, image_location FROM chips WHERE id = :id")
+    fun getChipIdentity(id: Long): ChipIdentity
+
+    @Query("SELECT id, parent_id, is_topic, image_location FROM chips WHERE id = :id")
+    fun getChipIdentityLive(id: Long): LiveData<ChipIdentity>
 
     @Transaction
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")
-    fun getChipChildren(parentId: Long): LiveData<List<Chip>>
+    fun getChipChildrenLive(parentId: Long): LiveData<List<Chip>>
 
     @Transaction
     @Query("SELECT id, parent_id, name, image_location FROM chips WHERE parent_id = :parentId")
@@ -27,15 +34,6 @@ interface ChipChildrenDao {
     @Query("SELECT id, image_location, vertices FROM chips WHERE parent_id = :parentId")
     fun getChipChildrenPaths(parentId: Long): LiveData<List<ChipPath>>
 
-    @Query("SELECT * FROM chips WHERE id = :id")
-    fun getChip(id: Long): Chip
-
-    @Query("SELECT id, parent_id, is_topic, image_location FROM chips WHERE id = :id")
-    fun getChipIdentity(id: Long): ChipIdentity
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertChip(chip: Chip): Long
-
-    @Delete
-    fun deleteChip(vararg chip: Chip): Int
+    @Query("SELECT is_topic FROM chips WHERE id = :id")
+    fun isChipTopic(id: Long): Boolean
 }

@@ -72,14 +72,15 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
 
-        localViewModel.setParent(passedArgs.parentId)
+        if(localViewModel.getParentId() != passedArgs.parentId)
+            localViewModel.setParentId(passedArgs.parentId)
 
         globalViewModel.getUpFlag().observe(this, Observer { flag ->
             //Navigate up to the parent of the currently displayed chip
             if(flag.touched) {
                 val id = localViewModel.getParentIdOfParent()
 
-                localViewModel.setParent(id)
+                localViewModel.setParentId(id)
             }
         })
     }
@@ -89,10 +90,6 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
         chipView = view.findViewById(R.id.chip_layout_surfaceview)
         chipHolder = chipView.holder
-
-        val childObserver: Observer<List<ChipPath>> = Observer {
-            chipView.invalidate()
-        }
 
         val pathPanelLayout: LinearLayout = view.findViewById(R.id.chip_layout_pathpanel)
         val pathPanelCamera: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_camera)
@@ -108,12 +105,14 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
         localViewModel.getParent()?.observe(this, Observer { parent ->
             Log.i("Life Event", "ChipFragment#parentObserver: triggered!")
+            localViewModel.checkUpNavigation()
 
             localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
-            //Children changed with parent, replace old observer with new one
-            localViewModel.getChildren()?.removeObserver(childObserver)
-            localViewModel.getChildren()?.observe(this, childObserver)
+        })
+
+        localViewModel.getChildren()?.observe(this, Observer {
+            chipView.invalidate()
         })
 
         localTouchViewModel.pathCreated.observe(this, Observer { created ->
@@ -260,7 +259,7 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
                 if((point0.y - y) > Constant.SWIPE_BUFFER) {
                     globalViewModel.displayFab(true)
 
-                    if(!localViewModel.isParentOfParentTopic())
+                    if(localViewModel.canNavigateUp)
                         globalViewModel.displayUp(true)
 
                 } else {
@@ -285,7 +284,7 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
                     CoordPoint(x, y).normalize(viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height()))
 
                 if(touchedChip != null)
-                    localViewModel.setParent(touchedChip.id)
+                    localViewModel.setParentId(touchedChip.id)
             }
         }
     }

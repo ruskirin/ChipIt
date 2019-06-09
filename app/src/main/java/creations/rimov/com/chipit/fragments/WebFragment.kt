@@ -62,12 +62,12 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
         Log.i("Life Event", "WebFragment#onCreate(): passed parent id: ${passedArgs.parentId}")
 
-        when {
-            localViewModel.getParentId() != -1L -> localViewModel.setParent(localViewModel.getParentId())
+        if(localViewModel.getParentId() == -1L) {
 
-            passedArgs.parentId != -1L -> localViewModel.setParent(passedArgs.parentId)
-
-            else -> localViewModel.setParent(globalViewModel.chipFragParentId)
+            if(passedArgs.parentId != -1L)
+                localViewModel.setParent(passedArgs.parentId)
+            else
+                localViewModel.setParent(globalViewModel.chipFragParentId)
         }
 
         globalViewModel.getUpFlag().observe(this, Observer { flag ->
@@ -109,22 +109,13 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
             }
         })
 
-        val chipObserver: Observer<List<ChipCard>> = Observer { chips ->
-
+        localViewModel.getListUpper().observe(this, Observer { chips ->
             uRecyclerAdapter.setChips(chips)
             //Clear the lower list
             lRecyclerAdapter.setChips(listOf())
-        }
 
-        localViewModel.getParent().observe(this, Observer { parent ->
-            //Parent changed: remove old observer, replace with new one
-            localViewModel.getListUpper().removeObserver(chipObserver)
-            localViewModel.getListUpper().observe(this, chipObserver)
-
-            if(parent.isTopic)
-                globalViewModel.displayUp(false)
-            else
-                globalViewModel.displayUp(true)
+            val isTopic: Boolean = localViewModel.getParent().value?.isTopic ?: true
+            globalViewModel.displayUp(!isTopic)
         })
 
         localViewModel.getListLower().observe(this, Observer { chips ->

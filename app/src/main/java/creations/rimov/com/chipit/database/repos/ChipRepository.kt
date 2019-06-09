@@ -1,66 +1,40 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
+import android.util.Log
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
-import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.objects.CoordPoint
 
 class ChipRepository(chipDb: ChipDatabase,
-                     private val chipComm: ChipRepoCommunication) {
+                     private val chipHandler: ChipRepoHandler) {
 
-    private val chipDao = chipDb.chipDao()
-    private val chipChildrenDao = chipDb.chipChildrenDao()
+    private val chipDao = chipDb.chipChildrenDao()
 
-    fun setParentIdentity(id: Long) {
-        AsyncGetParentIdentity(chipChildrenDao, chipComm).execute(id)
-    }
+    fun getChipIdentity(id: Long) = chipDao.getChipIdentityLive(id)
+
+    fun getChildrenPaths(parentId: Long) = chipDao.getChipChildrenPaths(parentId)
 
     fun isChipTopic(parentId: Long) {
-        AsyncGetIsChipTopic(chipDao, chipComm).execute(parentId)
+        AsyncGetIsChipTopic(chipDao, chipHandler).execute(parentId)
     }
-
-    fun getChildren(parentId: Long) = chipChildrenDao.getChipChildrenPaths(parentId)
 
     fun updateChip(id: Long,
                    name: String? = null,
                    imgLocation: String? = null,
                    vertices: List<CoordPoint>? = null) = AsyncChipUpdate(chipDao, name, imgLocation, vertices).execute(id)
 
-    fun insertChip(chip: Chip) = AsyncChipInsert(chipChildrenDao, chipComm).execute(chip)
+    fun insertChip(chip: Chip) = AsyncChipInsert(chipDao).execute(chip)
 
-
-    /**
-     * @param chipHandler: interface to communicate with WebFragment
-     * @param getParent: use chip's parent?
-     */
-    class AsyncGetParentIdentity(
-        private val chipChildrenDao: ChipChildrenDao,
-        private val chipHandler: ChipRepoCommunication) : AsyncTask<Long, Void, ChipIdentity>() {
-
-        override fun doInBackground(vararg params: Long?): ChipIdentity? {
-
-            return chipChildrenDao.getChipIdentity(params[0] ?: return null)
-        }
-
-        override fun onPostExecute(result: ChipIdentity?) {
-
-            if(result == null)
-                return
-
-            chipHandler.updateParent(result)
-        }
-    }
 
     class AsyncGetIsChipTopic(
-        private val chipDao: ChipDao,
-        private val chipHandler: ChipRepoCommunication) : AsyncTask<Long, Void, Boolean>() {
+        private val chipDao: ChipChildrenDao,
+        private val chipHandler: ChipRepoHandler) : AsyncTask<Long, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Long?): Boolean? {
 
-            return chipDao.isParentTopic(params[0] ?: return null)
+            return chipDao.isChipTopic(params[0] ?: return null)
         }
 
         override fun onPostExecute(result: Boolean?) {
@@ -68,11 +42,12 @@ class ChipRepository(chipDb: ChipDatabase,
             if(result == null)
                 return
 
+            Log.i("Touch Event", "AsyncGetIsChipTopic#onPostExecute(): is parent topic? $result")
             chipHandler.isParentTopic(result)
         }
     }
 
-    class AsyncChipUpdate(private val chipDao: ChipDao,
+    class AsyncChipUpdate(private val chipDao: ChipChildrenDao,
                           private val name: String?,
                           private val imgLocation: String?,
                           private val vertices: List<CoordPoint>?)
@@ -88,23 +63,16 @@ class ChipRepository(chipDb: ChipDatabase,
         }
     }
 
-    class AsyncChipInsert(private val chipChildrenDao: ChipChildrenDao,
-                          private val chipComm: ChipRepoCommunication) : AsyncTask<Chip, Void, Void>() {
+    class AsyncChipInsert(private val chipChildrenDao: ChipChildrenDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
-            val id = chipChildrenDao.insertChip(params[0])
-            //Return the newly-inserted chip id
-            chipComm.setChipId(id)
+            chipChildrenDao.insertChip(params[0])
 
             return null
         }
     }
 
-    interface ChipRepoCommunication {
-
-        fun setChipId(id: Long)
-
-        fun updateParent(parent: ChipIdentity)
+    interface ChipRepoHandler {
 
         fun isParentTopic(isTopic: Boolean)
     }

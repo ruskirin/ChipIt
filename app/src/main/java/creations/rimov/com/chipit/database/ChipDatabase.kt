@@ -4,7 +4,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
-import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.daos.TopicChipDao
 import creations.rimov.com.chipit.database.objects.Chip
 
@@ -15,8 +14,6 @@ import creations.rimov.com.chipit.database.objects.Chip
 abstract class ChipDatabase : RoomDatabase() {
 
     abstract fun topicDao(): TopicChipDao
-
-    abstract fun chipDao(): ChipDao
 
     abstract fun chipChildrenDao(): ChipChildrenDao
 }

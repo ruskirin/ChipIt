@@ -9,8 +9,8 @@ import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.util.CameraUtil
 
-class ChipChildrenRepository(chipDb: ChipDatabase,
-                             private val webComms: RepoChipRetriever) {
+class WebRepository(chipDb: ChipDatabase,
+                    private val webHandler: WebRepoHandler) {
 
     private val chipAndChildrenDao = chipDb.chipChildrenDao()
 
@@ -19,15 +19,17 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
     fun setParentIdentity(chipId: Long, useParent: Boolean) {
-        AsyncGetChipIdentity(chipAndChildrenDao, webComms, useParent).execute(chipId)
+        AsyncGetChipIdentity(chipAndChildrenDao, webHandler, useParent).execute(chipId)
     }
 
-    fun getChipChildrenCardsLive(parentId: Long) = chipAndChildrenDao.getChipChildrenCardsLive(parentId)
+    fun getChipIdentity(chipId: Long) = chipAndChildrenDao.getChipIdentity(chipId)
 
     fun getChipChildrenCards(parentId: Long, type: Int) {
 
-        AsyncGetChipCards(chipAndChildrenDao, webComms, type).execute(parentId)
+        AsyncGetChipCards(chipAndChildrenDao, webHandler, type).execute(parentId)
     }
+
+    fun getChipChildrenCardsLive(parentId: Long) = chipAndChildrenDao.getChipChildrenCardsLive(parentId)
 
     fun insertChip(chip: Chip) {
 
@@ -41,7 +43,7 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
     fun deleteChip(chipId: Long) {
 
-        AsyncGetChipToDelete(chipAndChildrenDao).execute(chipId)
+        AsyncDeleteChip(chipAndChildrenDao).execute(chipId)
     }
 
     /**
@@ -50,7 +52,7 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
      */
     class AsyncGetChipIdentity(
         private val chipAndChildrenDao: ChipChildrenDao,
-        private val webHandler: RepoChipRetriever,
+        private val webHandler: WebRepoHandler,
         private val getParent: Boolean) : AsyncTask<Long, Void, ChipIdentity>() {
 
         override fun doInBackground(vararg params: Long?): ChipIdentity? {
@@ -72,7 +74,7 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
 
     class AsyncGetChipCards(
         private val chipAndChildrenDao: ChipChildrenDao,
-        private val webHandler: RepoChipRetriever,
+        private val webHandler: WebRepoHandler,
         private val type: Int) : AsyncTask<Long, Void, List<ChipCard>>() {
 
         override fun doInBackground(vararg params: Long?): List<ChipCard>? {
@@ -87,28 +89,15 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
         }
     }
 
-    class AsyncGetChipToDelete(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Long, Void, Chip>() {
+    class AsyncDeleteChip(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Long, Void, Void>() {
 
-        override fun doInBackground(vararg params: Long?): Chip? {
+        override fun doInBackground(vararg params: Long?): Void? {
 
-            return chipAndChildrenDao.getChip(params[0] ?: return null)
-        }
+            val chip = chipAndChildrenDao.getChip(params[0] ?: return null)
 
-        override fun onPostExecute(result: Chip?) {
+            chipAndChildrenDao.deleteChip(chip)
 
-            if(result == null)
-                return
-
-            AsyncDeleteChip(chipAndChildrenDao).execute(result)
-        }
-    }
-
-    class AsyncDeleteChip(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Chip, Void, Void>() {
-
-        override fun doInBackground(vararg params: Chip): Void? {
-            chipAndChildrenDao.deleteChip(params[0])
-            //Delete from internal storage
-            CameraUtil.deleteImageFile(params[0].imgLocation)
+            CameraUtil.deleteImageFile(chip.imgLocation)
 
             return null
         }
@@ -123,7 +112,7 @@ class ChipChildrenRepository(chipDb: ChipDatabase,
         }
     }
 
-    interface RepoChipRetriever {
+    interface WebRepoHandler {
 
         fun updateParent(parent: ChipIdentity)
 

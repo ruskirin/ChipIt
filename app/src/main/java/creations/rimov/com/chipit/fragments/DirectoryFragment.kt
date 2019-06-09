@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.fragments
 
 import android.content.Intent
+import android.media.Image
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -33,14 +34,9 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
-    private lateinit var dirRecyclerView: RecyclerView
     private lateinit var dirRecyclerAdapter: DirectoryRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
-
-    private lateinit var addChipPanelLayout: LinearLayout
-    private lateinit var addChipCameraButton: ImageButton       //TODO: create a custom button
-    private lateinit var addChipFilesButton: ImageButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +54,7 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.directory_content_layout, container, false)
 
-        dirRecyclerView = view.findViewById<RecyclerView>(R.id.directory_layout_recycler_main)
+        val dirRecyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.directory_layout_recycler_main)
             .apply {
                 adapter = dirRecyclerAdapter
                 layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
@@ -68,9 +64,9 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         gestureDetector = GestureDetector(activity, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        addChipPanelLayout = view.findViewById(R.id.directory_layout_addpanel)
-        addChipCameraButton = view.findViewById(R.id.directory_layout_addpanel_camera)
-        addChipFilesButton = view.findViewById(R.id.directory_layout_addpanel_files)
+        val addChipPanelLayout: LinearLayout = view.findViewById(R.id.directory_layout_addpanel)
+        val addChipCameraButton: ImageButton = view.findViewById(R.id.directory_layout_addpanel_camera)
+        val addChipFilesButton: ImageButton = view.findViewById(R.id.directory_layout_addpanel_files)
 
         addChipCameraButton.setOnClickListener(this)
         addChipFilesButton.setOnClickListener(this)
@@ -96,16 +92,9 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
                 return@Observer
 
             when {
-                prompt.selectChip -> {
-
-
-                    localViewModel.resetFlags()
-                }
                 prompt.toNextScreen -> {
                     val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(id)
                     findNavController().navigate(directions)
-
-                    localViewModel.resetFlags()
                 }
             }
         })

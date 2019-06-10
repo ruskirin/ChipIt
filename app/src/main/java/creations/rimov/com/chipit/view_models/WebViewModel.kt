@@ -53,21 +53,20 @@ class WebViewModel : ViewModel(), WebRepository.WebRepoHandler {
     fun getListLower(): MutableLiveData<List<ChipCard>> = listLower
 
     /**Insert child into horizontal chip row**/
-    fun saveChip(name: String?, imgLocation: String?) {
+    fun saveChip(name: String, imgLocation: String?) {
         val chip = Chip(0, getParentId(), false, name, imgLocation ?: "", null)
 
         repository.insertChip(chip)
     }
 
     fun deleteChip(chipId: Long) {
-        repository.deleteChip(chipId)
+        repository.deleteChipAndChildren(chipId)
     }
 
-    var chipTouchPos: Int = -1
     var chipTouchId: Long = -1L
     private var gesture: Int = -1
 
-    fun handleUpperChipsTouch(chipAdapterPos: Int, chipId: Long) {
+    fun handleUpperChipsTouch(chipId: Long) {
 
         when(gesture) {
             DirectoryActivity.Constants.GESTURE_UP -> {
@@ -78,7 +77,6 @@ class WebViewModel : ViewModel(), WebRepository.WebRepoHandler {
                     prompts.postValue(ViewModelPrompts(false, true))
 
                 this.chipTouchId = chipId
-                this.chipTouchPos = chipAdapterPos
             }
         }
     }

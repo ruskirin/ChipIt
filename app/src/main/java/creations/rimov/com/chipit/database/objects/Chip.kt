@@ -19,7 +19,7 @@ data class Chip(
 
     @ColumnInfo(name = "is_topic") val isTopic: Boolean,
 
-    var name: String?,
+    @ColumnInfo(name = "description") var name: String,
 
     @ColumnInfo(name = "image_location") var imgLocation: String,
 

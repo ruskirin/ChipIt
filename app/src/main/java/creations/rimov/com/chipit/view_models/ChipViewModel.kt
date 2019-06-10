@@ -95,14 +95,14 @@ class ChipViewModel : ViewModel(), ChipRepository.ChipRepoHandler {
         else 0
 
     fun updateChip(id: Long,
-                   name: String? = null,
+                   name: String = "",
                    imgLocation: String? = null,
                    vertices: List<CoordPoint>? = null) {
 
         repository.updateChip(id, name, imgLocation, vertices)
     }
 
-    fun saveChip(name: String?, imgLocation: String?, vertices: List<CoordPoint>?) {
+    fun saveChip(name: String, imgLocation: String?, vertices: List<CoordPoint>?) {
         val chip = Chip(0, parentId.value ?: -1L, false, name, imgLocation ?: "", vertices)
 
         Log.i("Chip Creation", "ChipViewModel#saveChip(): saving chip under parent $parentId")

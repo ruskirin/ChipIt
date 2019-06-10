@@ -18,14 +18,12 @@ import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
-import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.util.CameraUtil
-import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import java.io.IOException
 
-class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
+class WebFragment : Fragment(), View.OnClickListener, WebRecyclerAdapter.WebAdapterHandler {
 
     object ListType {
         const val UPPER = 100
@@ -130,10 +128,6 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
 
             when {
                 prompt.selectChip -> {
-                    val position = localViewModel.chipTouchPos
-
-                    if(position == -1)
-                        return@Observer
 
                     localViewModel.setListLower(id)
 
@@ -141,6 +135,7 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
                 }
 
                 prompt.toNextScreen -> {
+
 
                     val directions = WebFragmentDirections.actionWebFragmentToChipFragment(id)
                     findNavController().navigate(directions)
@@ -194,18 +189,15 @@ class WebFragment : Fragment(), View.OnClickListener, RecyclerTouchHandler {
         }
     }
 
-    override fun topicTouch(position: Int, chipId: Long, event: MotionEvent, listType: Int) {
+    override fun topicTouch(chipId: Long, event: MotionEvent, listType: Int) {
         gestureDetector.onTouchEvent(event)
-
-        if(position == -1)
-            return
 
         if(event.action == MotionEvent.ACTION_UP) {
 
             if(listType == ListType.LOWER)
                 localViewModel.handleLowerChipsTouch(chipId)
             else
-                localViewModel.handleUpperChipsTouch(position, chipId)
+                localViewModel.handleUpperChipsTouch(chipId)
         }
     }
 

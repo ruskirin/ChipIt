@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.fragments
 
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -20,12 +19,11 @@ import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
-import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import java.io.IOException
 
-class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener {
+class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler, View.OnClickListener {
 
     private lateinit var globalViewModel: GlobalViewModel
 
@@ -86,15 +84,21 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
         })
 
         localViewModel.prompts.observe(this, Observer { prompt ->
-
             val id = localViewModel.chipTouchId
+
             if(id == -1L)
                 return@Observer
 
             when {
                 prompt.toNextScreen -> {
+                    Log.i("Touch Event", "DirectoryFragment#promptObserver: to next screen!")
+
                     val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(id)
                     findNavController().navigate(directions)
+                }
+
+                prompt.selectChip -> {
+                    dirRecyclerAdapter.setEditVisibility(true)
                 }
             }
         })
@@ -140,16 +144,24 @@ class DirectoryFragment : Fragment(), RecyclerTouchHandler, View.OnClickListener
     }
 
     //Handle recyclerview's touched events
-    override fun topicTouch(position: Int, chipId: Long, event: MotionEvent, listType: Int) {
-        localViewModel.chipTouchPos = position
-        localViewModel.chipTouchId = chipId
+    override fun topicTouch(id: Long, event: MotionEvent) {
+        localViewModel.chipTouchId = id
 
         gestureDetector.onTouchEvent(event)
     }
 
-    override fun topicDelete(chipId: Long) {
+    override fun topicEditImage(id: Long, event: MotionEvent) {
 
     }
+
+    override fun topicEditDesc(id: Long, event: MotionEvent) {
+
+    }
+
+    override fun topicDelete(id: Long, event: MotionEvent) {
+
+    }
+
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
 

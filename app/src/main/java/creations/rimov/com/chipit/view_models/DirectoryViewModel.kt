@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.activities.DirectoryActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.repos.DirectoryRepository
 import creations.rimov.com.chipit.objects.ViewModelPrompts
 
@@ -13,15 +14,13 @@ class DirectoryViewModel : ViewModel() {
 
     private val topicRepo: DirectoryRepository = DirectoryRepository(DatabaseApplication.database!!)
 
-    private val topics: LiveData<List<Chip>> = topicRepo.getTopics()
+    private val topics: LiveData<List<ChipCard>> = topicRepo.getTopics()
 
     val prompts = MutableLiveData<ViewModelPrompts>()
 
 
     /** Repository functions **/
     fun getTopics() = topics
-
-    fun getTopic(position: Int) = topics.value?.get(position)
 
     fun insertTopic(topic: Chip) {
         topicRepo.insert(topic)
@@ -35,15 +34,18 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.update(id, "", imgLocation)
     }
 
-    var chipTouchPos: Int = -1
     var chipTouchId: Long = -1L
 
     fun handleChipGesture(gesture: Int) {
 
         when(gesture) {
-            DirectoryActivity.Constants.GESTURE_UP -> {
 
-                prompts.postValue(ViewModelPrompts(false, true))
+            DirectoryActivity.Constants.GESTURE_UP -> {
+                prompts.postValue(ViewModelPrompts(toNextScreen = true))
+            }
+
+            DirectoryActivity.Constants.GESTURE_LONG_TOUCH -> {
+                prompts.postValue(ViewModelPrompts(true))
             }
         }
     }

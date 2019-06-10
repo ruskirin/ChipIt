@@ -55,7 +55,7 @@ class ChipRepository(chipDb: ChipDatabase,
 
         override fun doInBackground(vararg params: Long?): Void? {
 
-            if(!name.isNullOrBlank()) chipDao.updateName(params[0]!!, name)
+            if(!name.isNullOrBlank()) chipDao.updateDescription(params[0]!!, name)
             if(!imgLocation.isNullOrBlank()) chipDao.updateImage(params[0]!!, imgLocation)
             if(!vertices.isNullOrEmpty()) chipDao.updateVertices(params[0]!!, vertices)
 

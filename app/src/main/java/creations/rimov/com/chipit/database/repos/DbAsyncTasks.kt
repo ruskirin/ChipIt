@@ -1,8 +1,10 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
+import android.util.Log
 import creations.rimov.com.chipit.database.daos.BaseChipDao
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.util.CameraUtil
 
 object DbAsyncTasks {
 
@@ -15,25 +17,28 @@ object DbAsyncTasks {
         }
     }
 
-    /** Retrieve all the children of the passed chip, going down the "family tree"
-     * @param delete: should the retrieved children be deleted?
-     * @param handler: if !delete, use this base interface to communicate results back to calling activity
-     */
-    class GetChildrenIdsFull(private val dao: BaseChipDao,
-                             private val delete: Boolean,
-                             private val handler: BaseAsyncTaskHandler<Long>? = null) : AsyncTask<Long, Void, List<Long>?>() {
+    /**Retrieve all the children of the passed chip, going down the "family tree"**/
+    class DeleteChipAndChildren(private val dao: BaseChipDao) : AsyncTask<Long, Void, List<Long>?>() {
 
         override fun doInBackground(vararg params: Long?): List<Long>? {
 
-            //Nothing passed OR marked as !delete but no handler was passed to communicate results back
-            if((params[0] == null) || (!delete && handler == null))
+            if(params[0] == null)
                 return null
 
+            var index = 0
             val childrenIds: MutableList<Long> = mutableListOf(params[0]!!)
 
-            childrenIds.forEach { id ->
-                childrenIds.addAll(dao.getChildrenIds(id))
+            while(index < childrenIds.size) {
+                val ids = dao.getChildrenIds(childrenIds[index])
+                ++index
+
+                if(ids.isNullOrEmpty())
+                    continue
+
+                childrenIds.addAll(ids)
             }
+
+            Log.i("Touch Event", "DeleteChipAndChildren#doInBackground(): total ${childrenIds.size} to delete")
 
             return childrenIds
         }
@@ -42,11 +47,6 @@ object DbAsyncTasks {
 
             if(result == null)
                 return
-
-            if(!delete) {
-                handler!!.setResult(result)
-                return
-            }
 
             DeleteChipsById(dao).execute(result)
         }
@@ -58,15 +58,11 @@ object DbAsyncTasks {
         override fun doInBackground(vararg params: List<Long>): Void? {
 
             params[0].forEach { id ->
+                CameraUtil.deleteImageFile(dao.getChipImage(id))
                 dao.deleteChip(id)
             }
 
             return null
         }
-    }
-
-    interface BaseAsyncTaskHandler<T> {
-
-        fun setResult(result: List<T>)
     }
 }

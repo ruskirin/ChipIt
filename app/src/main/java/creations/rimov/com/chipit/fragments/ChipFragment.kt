@@ -322,7 +322,7 @@ class ChipFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
                     //TODO (FUTURE): verify that the id exists (here or elsewhere)
                     if (imageFile.storagePath.isNotEmpty()) {
-                        localViewModel.saveChip(null, imageFile.storagePath, localTouchViewModel.getPathVertices())
+                        localViewModel.saveChip("", imageFile.storagePath, localTouchViewModel.getPathVertices())
                         //Toggle flag
                         localTouchViewModel.pathCreated.postValue(false)
 

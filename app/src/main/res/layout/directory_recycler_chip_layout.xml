@@ -1,19 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <ImageView
-            android:id="@+id/directory_recycler_topic_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"/>
+    <ScrollView
+            android:id="@+id/directory_recycler_layout_topic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-            android:id="@+id/directory_recycler_topic_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                    android:id="@+id/directory_recycler_topic_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"/>
+
+            <TextView
+                    android:id="@+id/directory_recycler_topic_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+            android:id="@+id/directory_recycler_layout_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:alpha="0.7"
+            android:background="@android:color/darker_gray"
+            android:visibility="gone">
+
+        <Button
+                android:id="@+id/directory_recycler_button_edit_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/directory_recycler_button_edit_image"/>
+
+        <Button
+                android:id="@+id/directory_recycler_button_edit_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/directory_recycler_button_edit_desc"/>
+
+        <Button
+                android:id="@+id/directory_recycler_button_edit_delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/directory_recycler_button_edit_delete"/>
+
+    </LinearLayout>
 
 </FrameLayout>

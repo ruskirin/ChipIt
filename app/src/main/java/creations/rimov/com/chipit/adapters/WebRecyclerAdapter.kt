@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,18 +12,18 @@ import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.fragments.WebFragment
-import creations.rimov.com.chipit.util.handlers.RecyclerTouchHandler
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
 class WebRecyclerAdapter(private val context: Context,
                          private val listType: Int,
-                         private val touchHandler: RecyclerTouchHandler)
+                         private val touchHandler: WebAdapterHandler
+)
     : RecyclerView.Adapter<WebRecyclerAdapter.ChipImageHolder>() {
 
     private lateinit var chips: List<ChipCard>
     //Keep track of previously selected view to undo any visual changes
-    private val prevChip: TempChip = TempChip()
+    private val prevChip: SelectedChip = SelectedChip()
 
     init {
         //Adapter does not return proper id from overriden #getItemId() otherwise
@@ -55,7 +54,7 @@ class WebRecyclerAdapter(private val context: Context,
                 return false
 
             if(listType == WebFragment.ListType.LOWER) {
-                touchHandler.topicTouch(adapterPosition, itemId, event, listType)
+                touchHandler.topicTouch(itemId, event, listType)
 
                 return true
             }
@@ -81,7 +80,7 @@ class WebRecyclerAdapter(private val context: Context,
                 }
             }
 
-            touchHandler.topicTouch(adapterPosition, itemId, event, listType)
+            touchHandler.topicTouch(itemId, event, listType)
 
             view?.performClick()
 
@@ -116,7 +115,7 @@ class WebRecyclerAdapter(private val context: Context,
     }
 
     /**Hold information about the previously modified ChipImageHolder to allow for any visual modifications**/
-    class TempChip(
+    class SelectedChip(
         private var chipId: Long = -1L,
         private var chipImage: ImageView? = null,
         private var chipButton: ImageButton? = null) {
@@ -138,5 +137,12 @@ class WebRecyclerAdapter(private val context: Context,
             chipImage?.alpha = 0.5f
             chipButton?.visibility = View.VISIBLE
         }
+    }
+
+    interface WebAdapterHandler {
+
+        fun topicTouch(id: Long, event: MotionEvent, listType: Int)
+
+        fun topicDelete(id: Long)
     }
 }

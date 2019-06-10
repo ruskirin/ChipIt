@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ChipIt</string>
+
+    <string name="directory_recycler_button_edit_image">Change Image</string>
+    <string name="directory_recycler_button_edit_desc">Edit Description</string>
+    <string name="directory_recycler_button_edit_delete">Delete</string>
+
 </resources>

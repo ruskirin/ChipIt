@@ -7,7 +7,6 @@ import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
-import creations.rimov.com.chipit.util.CameraUtil
 
 class WebRepository(chipDb: ChipDatabase,
                     private val webHandler: WebRepoHandler) {
@@ -38,12 +37,11 @@ class WebRepository(chipDb: ChipDatabase,
             return
         }
 
-        AsyncInsertChip(chipAndChildrenDao).execute(chip)
+        DbAsyncTasks.InsertChip(chipAndChildrenDao).execute(chip)
     }
 
-    fun deleteChip(chipId: Long) {
-
-        AsyncDeleteChip(chipAndChildrenDao).execute(chipId)
+    fun deleteChipAndChildren(chipId: Long) {
+        DbAsyncTasks.DeleteChipAndChildren(chipAndChildrenDao).execute(chipId)
     }
 
     /**
@@ -86,29 +84,6 @@ class WebRepository(chipDb: ChipDatabase,
 
             if(result != null)
                 webHandler.setChipList(result, type)
-        }
-    }
-
-    class AsyncDeleteChip(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Long, Void, Void>() {
-
-        override fun doInBackground(vararg params: Long?): Void? {
-
-            val chip = chipAndChildrenDao.getChip(params[0] ?: return null)
-
-            chipAndChildrenDao.deleteChip(chip)
-
-            CameraUtil.deleteImageFile(chip.imgLocation)
-
-            return null
-        }
-    }
-
-    class AsyncInsertChip(private val chipAndChildrenDao: ChipChildrenDao) : AsyncTask<Chip, Void, Void>() {
-
-        override fun doInBackground(vararg params: Chip): Void? {
-            chipAndChildrenDao.insertChip(params[0])
-
-            return null
         }
     }
 

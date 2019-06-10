@@ -9,12 +9,15 @@ interface BaseChipDao {
     @Query("SELECT * FROM chips WHERE id = :id")
     fun getChip(id: Long): Chip
 
+    @Query("SELECT image_location FROM chips WHERE id = :id")
+    fun getChipImage(id: Long): String
+
     @Transaction
     @Query("SELECT id FROM chips WHERE parent_id = :id")
     fun getChildrenIds(id: Long): List<Long>
 
-    @Query("UPDATE chips SET name = :name WHERE id = :id")
-    fun updateName(id: Long, name: String): Int
+    @Query("UPDATE chips SET description = :desc WHERE id = :id")
+    fun updateDescription(id: Long, desc: String): Int
 
     @Query("UPDATE chips SET image_location = :imgLocation WHERE id = :id")
     fun updateImage(id: Long, imgLocation: String): Int

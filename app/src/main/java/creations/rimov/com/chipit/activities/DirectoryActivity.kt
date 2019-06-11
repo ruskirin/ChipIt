@@ -21,6 +21,7 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
         const val GESTURE_DOWN = 400
         const val GESTURE_UP = 401
         const val GESTURE_LONG_TOUCH = 402
+        const val GESTURE_DOUBLE_TAP = 403
     }
 
     private val globalViewModel: GlobalViewModel by lazy {

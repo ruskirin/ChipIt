@@ -91,14 +91,23 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
             when {
                 prompt.toNextScreen -> {
-                    Log.i("Touch Event", "DirectoryFragment#promptObserver: to next screen!")
+                    //Edit screen out, cannot click on the view till it's closed
+                    if(dirRecyclerAdapter.isEditing())
+                        return@Observer
 
                     val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(id)
                     findNavController().navigate(directions)
                 }
 
+                //TODO NOW: still wonky with visibility toggling, run and see
                 prompt.selectChip -> {
-                    dirRecyclerAdapter.setEditVisibility(true)
+
+                    dirRecyclerAdapter.toggleDesc()
+                }
+
+                prompt.editChip -> {
+
+                    dirRecyclerAdapter.toggleEditing()
                 }
             }
         })
@@ -154,12 +163,12 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
     }
 
-    override fun topicEditDesc(id: Long, event: MotionEvent) {
+    override fun topicEditDesc(id: Long, text: String) {
 
     }
 
-    override fun topicDelete(id: Long, event: MotionEvent) {
-
+    override fun topicDelete(id: Long) {
+        localViewModel.deleteTopic(id)
     }
 
 
@@ -177,7 +186,14 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
             localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_UP)
 
-            return super.onSingleTapUp(event)
+            return true
+        }
+
+        override fun onDoubleTap(event: MotionEvent?): Boolean {
+
+            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_DOUBLE_TAP)
+
+            return true
         }
 
         override fun onLongPress(event: MotionEvent?) {

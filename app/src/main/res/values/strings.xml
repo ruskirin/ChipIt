@@ -5,4 +5,7 @@
     <string name="directory_recycler_button_edit_desc">Edit Description</string>
     <string name="directory_recycler_button_edit_delete">Delete</string>
 
+    <string name="directory_recycler_topic_desc_default">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</string>
+
 </resources>

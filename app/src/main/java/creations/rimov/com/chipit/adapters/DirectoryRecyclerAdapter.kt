@@ -1,9 +1,9 @@
 package creations.rimov.com.chipit.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
@@ -13,13 +13,12 @@ import creations.rimov.com.chipit.database.objects.ChipCard
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering
  */
 class DirectoryRecyclerAdapter(private val context: Context,
-                               private val touchHandler: DirectoryAdapterHandler
-)
+                               private val touchHandler: DirectoryAdapterHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
     private lateinit var topics: List<ChipCard>
-    //Reference to the edit layout to allow triggering of visibility depending on event action
-    private val selectedTopic = SelectedTopic()
+    //Reference to selected ViewHolder
+    private lateinit var selectedTopic: DirectoryViewHolder
 
     init {
         //Adapter does not return proper id from overriden #getItemId() otherwise
@@ -32,14 +31,14 @@ class DirectoryRecyclerAdapter(private val context: Context,
         notifyDataSetChanged()
     }
 
-    fun isEditVisible() = selectedTopic.isEditVisible()
+    fun isEditing() = selectedTopic.isEditing()
 
-    fun setEditVisibility(visible: Boolean) {
+    fun toggleEditing() {
+        selectedTopic.toggleEditing()
+    }
 
-        if(visible)
-            selectedTopic.setSelected()
-        else
-            selectedTopic.setUnselected()
+    fun toggleDesc() {
+        selectedTopic.toggleDesc()
     }
 
     /**
@@ -48,17 +47,23 @@ class DirectoryRecyclerAdapter(private val context: Context,
      */
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
-        val layout: ScrollView = itemView.findViewById(R.id.directory_recycler_layout_topic)
         val image: ImageView = itemView.findViewById(R.id.directory_recycler_topic_image)
-        val description: TextView = itemView.findViewById(R.id.directory_recycler_topic_description)
+        val description: TextView = itemView.findViewById(R.id.directory_recycler_topic_desc)
 
-        private val editLayout: LinearLayout = itemView.findViewById(R.id.directory_recycler_layout_edit)
-        private val editButtonImage: Button = itemView.findViewById(R.id.directory_recycler_button_edit_image)
-        private val editButtonDesc: Button = itemView.findViewById(R.id.directory_recycler_button_edit_description)
-        private val editButtonDelete: Button = itemView.findViewById(R.id.directory_recycler_button_edit_delete)
+        private val editLayout: FrameLayout = itemView.findViewById(R.id.directory_recycler_edit_layout)
+
+        val editDesc: EditText = itemView.findViewById(R.id.directory_recycler_edit_desc)
+        val editDescButton: ImageButton = itemView.findViewById(R.id.directory_recycler_edit_button_desc_next)
+
+        private val editButtonLayout: LinearLayout = itemView.findViewById(R.id.directory_recycler_edit_button_layout)
+        private val editButtonImage: Button = itemView.findViewById(R.id.directory_recycler_edit_button_image)
+        private val editButtonDesc: Button = itemView.findViewById(R.id.directory_recycler_edit_button_desc)
+        private val editButtonDelete: Button = itemView.findViewById(R.id.directory_recycler_edit_button_delete)
 
         init {
-            layout.setOnTouchListener(this)
+            image.setOnTouchListener(this)
+
+            editDescButton.setOnTouchListener(this)
 
             editButtonImage.setOnTouchListener(this)
             editButtonDesc.setOnTouchListener(this)
@@ -70,37 +75,88 @@ class DirectoryRecyclerAdapter(private val context: Context,
             if(event == null)
                 return false
 
+            val id = itemId
+
             when(view?.id) {
-                R.id.directory_recycler_layout_topic -> {
-                    Log.i("Touch Event", "DirectoryRecyclerAdapter#onTouch(): touched topic layout!")
+                R.id.directory_recycler_topic_image -> {
 
-                    if(selectedTopic.isEditVisible() && (event.action == MotionEvent.ACTION_DOWN)) {
-                        selectedTopic.setUnselected()
+                    if(!::selectedTopic.isInitialized)
+                        selectedTopic = this
 
-                        if(itemId == selectedTopic.getId())
-                            return true
+                    if(id != selectedTopic.itemId) {
+                        selectedTopic.toggleEditing()
+                        selectedTopic = this
                     }
 
-                    selectedTopic.assignValues(itemId, editLayout)
-
-                    touchHandler.topicTouch(itemId, event)
+                    touchHandler.topicTouch(id, event)
                 }
 
-                R.id.directory_recycler_button_edit_image -> {
-                    touchHandler.topicEditImage(itemId, event)
+                R.id.directory_recycler_edit_button_image -> {
+                    touchHandler.topicEditImage(id, event)
                 }
 
-                R.id.directory_recycler_button_edit_description -> {
-                    touchHandler.topicEditDesc(itemId, event)
+                R.id.directory_recycler_edit_button_desc -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        toggleEditDesc()
                 }
 
-                R.id.directory_recycler_button_edit_delete -> {
-                    touchHandler.topicDelete(itemId, event)
+                R.id.directory_recycler_edit_button_delete -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        touchHandler.topicDelete(id)
+                }
+
+                R.id.directory_recycler_edit_button_desc_next -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        toggleEditDesc()
                 }
             }
 
             view?.performClick()
             return true
+        }
+
+        fun toggleDesc() {
+
+            selectedTopic.description.visibility =
+                if(selectedTopic.description.isVisible)
+                    View.GONE
+                else
+                    View.VISIBLE
+        }
+
+        fun isEditing() = editLayout.isVisible
+        //Toggle visibility of editLayout
+        fun toggleEditing() {
+
+            if(this.isEditing()) {
+                if(this.isEditingDesc()) {
+                    //TODO: save text
+                    toggleEditDesc()
+                }
+
+                editLayout.visibility = View.GONE
+
+            } else
+                editLayout.visibility = View.VISIBLE
+        }
+
+        fun isEditingDesc() = editDesc.isVisible
+        //Toggle visibility of description EditText
+        fun toggleEditDesc() {
+
+            if(isEditingDesc()) {
+                editDesc.visibility = View.GONE
+                editDescButton.visibility = View.GONE
+                editButtonLayout.visibility = View.VISIBLE
+
+            } else {
+                editDesc.visibility = View.VISIBLE
+                editDescButton.visibility = View.VISIBLE
+                editButtonLayout.visibility = View.GONE
+            }
         }
     }
 
@@ -125,31 +181,11 @@ class DirectoryRecyclerAdapter(private val context: Context,
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
 
         holder.description.text = topics[position].description
+        holder.editDesc.text = holder.description.editableText
+
         Glide.with(context)
             .load(topics[position].imgLocation)
             .into(holder.image)
-    }
-
-    class SelectedTopic(
-        private var id: Long = -1L,
-        private var editLayout: LinearLayout? = null) {
-
-        fun getId() = id
-
-        fun assignValues(id: Long, editLayout: LinearLayout) {
-            this.id = id
-            this.editLayout = editLayout
-        }
-
-        fun setSelected() {
-            editLayout?.visibility = View.VISIBLE
-        }
-
-        fun setUnselected() {
-            editLayout?.visibility = View.GONE
-        }
-
-        fun isEditVisible() = editLayout?.visibility == View.VISIBLE
     }
 
     interface DirectoryAdapterHandler {
@@ -158,8 +194,8 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
         fun topicEditImage(id: Long, event: MotionEvent)
 
-        fun topicEditDesc(id: Long, event: MotionEvent)
+        fun topicEditDesc(id: Long, text: String)
 
-        fun topicDelete(id: Long, event: MotionEvent)
+        fun topicDelete(id: Long)
     }
 }

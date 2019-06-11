@@ -19,7 +19,7 @@
             android:layout_marginStart="@dimen/web_recycler_button_delete_margin"
             android:layout_marginBottom="@dimen/web_recycler_button_delete_margin"
             android:scaleType="fitXY"
-            android:background="@drawable/button_round"
+            android:background="@drawable/fab_button_round"
             android:src="@mipmap/ic_delete_web"
             android:visibility="gone"/>
 

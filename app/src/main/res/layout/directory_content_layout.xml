@@ -29,7 +29,7 @@
                 android:layout_marginTop="@dimen/directory_layout_addpanel_button_marginvert"
                 android:layout_marginBottom="@dimen/directory_layout_addpanel_button_marginvert"
                 android:scaleType="fitXY"
-                android:background="@drawable/button_round"
+                android:background="@drawable/fab_button_round"
                 android:src="@mipmap/ic_add_camera"/>
 
         <ImageButton
@@ -41,7 +41,7 @@
                 android:layout_marginTop="@dimen/directory_layout_addpanel_button_marginvert"
                 android:layout_marginBottom="@dimen/directory_layout_addpanel_button_marginvert"
                 android:scaleType="fitXY"
-                android:background="@drawable/button_round"
+                android:background="@drawable/fab_button_round"
                 android:src="@mipmap/ic_add_files"/>
 
     </LinearLayout>

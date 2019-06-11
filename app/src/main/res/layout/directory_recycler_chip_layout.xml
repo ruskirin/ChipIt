@@ -2,68 +2,79 @@
 
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <ScrollView
-            android:id="@+id/directory_recycler_layout_topic"
+    <ImageView
+            android:id="@+id/directory_recycler_topic_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"/>
 
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables">
+    <TextView
+            android:id="@+id/directory_recycler_topic_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/directory_recycler_topic_desc_default"
+            android:textStyle="italic"
+            android:textSize="12sp"
+            android:visibility="gone"/>
 
-            <ImageView
-                    android:id="@+id/directory_recycler_topic_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"/>
-
-            <TextView
-                    android:id="@+id/directory_recycler_topic_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <LinearLayout
-            android:id="@+id/directory_recycler_layout_edit"
+    <FrameLayout
+            android:id="@+id/directory_recycler_edit_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
             android:alpha="0.7"
             android:background="@android:color/darker_gray"
             android:visibility="gone">
 
-        <Button
-                android:id="@+id/directory_recycler_button_edit_image"
+        <LinearLayout
+                android:id="@+id/directory_recycler_edit_button_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+            <Button
+                    android:id="@+id/directory_recycler_edit_button_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/directory_recycler_button_edit_image"/>
+
+            <Button
+                    android:id="@+id/directory_recycler_edit_button_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/directory_recycler_button_edit_desc"/>
+
+            <Button
+                    android:id="@+id/directory_recycler_edit_button_delete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/directory_recycler_button_edit_delete"/>
+
+        </LinearLayout>
+
+        <EditText
+                android:id="@+id/directory_recycler_edit_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/directory_recycler_button_edit_image"/>
+                android:textStyle="italic"
+                android:textSize="12sp"
+                android:inputType="textMultiLine"
+                android:visibility="gone"/>
 
-        <Button
-                android:id="@+id/directory_recycler_button_edit_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/directory_recycler_button_edit_desc"/>
+        <ImageButton
+                android:id="@+id/directory_recycler_edit_button_desc_next"
+                android:layout_width="@dimen/directory_recycler_button_edit_desc_next_side"
+                android:layout_height="@dimen/directory_recycler_button_edit_desc_next_side"
+                android:layout_gravity="bottom|end"
+                android:visibility="gone"/>
 
-        <Button
-                android:id="@+id/directory_recycler_button_edit_delete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/directory_recycler_button_edit_delete"/>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

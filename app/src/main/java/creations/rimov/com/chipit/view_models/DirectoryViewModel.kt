@@ -34,6 +34,10 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.update(id, "", imgLocation)
     }
 
+    fun deleteTopic(id: Long) {
+        topicRepo.deleteTopicAndChildren(id)
+    }
+
     var chipTouchId: Long = -1L
 
     fun handleChipGesture(gesture: Int) {
@@ -41,6 +45,10 @@ class DirectoryViewModel : ViewModel() {
         when(gesture) {
 
             DirectoryActivity.Constants.GESTURE_UP -> {
+                prompts.postValue(ViewModelPrompts(selectChip = true))
+            }
+
+            DirectoryActivity.Constants.GESTURE_DOUBLE_TAP -> {
                 prompts.postValue(ViewModelPrompts(toNextScreen = true))
             }
 

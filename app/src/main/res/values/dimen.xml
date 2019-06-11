@@ -17,6 +17,8 @@
     <dimen name="web_layout_l_chips_marginside">4dp</dimen>
     <dimen name="directory_layout_button_branchup_width">60dp</dimen>
 
+    <dimen name="directory_recycler_button_edit_desc_next_side">32dp</dimen>
+
     <dimen name="web_recycler_button_delete_margin">8dp</dimen>
     <dimen name="web_recycler_button_delete_side">32dp</dimen>
 </resources>

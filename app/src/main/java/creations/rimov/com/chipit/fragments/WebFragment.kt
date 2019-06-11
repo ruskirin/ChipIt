@@ -127,7 +127,7 @@ class WebFragment : Fragment(), View.OnClickListener, WebRecyclerAdapter.WebAdap
                 return@Observer
 
             when {
-                prompt.selectChip -> {
+                prompt.editChip -> {
 
                     localViewModel.setListLower(id)
 

@@ -3,7 +3,7 @@ package creations.rimov.com.chipit.view_models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.activities.DirectoryActivity
+import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
@@ -44,15 +44,11 @@ class DirectoryViewModel : ViewModel() {
 
         when(gesture) {
 
-            DirectoryActivity.Constants.GESTURE_UP -> {
-                prompts.postValue(ViewModelPrompts(selectChip = true))
-            }
-
-            DirectoryActivity.Constants.GESTURE_DOUBLE_TAP -> {
+            MainActivity.Constants.GESTURE_UP -> {
                 prompts.postValue(ViewModelPrompts(toNextScreen = true))
             }
 
-            DirectoryActivity.Constants.GESTURE_LONG_TOUCH -> {
+            MainActivity.Constants.GESTURE_LONG_TOUCH -> {
                 prompts.postValue(ViewModelPrompts(true))
             }
         }

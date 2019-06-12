@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     <LinearLayout
-            android:id="@+id/directory_recycler_topic_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
         <ImageView
-                android:id="@+id/directory_recycler_topic_image"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"/>
+                android:id="@+id/album_recycler_chip_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         <TextView
-                android:id="@+id/directory_recycler_topic_desc"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textStyle="italic"
-                android:textSize="14sp"/>
+                android:id="@+id/album_recycler_chip_topic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"/>
 
     </LinearLayout>
+
+    <ImageButton
+            android:id="@+id/album_recycler_chip_button_expand"
+            android:layout_width="@dimen/album_recycler_button_expand_side"
+            android:layout_height="@dimen/album_recycler_button_expand_side"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="@dimen/album_recycler_button_expand_margin"
+            android:layout_marginTop="@dimen/album_recycler_button_expand_margin"
+            android:scaleType="fitXY"
+            android:background="@drawable/fab_button_round"
+            android:src="@drawable/ic_expand"/>
 
     <LinearLayout
             android:id="@+id/album_recycler_edit_button_layout"
@@ -50,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/recycler_button_edit_desc"/>
+                android:text="@string/recycler_butotn_edit_topic"/>
 
         <Button
                 android:id="@+id/album_recycler_edit_button_delete"

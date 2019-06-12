@@ -8,37 +8,26 @@
             android:id="@+id/directoryFragment"
             android:name="creations.rimov.com.chipit.fragments.DirectoryFragment"
             android:label="DirectoryFragment">
-        <action
-                android:id="@+id/action_directoryFragment_to_webFragment"
-                app:destination="@id/webFragment"
-        />
+        <action android:id="@+id/action_directoryFragment_to_albumFragment" app:destination="@id/albumFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/albumFragment"
+            android:name="creations.rimov.com.chipit.fragments.AlbumFragment"
+            android:label="AlbumFragment">
+        <action android:id="@+id/action_albumFragment_to_webFragment" app:destination="@id/webFragment"/>
+        <action android:id="@+id/action_albumFragment_to_directoryFragment" app:destination="@id/directoryFragment"
+                app:popUpToInclusive="true"/>
+        <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
 
     <fragment
             android:id="@+id/webFragment"
             android:name="creations.rimov.com.chipit.fragments.WebFragment"
             android:label="WebFragment">
-        <action
-                android:id="@+id/action_webFragment_to_chipFragment"
-                app:destination="@id/chipFragment"
-        />
-        <argument
-                android:name="parentId"
-                app:argType="long"
-                android:defaultValue="-1L"/>
-        <action android:id="@+id/action_webFragment_to_directoryFragment" app:destination="@id/directoryFragment"
-                app:launchSingleTop="true"/>
-    </fragment>
-
-    <fragment
-            android:id="@+id/chipFragment"
-            android:name="creations.rimov.com.chipit.fragments.ChipFragment"
-            android:label="ChipFragment">
-        <argument
-                android:name="parentId"
-                app:argType="long"/>
-        <action android:id="@+id/action_chipFragment_to_webFragment" app:destination="@id/webFragment"
-                app:launchSingleTop="true"/>
+        <action android:id="@+id/action_webFragment_to_albumFragment" app:destination="@id/albumFragment"
+                app:popUpToInclusive="true"/>
+        <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
 
 </navigation>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    
+    <fragment
+            android:id="@+id/directory_nav_host"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:navGraph="@navigation/nav_graph"
+            app:defaultNavHost="true"/>
+
+    <ImageButton
+            android:id="@+id/directory_layout_button_branchup"
+            android:layout_width="@dimen/directory_layout_button_branchup_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:background="@android:color/darker_gray"
+            android:src="@drawable/ic_web_up"
+            android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/directory_layout_fab_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/directory_addpanel_margin_bot"
+            android:layout_marginEnd="@dimen/directory_addpanel_margin_end"
+            app:fabSize="normal"
+            app:elevation="@dimen/fab_elevation_def"
+            android:src="@drawable/ic_add_fab_image"/>
+
+</FrameLayout>

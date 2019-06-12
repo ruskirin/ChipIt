@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.objects.CoordPoint
 
-class ChipTouchViewModel : ViewModel() {
+class WebTouchViewModel : ViewModel() {
 
     private object Constant {
         //Radius around path starting point which will autosnap an endpoint and complete the chip

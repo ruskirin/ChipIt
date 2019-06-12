@@ -32,7 +32,7 @@
 
         </provider>
 
-        <activity android:name="creations.rimov.com.chipit.activities.DirectoryActivity">
+        <activity android:name="creations.rimov.com.chipit.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

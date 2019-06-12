@@ -1,112 +1,118 @@
 package creations.rimov.com.chipit.view_models
 
+import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.activities.DirectoryActivity
+import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.WebRepository
-import creations.rimov.com.chipit.fragments.WebFragment
-import creations.rimov.com.chipit.objects.ViewModelPrompts
+import creations.rimov.com.chipit.objects.CoordPoint
+import creations.rimov.com.chipit.util.TextureUtil
+import java.lang.Exception
 
-class WebViewModel : ViewModel(), WebRepository.WebRepoHandler {
+class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
 
     private val repository = WebRepository(DatabaseApplication.database!!, this)
 
-    private val parentUpper = MutableLiveData<ChipIdentity>()
+    private val parentId: MutableLiveData<Long> = MutableLiveData()
+    //The chip currently viewed in the background and being worked on
+    private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
+        repository.getChipIdentity(it)
+    }
+    //Children of the main chip
+    private val children: LiveData<List<ChipPath>> = Transformations.switchMap(parentId) {
+        repository.getChildrenPaths(it)
+    }
 
-    private val listLower = MutableLiveData<List<ChipCard>>()
+    private lateinit var bitmap: Bitmap
+    //Saved image path for present bitmap
+    private var imgLocation: String = ""
 
-    val prompts = MutableLiveData<ViewModelPrompts>()
+    //Flag to redraw background bitmap
+    var backgroundChanged = false
+    //Is the parent of the current parent a topic? Used to toggle branch up navigation
+    var canNavigateUp = false
 
 
-    fun setParent(parentId: Long) {
+    fun setParentId(parentId: Long) {
 
-        if(parentId == -1L) {
-            Log.e("WebViewModel", "#setParentIdentity(): passed parentId == -1L")
-            return
+        if(parentId != this.parentId.value) {
+            this.parentId.postValue(parentId)
+        }
+    }
+
+    fun getParentId() = parentId.value
+
+    fun getParentIdOfParent() = parent.value?.parentId ?: -1L
+
+    fun getParent(): LiveData<ChipIdentity>? = parent
+
+    fun getChildren(): LiveData<List<ChipPath>>? = children
+
+    fun checkUpNavigation() {
+        repository.isChipTopic(parent.value?.parentId ?: -1L)
+    }
+
+    /**Check if point landed inside one of the children**/
+    fun getTouchedChip(point: CoordPoint): ChipPath? {
+
+        children.value?.forEach { chip ->
+            if(chip.isInside(point)) {
+                return chip
+            }
         }
 
-        repository.setParentIdentity(parentId, false)
+        return null
     }
 
-    fun getParent() = parentUpper
+    fun setBitmap(imgLocation: String) {
+        this.imgLocation = imgLocation
 
-    fun getParentId() = parentUpper.value?.id ?: -1L
+        try {
+            bitmap = TextureUtil.convertPathToBitmap(imgLocation)!!
 
-    fun getParentIdOfParent() = parentUpper.value?.parentId ?: -1L
+        } catch(e: Exception) {
+            Log.e("WebViewModel", "#setBitmap(): could not create bitmap from passed image path!")
+            e.printStackTrace()
 
-    fun setListLower(parentId: Long) {
-        repository.getChipChildrenCards(parentId, WebFragment.ListType.LOWER)
+        } finally {
+            backgroundChanged = true
+        }
     }
 
-    //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
-    fun getListUpper(): LiveData<List<ChipCard>> = Transformations.switchMap(parentUpper) {
-        repository.getChipChildrenCardsLive(it.id)
+    fun getBitmap() =
+        if(::bitmap.isInitialized) bitmap
+        else null
+
+    fun getBitmapWidth() =
+        if(::bitmap.isInitialized) bitmap.width
+        else 0
+
+    fun getBitmapHeight() =
+        if(::bitmap.isInitialized) bitmap.height
+        else 0
+
+    fun updateChip(id: Long,
+                   name: String = "",
+                   imgLocation: String? = null,
+                   vertices: List<CoordPoint>? = null) {
+
+        repository.updateChip(id, name, imgLocation, vertices)
     }
 
-    fun getListLower(): MutableLiveData<List<ChipCard>> = listLower
+    fun saveChip(name: String, imgLocation: String?, vertices: List<CoordPoint>?) {
+        val chip = Chip(0, parentId.value ?: -1L, false, name, imgLocation ?: "", vertices)
 
-    /**Insert child into horizontal chip row**/
-    fun saveChip(name: String, imgLocation: String?) {
-        val chip = Chip(0, getParentId(), false, name, imgLocation ?: "", null)
+        Log.i("Chip Creation", "WebViewModel#saveChip(): saving chip under parent $parentId")
 
         repository.insertChip(chip)
     }
 
-    fun deleteChip(chipId: Long) {
-        repository.deleteChipAndChildren(chipId)
-    }
+    override fun isParentTopic(isTopic: Boolean) {
 
-    var chipTouchId: Long = -1L
-    private var gesture: Int = -1
 
-    fun handleUpperChipsTouch(chipId: Long) {
-
-        when(gesture) {
-            DirectoryActivity.Constants.GESTURE_UP -> {
-
-                if(chipTouchId != chipId)
-                    prompts.postValue(ViewModelPrompts(true))
-                else
-                    prompts.postValue(ViewModelPrompts(false, true))
-
-                this.chipTouchId = chipId
-            }
-        }
-    }
-
-    fun handleLowerChipsTouch(chipId: Long) {
-
-        repository.setParentIdentity(chipId, true)
-    }
-
-    /**Get the parent of parentUpper and set it as the current parent (sorry for the description); navigate up the "branch" of chips**/
-    fun navigateUpBranch() {
-
-        repository.setParentIdentity(getParentIdOfParent(), false)
-    }
-
-    fun setChipTouchGesture(gesture: Int) {
-        this.gesture = gesture
-    }
-
-    fun resetFlags() {
-        prompts.postValue(ViewModelPrompts())
-    }
-
-    override fun updateParent(parent: ChipIdentity) {
-        parentUpper.postValue(parent)
-    }
-
-    override fun setChipList(chips: List<ChipCard>, type: Int) {
-
-        if(type == WebFragment.ListType.LOWER)
-            listLower.postValue(chips)
+        this.canNavigateUp = !isTopic
     }
 }

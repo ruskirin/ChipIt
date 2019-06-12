@@ -37,33 +37,23 @@ class DirectoryRecyclerAdapter(private val context: Context,
         selectedTopic.toggleEditing()
     }
 
-    fun toggleDesc() {
-        selectedTopic.toggleDesc()
-    }
-
     /**
      * VIEW HOLDER
      * @param: touchHandler = interface for communicating touched events' information to activity
      */
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
+        val layout: LinearLayout = itemView.findViewById(R.id.directory_recycler_topic_layout)
         val image: ImageView = itemView.findViewById(R.id.directory_recycler_topic_image)
         val description: TextView = itemView.findViewById(R.id.directory_recycler_topic_desc)
 
-        private val editLayout: FrameLayout = itemView.findViewById(R.id.directory_recycler_edit_layout)
-
-        val editDesc: EditText = itemView.findViewById(R.id.directory_recycler_edit_desc)
-        val editDescButton: ImageButton = itemView.findViewById(R.id.directory_recycler_edit_button_desc_next)
-
-        private val editButtonLayout: LinearLayout = itemView.findViewById(R.id.directory_recycler_edit_button_layout)
-        private val editButtonImage: Button = itemView.findViewById(R.id.directory_recycler_edit_button_image)
-        private val editButtonDesc: Button = itemView.findViewById(R.id.directory_recycler_edit_button_desc)
-        private val editButtonDelete: Button = itemView.findViewById(R.id.directory_recycler_edit_button_delete)
+        private val editLayout: LinearLayout = itemView.findViewById(R.id.album_recycler_edit_button_layout)
+        private val editButtonImage: Button = itemView.findViewById(R.id.album_recycler_edit_button_image)
+        private val editButtonDesc: Button = itemView.findViewById(R.id.album_recycler_edit_button_topic)
+        private val editButtonDelete: Button = itemView.findViewById(R.id.album_recycler_edit_button_delete)
 
         init {
-            image.setOnTouchListener(this)
-
-            editDescButton.setOnTouchListener(this)
+            layout.setOnTouchListener(this)
 
             editButtonImage.setOnTouchListener(this)
             editButtonDesc.setOnTouchListener(this)
@@ -78,39 +68,35 @@ class DirectoryRecyclerAdapter(private val context: Context,
             val id = itemId
 
             when(view?.id) {
-                R.id.directory_recycler_topic_image -> {
+                R.id.directory_recycler_topic_layout -> {
 
                     if(!::selectedTopic.isInitialized)
                         selectedTopic = this
 
                     if(id != selectedTopic.itemId) {
-                        selectedTopic.toggleEditing()
+
+                        if(selectedTopic.isEditing())
+                            selectedTopic.toggleEditing()
+
                         selectedTopic = this
                     }
 
                     touchHandler.topicTouch(id, event)
                 }
 
-                R.id.directory_recycler_edit_button_image -> {
+                R.id.album_recycler_edit_button_image -> {
                     touchHandler.topicEditImage(id, event)
                 }
 
-                R.id.directory_recycler_edit_button_desc -> {
+                R.id.album_recycler_edit_button_topic -> {
 
-                    if(event.action == MotionEvent.ACTION_UP)
-                        toggleEditDesc()
+
                 }
 
-                R.id.directory_recycler_edit_button_delete -> {
+                R.id.album_recycler_edit_button_delete -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
                         touchHandler.topicDelete(id)
-                }
-
-                R.id.directory_recycler_edit_button_desc_next -> {
-
-                    if(event.action == MotionEvent.ACTION_UP)
-                        toggleEditDesc()
                 }
             }
 
@@ -118,45 +104,15 @@ class DirectoryRecyclerAdapter(private val context: Context,
             return true
         }
 
-        fun toggleDesc() {
-
-            selectedTopic.description.visibility =
-                if(selectedTopic.description.isVisible)
-                    View.GONE
-                else
-                    View.VISIBLE
-        }
-
         fun isEditing() = editLayout.isVisible
         //Toggle visibility of editLayout
         fun toggleEditing() {
 
             if(this.isEditing()) {
-                if(this.isEditingDesc()) {
-                    //TODO: save text
-                    toggleEditDesc()
-                }
-
                 editLayout.visibility = View.GONE
 
             } else
                 editLayout.visibility = View.VISIBLE
-        }
-
-        fun isEditingDesc() = editDesc.isVisible
-        //Toggle visibility of description EditText
-        fun toggleEditDesc() {
-
-            if(isEditingDesc()) {
-                editDesc.visibility = View.GONE
-                editDescButton.visibility = View.GONE
-                editButtonLayout.visibility = View.VISIBLE
-
-            } else {
-                editDesc.visibility = View.VISIBLE
-                editDescButton.visibility = View.VISIBLE
-                editButtonLayout.visibility = View.GONE
-            }
         }
     }
 
@@ -181,8 +137,6 @@ class DirectoryRecyclerAdapter(private val context: Context,
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
 
         holder.description.text = topics[position].description
-        holder.editDesc.text = holder.description.editableText
-
         Glide.with(context)
             .load(topics[position].imgLocation)
             .into(holder.image)

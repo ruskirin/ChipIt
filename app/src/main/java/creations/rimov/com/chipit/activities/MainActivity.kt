@@ -15,13 +15,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 
-class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     object Constants {
         const val GESTURE_DOWN = 400
         const val GESTURE_UP = 401
         const val GESTURE_LONG_TOUCH = 402
-        const val GESTURE_DOUBLE_TAP = 403
     }
 
     private val globalViewModel: GlobalViewModel by lazy {
@@ -46,7 +45,7 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.directory_layout)
+        setContentView(R.layout.app_layout)
 
         navController.addOnDestinationChangedListener(this)
 
@@ -101,7 +100,7 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
 
                 globalViewModel.displayFab(true)
             }
-            R.id.webFragment -> {
+            R.id.albumFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
                 actionFab.setImageDrawable(
@@ -109,7 +108,7 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
 
                 globalViewModel.displayFab(true)
             }
-            R.id.chipFragment -> {
+            R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Chip")
 
                 actionFab.setImageDrawable(
@@ -125,16 +124,16 @@ class DirectoryActivity : AppCompatActivity(), NavController.OnDestinationChange
 
         when(navController.currentDestination?.id) {
 
+            R.id.albumFragment -> {
+                globalViewModel.displayFab(true)
+
+                navController.navigate(R.id.action_albumFragment_to_directoryFragment)
+
+            }
             R.id.webFragment -> {
                 globalViewModel.displayFab(true)
 
-                navController.navigate(R.id.action_webFragment_to_directoryFragment)
-
-            }
-            R.id.chipFragment -> {
-                globalViewModel.displayFab(true)
-
-                navController.navigate(R.id.action_chipFragment_to_webFragment)
+                navController.navigate(R.id.action_webFragment_to_albumFragment)
 
             }
         }

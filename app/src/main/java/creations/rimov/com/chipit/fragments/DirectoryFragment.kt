@@ -12,10 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.DirectoryActivity
+import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
@@ -50,12 +50,12 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.directory_content_layout, container, false)
+        val view = inflater.inflate(R.layout.directory_layout, container, false)
 
         val dirRecyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.directory_layout_recycler_main)
             .apply {
                 adapter = dirRecyclerAdapter
-                layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+                layoutManager = LinearLayoutManager(activity)
                 setHasFixedSize(true)
         }
 
@@ -95,14 +95,8 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
                     if(dirRecyclerAdapter.isEditing())
                         return@Observer
 
-                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(id)
+                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(id)
                     findNavController().navigate(directions)
-                }
-
-                //TODO NOW: still wonky with visibility toggling, run and see
-                prompt.selectChip -> {
-
-                    dirRecyclerAdapter.toggleDesc()
                 }
 
                 prompt.editChip -> {
@@ -142,7 +136,9 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
                     startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
                     //TODO: Change passed in values to variables
-                    localViewModel.insertTopic(Chip(0L, 0L, true, "TOPIC", imageFile.storagePath))
+                    localViewModel.insertTopic(
+                        Chip(0L, 0L, true,
+                            resources.getString(R.string.directory_recycler_topic_desc_default), imageFile.storagePath))
                 }
             }
 
@@ -184,14 +180,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "onSingleTapUp()!")
 
-            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_UP)
-
-            return true
-        }
-
-        override fun onDoubleTap(event: MotionEvent?): Boolean {
-
-            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_DOUBLE_TAP)
+            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_UP)
 
             return true
         }
@@ -199,7 +188,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         override fun onLongPress(event: MotionEvent?) {
             Log.i("Touch Event", "onLongPress()!")
 
-            localViewModel.handleChipGesture(DirectoryActivity.Constants.GESTURE_LONG_TOUCH)
+            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_LONG_TOUCH)
         }
     }
 }

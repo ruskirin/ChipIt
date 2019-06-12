@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/directory_layout_recycler_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/album_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/web_layout_u_chips_margintop"
+                android:clipToPadding="false"/>
 
     <LinearLayout
-            android:id="@+id/directory_layout_addpanel"
+            android:id="@+id/album_button_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -21,7 +24,7 @@
             android:visibility="gone">
 
         <ImageButton
-                android:id="@+id/directory_layout_addpanel_camera"
+                android:id="@+id/album_button_camera"
                 android:layout_width="@dimen/directory_addpanel_button_side"
                 android:layout_height="@dimen/directory_addpanel_button_side"
                 android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"
@@ -33,7 +36,7 @@
                 android:src="@mipmap/ic_add_camera"/>
 
         <ImageButton
-                android:id="@+id/directory_layout_addpanel_files"
+                android:id="@+id/album_button_photos"
                 android:layout_width="@dimen/directory_addpanel_button_side"
                 android:layout_height="@dimen/directory_addpanel_button_side"
                 android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"

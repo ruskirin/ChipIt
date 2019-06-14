@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary"> #a0aaab </color>
+    <color name="colorPrimaryDark"> #5a6061 </color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="colorRecyclerViewHighlight">#add827</color>
-
+    <color name="colorTextBackground"> #e8f0f1 </color>
 </resources>

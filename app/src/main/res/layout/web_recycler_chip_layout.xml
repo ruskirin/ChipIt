@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ImageView
+        android:id="@+id/webRecyclerImage"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/web_recycler_chips_margin_horiz"
+        android:layout_marginEnd="@dimen/web_recycler_chips_margin_horiz"
+        android:layout_marginBottom="@dimen/web_recycler_chips_margin_vert"
+        android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
+        xmlns:android="http://schemas.android.com/apk/res/android"/>
+

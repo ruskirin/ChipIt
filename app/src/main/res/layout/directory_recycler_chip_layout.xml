@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
+<androidx.cardview.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/directory_recycler_margin">
 
     <LinearLayout
-            android:id="@+id/directory_recycler_topic_layout"
+            android:id="@+id/dirRecyclerTopicLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
         <ImageView
-                android:id="@+id/directory_recycler_topic_image"
+                android:id="@+id/dirRecyclerTopicImage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"/>
 
         <TextView
-                android:id="@+id/directory_recycler_topic_desc"
+                android:id="@+id/dirRecyclerTopicDescription"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:padding="@dimen/directory_recycler_desc_padding"
+                android:gravity="center_vertical"
                 android:textStyle="italic"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:background="@color/colorTextBackground"/>
 
     </LinearLayout>
 
     <LinearLayout
-            android:id="@+id/album_recycler_edit_button_layout"
+            android:id="@+id/dirRecyclerEditLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -39,21 +43,21 @@
             android:visibility="gone">
 
         <Button
-                android:id="@+id/album_recycler_edit_button_image"
+                android:id="@+id/dirRecyclerEditImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/recycler_button_edit_image"/>
 
         <Button
-                android:id="@+id/album_recycler_edit_button_topic"
+                android:id="@+id/dirRecyclerEditDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/recycler_button_edit_desc"/>
 
         <Button
-                android:id="@+id/album_recycler_edit_button_delete"
+                android:id="@+id/dirRecyclerEditDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -61,4 +65,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</androidx.cardview.widget.CardView>

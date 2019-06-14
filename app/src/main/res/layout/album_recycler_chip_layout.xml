@@ -5,25 +5,27 @@
         android:layout_height="wrap_content">
 
     <LinearLayout
+            android:id="@+id/albumRecyclerChipLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
         <ImageView
-                android:id="@+id/album_recycler_chip_image"
+                android:id="@+id/albumRecyclerImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
         <TextView
-                android:id="@+id/album_recycler_chip_topic"
+                android:id="@+id/albumRecyclerTopic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:background="@color/colorTextBackground"/>
 
     </LinearLayout>
 
     <ImageButton
-            android:id="@+id/album_recycler_chip_button_expand"
+            android:id="@+id/albumRecyclerBtnExpand"
             android:layout_width="@dimen/album_recycler_button_expand_side"
             android:layout_height="@dimen/album_recycler_button_expand_side"
             android:layout_gravity="top|end"
@@ -34,7 +36,7 @@
             android:src="@drawable/ic_expand"/>
 
     <LinearLayout
-            android:id="@+id/album_recycler_edit_button_layout"
+            android:id="@+id/albumRecyclerEditLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -44,21 +46,21 @@
             android:visibility="gone">
 
         <Button
-                android:id="@+id/album_recycler_edit_button_image"
+                android:id="@+id/albumRecyclerEditImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/recycler_button_edit_image"/>
 
         <Button
-                android:id="@+id/album_recycler_edit_button_topic"
+                android:id="@+id/albumRecyclerEditTopic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/recycler_butotn_edit_topic"/>
 
         <Button
-                android:id="@+id/album_recycler_edit_button_delete"
+                android:id="@+id/albumRecyclerEditDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

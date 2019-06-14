@@ -7,7 +7,7 @@ import creations.rimov.com.chipit.objects.CoordPoint
 data class ChipPath(
     val id: Long,
     @ColumnInfo(name = "image_location") val imgLocation: String,
-    val vertices: List<CoordPoint>) {
+    val vertices: List<CoordPoint>?) {
 
     /**
      * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes
@@ -18,7 +18,7 @@ data class ChipPath(
                               viewWidth: Int, viewHeight: Int,
                               imageWidth: Int, imageHeight: Int): FloatArray? {
 
-        if(vertices.size <= 3) {
+        if(vertices == null || vertices.size <= 3) {
             return null
         }
 
@@ -74,7 +74,7 @@ data class ChipPath(
     fun isInside(point0: CoordPoint): Boolean {
         //Identify closest and furthest points from point0
         val closest: CoordPoint = getClosestPoint(point0) ?: return false
-        val furthest: CoordPoint = getFurthestPoint(closest)
+        val furthest: CoordPoint = getFurthestPoint(closest) ?: return false
 
         if(furthest.distanceTo(point0) < furthest.distanceTo(closest))
             return true
@@ -87,7 +87,7 @@ data class ChipPath(
         var point: CoordPoint? = null
         var distance: Float = 2f
 
-        vertices.forEach { coord ->
+        vertices?.forEach { coord ->
             val d = point0.distanceTo(coord)
 
             if(d <= distance) {
@@ -100,7 +100,11 @@ data class ChipPath(
     }
 
     /**Return point in vertices farthest (approximately) from point0**/
-    private fun getFurthestPoint(point0: CoordPoint): CoordPoint {
+    private fun getFurthestPoint(point0: CoordPoint): CoordPoint? {
+
+        if(vertices == null)
+            return null
+
         val distance: Int = vertices.size / 2
         val location: Int = vertices.indexOf(point0)
 

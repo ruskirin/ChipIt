@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="creations.rimov.com.chipit">
 
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
     <uses-feature android:name="android.hardware.camera2"
                   android:required="true"/>
 
@@ -39,8 +38,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="creations.rimov.com.chipit.activities.WebActivity"/>
-        <activity android:name=".activities.ChipActivity"/>
     </application>
 
 </manifest>

@@ -17,7 +17,7 @@
             android:label="AlbumFragment">
         <action android:id="@+id/action_albumFragment_to_webFragment" app:destination="@id/webFragment"/>
         <action android:id="@+id/action_albumFragment_to_directoryFragment" app:destination="@id/directoryFragment"
-                app:popUpToInclusive="true"/>
+                app:popUpToInclusive="true" app:popUpTo="@id/directoryFragment"/>
         <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
 
@@ -26,7 +26,7 @@
             android:name="creations.rimov.com.chipit.fragments.WebFragment"
             android:label="WebFragment">
         <action android:id="@+id/action_webFragment_to_albumFragment" app:destination="@id/albumFragment"
-                app:popUpToInclusive="true"/>
+                app:popUpToInclusive="true" app:popUpTo="@id/albumFragment"/>
         <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
 

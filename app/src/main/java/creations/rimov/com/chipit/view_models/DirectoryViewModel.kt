@@ -38,8 +38,6 @@ class DirectoryViewModel : ViewModel() {
         topicRepo.deleteTopicAndChildren(id)
     }
 
-    var chipTouchId: Long = -1L
-
     fun handleChipGesture(gesture: Int) {
 
         when(gesture) {

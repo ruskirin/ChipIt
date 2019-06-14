@@ -55,22 +55,15 @@ class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
         repository.deleteChipAndChildren(chipId)
     }
 
-    var chipTouchId: Long = -1L
-    private var gesture: Int = -1
-
-    fun handleChipTouch(chipId: Long) {
+    fun handleChipGesture(gesture: Int) {
 
         when(gesture) {
 
             MainActivity.Constants.GESTURE_UP -> {
-                this.chipTouchId = chipId
-
                 prompts.postValue(ViewModelPrompts(toNextScreen = true))
             }
 
             MainActivity.Constants.GESTURE_LONG_TOUCH -> {
-                this.chipTouchId = chipId
-
                 prompts.postValue(ViewModelPrompts(true))
             }
         }
@@ -80,10 +73,6 @@ class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
     fun navigateUpBranch() {
 
         repository.setParentIdentity(getParentIdOfParent(), false)
-    }
-
-    fun setChipTouchGesture(gesture: Int) {
-        this.gesture = gesture
     }
 
     override fun updateParent(parent: ChipIdentity) {

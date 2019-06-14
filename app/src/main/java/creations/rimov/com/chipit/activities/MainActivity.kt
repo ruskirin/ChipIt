@@ -2,8 +2,10 @@ package creations.rimov.com.chipit.activities
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.ImageButton
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
+import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -27,25 +30,23 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         ViewModelProviders.of(this).get(GlobalViewModel::class.java)
     }
 
-    private val navHostFragment: NavHostFragment by lazy {
-        supportFragmentManager.findFragmentById(R.id.directory_nav_host) as NavHostFragment
-    }
-    private val navController: NavController by lazy {
-        navHostFragment.navController
-    }
+    private val toolbar: Toolbar by lazy { appToolbar }
+    private val toolbarImg by lazy { toolbarImage }
 
-    private val branchUpButton: ImageButton by lazy {
-        findViewById<ImageButton>(R.id.directory_layout_button_branchup)
-    }
+    private val navHostFragment: NavHostFragment by lazy { appNavHostFragment as NavHostFragment }
 
-    private val actionFab: FloatingActionButton by lazy {
-        findViewById<FloatingActionButton>(R.id.directory_layout_fab_action)
-    }
+    private val navController: NavController by lazy { navHostFragment.navController }
+
+    private val branchUpButton: ImageButton by lazy { appButtonBranchup }
+
+    private val actionFab: FloatingActionButton by lazy { appFab }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_layout)
+
+        setActionBar(toolbar)
 
         navController.addOnDestinationChangedListener(this)
 
@@ -88,6 +89,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        return true
+    }
+
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
 
         when(destination.id) {
@@ -95,13 +101,19 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
 
+                toolbar.visibility = View.VISIBLE
+                toolbarImg.visibility = View.GONE
+
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
 
                 globalViewModel.displayFab(true)
             }
             R.id.albumFragment -> {
-                Log.i("Navigation", "Destination: Web")
+                Log.i("Navigation", "Destination: Album")
+
+                toolbar.visibility = View.VISIBLE
+                toolbarImg.visibility = View.VISIBLE
 
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
@@ -109,17 +121,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 globalViewModel.displayFab(true)
             }
             R.id.webFragment -> {
-                Log.i("Navigation", "Destination: Chip")
+                Log.i("Navigation", "Destination: Web")
 
-                actionFab.setImageDrawable(
-                    ResourcesCompat.getDrawable(resources, R.mipmap.ic_edit, null))
-
-                globalViewModel.displayFab(false)
+                toolbar.visibility = View.GONE
+                toolbarImg.visibility = View.GONE
             }
         }
     }
 
-    //
     override fun onBackPressed() {
 
         when(navController.currentDestination?.id) {

@@ -31,6 +31,11 @@ class DirectoryRecyclerAdapter(private val context: Context,
         notifyDataSetChanged()
     }
 
+    fun getSelectedId() =
+        if(::selectedTopic.isInitialized)
+            selectedTopic.itemId
+        else -1L
+
     fun isEditing() = selectedTopic.isEditing()
 
     fun toggleEditing() {
@@ -43,14 +48,14 @@ class DirectoryRecyclerAdapter(private val context: Context,
      */
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
-        val layout: LinearLayout = itemView.findViewById(R.id.directory_recycler_topic_layout)
-        val image: ImageView = itemView.findViewById(R.id.directory_recycler_topic_image)
-        val description: TextView = itemView.findViewById(R.id.directory_recycler_topic_desc)
+        val layout: LinearLayout = itemView.findViewById(R.id.dirRecyclerTopicLayout)
+        val image: ImageView = itemView.findViewById(R.id.dirRecyclerTopicImage)
+        val description: TextView = itemView.findViewById(R.id.dirRecyclerTopicDescription)
 
-        private val editLayout: LinearLayout = itemView.findViewById(R.id.album_recycler_edit_button_layout)
-        private val editButtonImage: Button = itemView.findViewById(R.id.album_recycler_edit_button_image)
-        private val editButtonDesc: Button = itemView.findViewById(R.id.album_recycler_edit_button_topic)
-        private val editButtonDelete: Button = itemView.findViewById(R.id.album_recycler_edit_button_delete)
+        private val editLayout: LinearLayout = itemView.findViewById(R.id.dirRecyclerEditLayout)
+        private val editButtonImage: Button = itemView.findViewById(R.id.dirRecyclerEditImage)
+        private val editButtonDesc: Button = itemView.findViewById(R.id.dirRecyclerEditDesc)
+        private val editButtonDelete: Button = itemView.findViewById(R.id.dirRecyclerEditDelete)
 
         init {
             layout.setOnTouchListener(this)
@@ -60,48 +65,18 @@ class DirectoryRecyclerAdapter(private val context: Context,
             editButtonDelete.setOnTouchListener(this)
         }
 
-        override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+        private fun setSelectedTopic(topic: DirectoryViewHolder) {
 
-            if(event == null)
-                return false
+            if(!::selectedTopic.isInitialized)
+                selectedTopic = topic
 
-            val id = itemId
+            if(selectedTopic.itemId != itemId) {
 
-            when(view?.id) {
-                R.id.directory_recycler_topic_layout -> {
+                if(selectedTopic.isEditing())
+                    selectedTopic.toggleEditing()
 
-                    if(!::selectedTopic.isInitialized)
-                        selectedTopic = this
-
-                    if(id != selectedTopic.itemId) {
-
-                        if(selectedTopic.isEditing())
-                            selectedTopic.toggleEditing()
-
-                        selectedTopic = this
-                    }
-
-                    touchHandler.topicTouch(id, event)
-                }
-
-                R.id.album_recycler_edit_button_image -> {
-                    touchHandler.topicEditImage(id, event)
-                }
-
-                R.id.album_recycler_edit_button_topic -> {
-
-
-                }
-
-                R.id.album_recycler_edit_button_delete -> {
-
-                    if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicDelete(id)
-                }
+                selectedTopic = topic
             }
-
-            view?.performClick()
-            return true
         }
 
         fun isEditing() = editLayout.isVisible
@@ -113,6 +88,42 @@ class DirectoryRecyclerAdapter(private val context: Context,
 
             } else
                 editLayout.visibility = View.VISIBLE
+        }
+
+        override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+
+            if(event == null)
+                return false
+
+            val id = itemId
+
+            when(view?.id) {
+                R.id.dirRecyclerTopicLayout -> {
+
+                    if(event.action == MotionEvent.ACTION_DOWN)
+                        setSelectedTopic(this)
+
+                    touchHandler.topicTouch(id, event)
+                }
+
+                R.id.dirRecyclerEditImage -> {
+                    touchHandler.topicEditImage(id, event)
+                }
+
+                R.id.dirRecyclerEditDesc -> {
+
+
+                }
+
+                R.id.dirRecyclerEditDelete -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        touchHandler.topicDelete(id)
+                }
+            }
+
+            view?.performClick()
+            return true
         }
     }
 

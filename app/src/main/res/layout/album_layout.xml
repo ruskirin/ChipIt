@@ -6,14 +6,14 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/album_recycler"
+                android:id="@+id/albumRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/web_layout_u_chips_margintop"
+                android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
                 android:clipToPadding="false"/>
 
     <LinearLayout
-            android:id="@+id/album_button_layout"
+            android:id="@+id/albumAddLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -24,7 +24,7 @@
             android:visibility="gone">
 
         <ImageButton
-                android:id="@+id/album_button_camera"
+                android:id="@+id/albumAddCamera"
                 android:layout_width="@dimen/directory_addpanel_button_side"
                 android:layout_height="@dimen/directory_addpanel_button_side"
                 android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"
@@ -36,7 +36,7 @@
                 android:src="@mipmap/ic_add_camera"/>
 
         <ImageButton
-                android:id="@+id/album_button_photos"
+                android:id="@+id/albumAddPhotos"
                 android:layout_width="@dimen/directory_addpanel_button_side"
                 android:layout_height="@dimen/directory_addpanel_button_side"
                 android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"

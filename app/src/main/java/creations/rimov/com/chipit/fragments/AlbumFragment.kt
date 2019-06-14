@@ -5,15 +5,13 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.widget.ImageButton
-import android.widget.LinearLayout
+import android.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
@@ -22,6 +20,10 @@ import creations.rimov.com.chipit.adapters.AlbumRecyclerAdapter
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.AlbumViewModel
+import kotlinx.android.synthetic.main.album_layout.*
+import kotlinx.android.synthetic.main.album_layout.view.*
+import kotlinx.android.synthetic.main.app_layout.*
+import kotlinx.android.synthetic.main.app_layout.view.*
 import java.io.IOException
 
 class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.AlbumAdapterHandler {
@@ -35,6 +37,8 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<AlbumFragmentArgs>()
 
+    private lateinit var toolbar: Toolbar
+
     private lateinit var recyclerAdapter: AlbumRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
@@ -45,6 +49,8 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
+
+            toolbar = it.appToolbar
 
             recyclerAdapter = AlbumRecyclerAdapter(it, this@AlbumFragment)
 
@@ -72,25 +78,29 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.album_layout, container, false)
 
-        val addPanelLayout: LinearLayout = view.findViewById(R.id.album_button_layout)
+        view.toolbarImage?.apply {
+            visibility = View.VISIBLE
+        }
+
+        val addChipLayout = view.albumAddLayout
         //TODO: create a custom button
-        val addCameraButton: ImageButton = view.findViewById(R.id.album_button_camera)
-        val addPhotosButton: ImageButton = view.findViewById(R.id.album_button_photos)
+        view.albumAddCamera.setOnClickListener(this)
+        view.albumAddPhotos.setOnClickListener(this)
 
         //Horizontal recycler view for "sibling" children
-        val recyclerView = view.findViewById<RecyclerView>(R.id.album_recycler).apply {
+        view.albumRecycler.apply {
             adapter = recyclerAdapter
-            layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
             setHasFixedSize(true)
         }
 
         globalViewModel.getFabFlag().observe(this, Observer { flag ->
 
             if(flag.touched) {
-                addPanelLayout.visibility = View.VISIBLE
+                addChipLayout.visibility = View.VISIBLE
 
             } else {
-                addPanelLayout.visibility = View.GONE
+                addChipLayout.visibility = View.GONE
             }
         })
 
@@ -104,16 +114,12 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         localViewModel.prompts.observe(this, Observer { prompt ->
 
-            val id = localViewModel.chipTouchId
+            val id = recyclerAdapter.getSelectedId()
+
             if(id == -1L)
                 return@Observer
 
             when {
-                prompt.editChip -> {
-
-                    recyclerAdapter.toggleEdit()
-                }
-
                 prompt.toNextScreen -> {
                     //No clicking through the edit screen
                     if(recyclerAdapter.isEditing())
@@ -124,11 +130,13 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
                     globalViewModel.saveChipFragParentId(localViewModel.getParentId())
                 }
+
+                prompt.editChip -> {
+
+                    recyclerAdapter.toggleEditing()
+                }
             }
         })
-
-        addCameraButton.setOnClickListener(this)
-        addPhotosButton.setOnClickListener(this)
 
         return view
     }
@@ -137,7 +145,7 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         when(view?.id) {
 
-            R.id.album_button_camera -> {
+            R.id.albumAddCamera -> {
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists
                 addChipCameraIntent.resolveActivity(activity!!.packageManager)
@@ -163,16 +171,15 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
                         localViewModel.saveChip("Lorem Ipsum", imageFile.storagePath)
                 }
             }
-            R.id.album_button_photos -> {
+            R.id.albumAddPhotos -> {
 
             }
         }
     }
 
     override fun topicTouch(id: Long, event: MotionEvent) {
-        gestureDetector.onTouchEvent(event)
 
-        localViewModel.handleChipTouch(id)
+        gestureDetector.onTouchEvent(event)
     }
 
     override fun topicExpand(id: Long) {
@@ -189,23 +196,21 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
         override fun onDown(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "Album.ChipGestureDetector#onDown()!")
 
-            localViewModel.setChipTouchGesture(MainActivity.Constants.GESTURE_DOWN)
-
             return true
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "Album.ChipGestureDetector#onUp()!")
 
-            localViewModel.setChipTouchGesture(MainActivity.Constants.GESTURE_UP)
+            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_UP)
 
-            return super.onSingleTapUp(event)
+            return true
         }
 
         override fun onLongPress(event: MotionEvent?) {
             Log.i("Touch Event", "Album.ChipGestureDetector#onLongPress()!")
 
-            localViewModel.setChipTouchGesture(MainActivity.Constants.GESTURE_LONG_TOUCH)
+            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_LONG_TOUCH)
         }
     }
 }

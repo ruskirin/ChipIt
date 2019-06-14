@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
+import kotlinx.android.synthetic.main.album_recycler_chip_layout.view.*
+import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
-class AlbumRecyclerAdapter(private val context: Context,
-                           private val touchHandler: AlbumAdapterHandler)
-    : RecyclerView.Adapter<AlbumRecyclerAdapter.ChipViewHolder>() {
+class AlbumRecyclerAdapter(
+    private val context: Context,
+    private val touchHandler: AlbumAdapterHandler) : RecyclerView.Adapter<AlbumRecyclerAdapter.ChipViewHolder>() {
 
     private lateinit var chips: List<ChipCard>
     //Reference to the touched chip
@@ -33,12 +35,17 @@ class AlbumRecyclerAdapter(private val context: Context,
         notifyDataSetChanged()
     }
 
+    fun getSelectedId() =
+        if(::selectedChip.isInitialized)
+            selectedChip.itemId
+        else -1L
+
     fun isEditing() = selectedChip.isEditing()
 
-    fun toggleEdit() {
+    fun toggleEditing() {
 
-        if(::selectedChip.isInitialized)
-            selectedChip.toggleEdit()
+        if (::selectedChip.isInitialized)
+            selectedChip.toggleEditing()
     }
 
     /**
@@ -46,92 +53,89 @@ class AlbumRecyclerAdapter(private val context: Context,
      */
     inner class ChipViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
-        val image: ImageView = itemView.findViewById(R.id.album_recycler_chip_image)
-        val topic: TextView = itemView.findViewById(R.id.album_recycler_chip_topic)
-        val buttonExpand: ImageButton = itemView.findViewById(R.id.album_recycler_chip_button_expand)
+        val image: ImageView = itemView.albumRecyclerImage
+        val topic: TextView = itemView.albumRecyclerTopic
 
-        private val editLayout: LinearLayout = itemView.findViewById(R.id.album_recycler_edit_button_layout)
-        private val editButtonImage: Button = itemView.findViewById(R.id.album_recycler_edit_button_image)
-        private val editButtonTopic: Button = itemView.findViewById(R.id.album_recycler_edit_button_topic)
-        private val editButtonDelete: Button = itemView.findViewById(R.id.album_recycler_edit_button_delete)
+        private val editLayout: LinearLayout = itemView.albumRecyclerEditLayout
 
         init {
-            image.setOnTouchListener(this)
+            itemView.albumRecyclerChipLayout.setOnTouchListener(this)
 
-            buttonExpand.setOnTouchListener(this)
-            editButtonImage.setOnTouchListener(this)
-            editButtonTopic.setOnTouchListener(this)
-            editButtonDelete.setOnTouchListener(this)
+            itemView.albumRecyclerBtnExpand.setOnTouchListener(this)
+            itemView.albumRecyclerEditImage.setOnTouchListener(this)
+            itemView.albumRecyclerEditTopic.setOnTouchListener(this)
+            itemView.albumRecyclerEditDelete.setOnTouchListener(this)
         }
 
-        override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+        private fun setSelectedChip(chip: ChipViewHolder) {
 
-            if(event == null)
-                return false
-
-            val id = itemId
-
-            if(event.action == MotionEvent.ACTION_UP) {
-
-                when(view?.id) {
-
-                    R.id.album_recycler_chip_button_expand -> {
-                        touchHandler.topicExpand(id)
-
-                        return true
-                    }
-
-                    R.id.album_recycler_edit_button_image -> {
-
-
-                        return true
-                    }
-
-                    R.id.album_recycler_edit_button_topic -> {
-
-
-                        return true
-                    }
-
-                    R.id.album_recycler_edit_button_delete -> {
-                        touchHandler.topicDelete(id)
-
-                        return true
-                    }
-                }
-            }
-            //Initialize
             if(!::selectedChip.isInitialized)
-                selectedChip = this
+                selectedChip = chip
 
-            //Toggle editing of previous selected chip and reassign to the one worked on now
-            if(id != selectedChip.itemId) {
+            if(selectedChip.itemId != itemId) {
 
                 if(selectedChip.isEditing())
-                    selectedChip.toggleEdit()
+                    selectedChip.toggleEditing()
 
-                selectedChip = this
+                selectedChip = chip
             }
-
-            touchHandler.topicTouch(itemId, event)
-
-            view?.performClick()
-
-            return true
         }
 
         fun isEditing() = selectedChip.editLayout.isVisible
 
-        fun toggleEdit() {
-             if(selectedChip.isEditing())
-                 selectedChip.editLayout.visibility = View.GONE
-             else
-                 selectedChip.editLayout.visibility = View.VISIBLE
+        fun toggleEditing() {
+
+            if (selectedChip.isEditing())
+                selectedChip.editLayout.visibility = View.GONE
+            else
+                selectedChip.editLayout.visibility = View.VISIBLE
+        }
+
+        override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+
+            if (event == null)
+                return false
+
+            val id = itemId
+
+            when (view?.id) {
+
+                R.id.albumRecyclerChipLayout -> {
+
+                    if(event.action == MotionEvent.ACTION_DOWN)
+                        setSelectedChip(this)
+
+                    touchHandler.topicTouch(id, event)
+                }
+
+                R.id.albumRecyclerBtnExpand -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        touchHandler.topicExpand(id)
+                }
+
+                R.id.albumRecyclerEditImage -> {
+
+                }
+
+                R.id.albumRecyclerEditTopic -> {
+
+                }
+
+                R.id.albumRecyclerEditDelete -> {
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        touchHandler.topicDelete(id)
+                }
+            }
+
+            view?.performClick()
+            return true
         }
     }
 
     override fun getItemCount() =
-        if(::chips.isInitialized)
+        if (::chips.isInitialized)
             chips.size
         else
             0

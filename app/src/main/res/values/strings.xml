@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">ChipIt</string>
 
+    <string name="dir_fragment_name">Topics</string>
+
+    <string name="toolbar_web_left">Adjacent Left</string>
+    <string name="toolbar_web_right">Adjact Right</string>
+
     <string name="recycler_button_edit_image">Change Image</string>
     <string name="recycler_button_edit_desc">Edit Description</string>
     <string name="recycler_button_edit_delete">Delete</string>

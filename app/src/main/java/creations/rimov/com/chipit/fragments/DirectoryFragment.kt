@@ -5,15 +5,14 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
@@ -21,6 +20,9 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
+import kotlinx.android.synthetic.main.app_layout.*
+import kotlinx.android.synthetic.main.directory_layout.*
+import kotlinx.android.synthetic.main.directory_layout.view.*
 import java.io.IOException
 
 class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler, View.OnClickListener {
@@ -32,7 +34,9 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
-    private lateinit var dirRecyclerAdapter: DirectoryRecyclerAdapter
+    private lateinit var toolbar: Toolbar
+
+    private lateinit var recyclerAdapter: DirectoryRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -45,16 +49,17 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            dirRecyclerAdapter = DirectoryRecyclerAdapter(it, this@DirectoryFragment)
+            toolbar = it.appToolbar
+
+            recyclerAdapter = DirectoryRecyclerAdapter(it, this@DirectoryFragment)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.directory_layout, container, false)
 
-        val dirRecyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.directory_layout_recycler_main)
-            .apply {
-                adapter = dirRecyclerAdapter
+        view.dirRecycler.apply {
+                adapter = recyclerAdapter
                 layoutManager = LinearLayoutManager(activity)
                 setHasFixedSize(true)
         }
@@ -62,29 +67,26 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         gestureDetector = GestureDetector(activity, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        val addChipPanelLayout: LinearLayout = view.findViewById(R.id.directory_layout_addpanel)
-        val addChipCameraButton: ImageButton = view.findViewById(R.id.directory_layout_addpanel_camera)
-        val addChipFilesButton: ImageButton = view.findViewById(R.id.directory_layout_addpanel_files)
-
-        addChipCameraButton.setOnClickListener(this)
-        addChipFilesButton.setOnClickListener(this)
+        val addTopicLayout: LinearLayout = view.dirTopicAddLayout
+        view.dirTopicAddCamera.setOnClickListener(this)
+        view.dirTopicAddFiles.setOnClickListener(this)
 
         globalViewModel.getFabFlag().observe(this, Observer { flag ->
 
             if(flag.touched) {
-                addChipPanelLayout.visibility = View.VISIBLE
+                addTopicLayout.visibility = View.VISIBLE
 
             } else {
-                addChipPanelLayout.visibility = View.GONE
+                addTopicLayout.visibility = View.GONE
             }
         })
 
         localViewModel.getTopics().observe(this, Observer { topics ->
-            dirRecyclerAdapter.setTopics(topics)
+            recyclerAdapter.setTopics(topics)
         })
 
         localViewModel.prompts.observe(this, Observer { prompt ->
-            val id = localViewModel.chipTouchId
+            val id = recyclerAdapter.getSelectedId()
 
             if(id == -1L)
                 return@Observer
@@ -92,7 +94,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
             when {
                 prompt.toNextScreen -> {
                     //Edit screen out, cannot click on the view till it's closed
-                    if(dirRecyclerAdapter.isEditing())
+                    if(recyclerAdapter.isEditing())
                         return@Observer
 
                     val directions = DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(id)
@@ -101,7 +103,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
                 prompt.editChip -> {
 
-                    dirRecyclerAdapter.toggleEditing()
+                    recyclerAdapter.toggleEditing()
                 }
             }
         })
@@ -113,7 +115,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
         when(view?.id) {
 
-            R.id.directory_layout_addpanel_camera -> {
+            R.id.dirTopicAddCamera -> {
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists
                 addChipCameraIntent.resolveActivity(activity!!.packageManager)
@@ -142,7 +144,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
                 }
             }
 
-            R.id.directory_layout_addpanel_files -> {
+            R.id.dirTopicAddFiles -> {
 
             }
         }
@@ -150,7 +152,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
     //Handle recyclerview's touched events
     override fun topicTouch(id: Long, event: MotionEvent) {
-        localViewModel.chipTouchId = id
 
         gestureDetector.onTouchEvent(event)
     }

@@ -6,14 +6,20 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toolbar
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.util.RenderUtil
@@ -21,9 +27,13 @@ import creations.rimov.com.chipit.view_models.WebTouchViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipView
+import kotlinx.android.synthetic.main.app_layout.*
+import kotlinx.android.synthetic.main.app_layout.view.*
+import kotlinx.android.synthetic.main.web_layout.*
+import kotlinx.android.synthetic.main.web_layout.view.*
 import java.io.IOException
 
-class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
+class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
 
     private object Constant {
         //Buffer around surfaceview edge to trigger gesture swipe events
@@ -41,8 +51,14 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
+    private lateinit var toolbar: Toolbar
+
     private lateinit var chipView: ChipView
     private lateinit var chipHolder: SurfaceHolder
+
+    private lateinit var recyclerVisBtn: ImageButton
+    private lateinit var recyclerLayout: FrameLayout
+    private lateinit var recyclerAdapter: WebRecyclerAdapter
 
     private val localViewModel: WebViewModel by lazy {
         ViewModelProviders.of(this).get(WebViewModel::class.java)
@@ -54,9 +70,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
     //Writes/draws onto an assigned bitmap
     private lateinit var parentCanvas: Canvas
     //Aspect ratio Rect frame for subject image
-    private val parentImageFrame: Rect by lazy {
-        Rect()
-    }
+    private val parentImageFrame: Rect by lazy { Rect() }
 
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0
@@ -69,6 +83,10 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
+
+            toolbar = it.appToolbar
+
+            recyclerAdapter = WebRecyclerAdapter(it, this@WebFragment)
         }
 
         if(localViewModel.getParentId() != passedArgs.parentId)
@@ -85,32 +103,50 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.web_layout, container, false)
+        val view: View = inflater.inflate(R.layout.web_layout, container, false)
 
-        chipView = view.findViewById(R.id.chip_layout_surfaceview)
+        view.toolbarImage?.apply {
+            visibility = View.GONE
+        }
+
+        chipView = view.webSurfaceView.apply {
+            setHandler(this@WebFragment)
+            setOnTouchListener(this@WebFragment)
+        }
+
         chipHolder = chipView.holder
 
-        val pathPanelLayout: LinearLayout = view.findViewById(R.id.chip_layout_pathpanel)
-        val pathPanelCamera: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_camera)
-        val pathPanelPhotos: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_photos)
-        val pathPanelCancel: ImageButton = view.findViewById(R.id.chip_layout_pathpanel_cancel)
+        recyclerLayout = view.webChildrenLayout
 
-        chipView.setHandler(this)
-        chipView.setOnTouchListener(this)
+        recyclerVisBtn = view.webBtnRecyclerVis.apply {
+            setOnTouchListener(this@WebFragment)
+        }
 
-        pathPanelCamera.setOnTouchListener(this)
-        pathPanelPhotos.setOnTouchListener(this)
-        pathPanelCancel.setOnTouchListener(this)
+        view.webRecycler.apply {
+            adapter = recyclerAdapter
+            layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
+            setHasFixedSize(true)
+        }
+
+        val pathPanelLayout: LinearLayout = view.webPathAddButtonLayout
+
+        view.webPathAddButtonCamera.setOnTouchListener(this)
+        view.webPathAddButtonPhotos.setOnTouchListener(this)
+        view.webPathAddButtonCancel.setOnTouchListener(this)
+
 
         localViewModel.getParent()?.observe(this, Observer { parent ->
             Log.i("Life Event", "WebFragment#parentObserver: triggered!")
+
             localViewModel.checkUpNavigation()
 
             localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
         })
 
-        localViewModel.getChildren()?.observe(this, Observer {
+        localViewModel.getChildren()?.observe(this, Observer { children ->
+            recyclerAdapter.setTopics(children)
+
             chipView.invalidate()
         })
 
@@ -125,6 +161,22 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
         })
 
         return view
+    }
+
+    //Toggle the visibility of recyclerView displaying children and the image of the button responsible for toggling
+    fun toggleRecyclerVis() {
+
+        if(recyclerAdapter.itemCount == 0) return
+
+        recyclerLayout.visibility =
+            if(recyclerLayout.isVisible) {
+                recyclerVisBtn.setImageResource(R.drawable.ic_arrow_web_recycler_show)
+                View.GONE
+
+            } else {
+                recyclerVisBtn.setImageResource(R.drawable.ic_arrow_web_recycler_hide)
+                View.VISIBLE
+            }
     }
 
 
@@ -211,6 +263,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
     /**Identify surface touched intention (draw, swipe, etc)**/
     override fun setAction(x: Float, y: Float) {
+
         point0 = CoordPoint(x, y)
 
         if((viewHeight - y) < Constant.EDGE_TOUCH_BUFFER) {
@@ -235,6 +288,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
 
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun touchDown(x: Float, y: Float) {
+
         globalViewModel.displayFab(false)
         globalViewModel.displayUp(false)
 
@@ -288,13 +342,22 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
         }
     }
 
+    override fun chipTouch(id: Long) {
+
+    }
+
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
-        when(view?.id) {
-            R.id.chip_layout_pathpanel_camera -> {
+        if(event == null || event.action == MotionEvent.ACTION_DOWN)
+            return false
 
-                if(event?.action != MotionEvent.ACTION_DOWN)
-                    return false
+        when(view?.id) {
+            R.id.webBtnRecyclerVis -> {
+
+                toggleRecyclerVis()
+            }
+
+            R.id.webPathAddButtonCamera -> {
 
                 val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 //Verifies that an application that can handle this intent exists
@@ -332,20 +395,24 @@ class WebFragment : Fragment(), ChipView.ChipHandler, View.OnTouchListener {
                     return true
                 }
             }
-            R.id.chip_layout_pathpanel_photos -> {
 
-                if(event?.action != MotionEvent.ACTION_DOWN)
-                    return false
+            R.id.webPathAddButtonPhotos -> {
 
-                return true
+                if(event.action == MotionEvent.ACTION_UP)
+                    return true
+
+                return false
             }
-            R.id.chip_layout_pathpanel_cancel -> {
 
-                if(event?.action != MotionEvent.ACTION_DOWN)
-                    return false
+            R.id.webPathAddButtonCancel -> {
 
-                localTouchViewModel.pathCreated.postValue(false)
-                return true
+                if(event.action == MotionEvent.ACTION_UP) {
+                    localTouchViewModel.pathCreated.postValue(false)
+
+                    return true
+                }
+
+                return false
             }
         }
 

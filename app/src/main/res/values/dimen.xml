@@ -6,15 +6,16 @@
     <dimen name="directory_addpanel_margin_bot">8dp</dimen>
     <dimen name="directory_addpanel_margin_end">8dp</dimen>
     <dimen name="directory_addpanel_button_side">64dp</dimen>
+    <dimen name="directory_recycler_desc_padding">8dp</dimen>
+    <dimen name="directory_recycler_margin">4dp</dimen>
 
     <dimen name="web_pathpanel_button_side">48dp</dimen>
+    <dimen name="web_button_recycler_vis_width">32dp</dimen>
+    <dimen name="web_button_recycler_vis_height">40dp</dimen>
     <dimen name="web_pathpanel_button_margin_horiz">4dp</dimen>
     <dimen name="web_pathpanel_button_margin_vert">2dp</dimen>
-
-    <dimen name="web_layout_u_chips_margintop">8dp</dimen>
-    <dimen name="web_layout_l_chips_margintop">8dp</dimen>
-    <dimen name="web_layout_l_chips_marginbot">16dp</dimen>
-    <dimen name="web_layout_l_chips_marginside">4dp</dimen>
+    <dimen name="web_recycler_chips_margin_vert">8dp</dimen>
+    <dimen name="web_recycler_chips_margin_horiz">4dp</dimen>
 
     <dimen name="directory_layout_button_branchup_width">60dp</dimen>
     <dimen name="directory_recycler_button_edit_desc_next_side">32dp</dimen>

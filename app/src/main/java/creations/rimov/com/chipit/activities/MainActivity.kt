@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     private val toolbar: Toolbar by lazy { appToolbar }
-    private val toolbarImg by lazy { toolbarImage }
+    private val toolbarImg by lazy { toolbarDisplayImg }
 
     private val navHostFragment: NavHostFragment by lazy { appNavHostFragment as NavHostFragment }
 
@@ -72,6 +73,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
             }
         })
+
+        //TODO NOW: work on converting everything you can into compound, reusable viewgroups; for guidance:
+        //           https://android.jlelse.eu/app-rating-bar-making-a-compound-viewgroup-in-android-adb2bd25f4cc
 
         globalViewModel.getUpFlag().observe(this, Observer { flag ->
 

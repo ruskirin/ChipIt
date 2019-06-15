@@ -34,8 +34,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
     }
 
-    private lateinit var toolbar: Toolbar
-
     private lateinit var recyclerAdapter: DirectoryRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
@@ -48,8 +46,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
-
-            toolbar = it.appToolbar
 
             recyclerAdapter = DirectoryRecyclerAdapter(it, this@DirectoryFragment)
         }

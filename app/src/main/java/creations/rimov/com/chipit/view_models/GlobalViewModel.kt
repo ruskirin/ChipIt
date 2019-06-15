@@ -2,6 +2,7 @@ package creations.rimov.com.chipit.view_models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.objects.BranchUpFlag
 import creations.rimov.com.chipit.objects.FabFlag
 

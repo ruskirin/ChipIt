@@ -37,8 +37,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<AlbumFragmentArgs>()
 
-    private lateinit var toolbar: Toolbar
-
     private lateinit var recyclerAdapter: AlbumRecyclerAdapter
 
     private lateinit var gestureDetector: GestureDetector
@@ -49,8 +47,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
-
-            toolbar = it.appToolbar
 
             recyclerAdapter = AlbumRecyclerAdapter(it, this@AlbumFragment)
 
@@ -78,10 +74,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.album_layout, container, false)
 
-        view.toolbarImage?.apply {
-            visibility = View.VISIBLE
-        }
-
         val addChipLayout = view.albumAddLayout
         //TODO: create a custom button
         view.albumAddCamera.setOnClickListener(this)
@@ -106,7 +98,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         localViewModel.getChips().observe(this, Observer { chips ->
             recyclerAdapter.setChips(chips)
-            //Clear the lower list
 
             val isTopic: Boolean = localViewModel.getParent().value?.isTopic ?: true
             globalViewModel.displayUp(!isTopic)
@@ -178,7 +169,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     }
 
     override fun topicTouch(id: Long, event: MotionEvent) {
-
         gestureDetector.onTouchEvent(event)
     }
 

@@ -26,13 +26,29 @@
                 android:fitsSystemWindows="true"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
-            <ImageView
-                    android:id="@+id/toolbarImage"
+            <LinearLayout
+                    android:id="@+id/toolbarDisplay"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     app:layout_collapseMode="parallax"
-                    android:adjustViewBounds="true"
-                    android:visibility="gone"/>
+                    android:visibility="gone">
+
+                <ImageView
+                        android:id="@+id/toolbarDisplayImg"
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"/>
+
+                <TextView
+                        android:id="@+id/toolbarDisplayDesc"
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1"
+                        android:text="@string/directory_recycler_topic_desc_default"/>
+
+            </LinearLayout>
 
             <Toolbar
                     android:id="@+id/appToolbar"

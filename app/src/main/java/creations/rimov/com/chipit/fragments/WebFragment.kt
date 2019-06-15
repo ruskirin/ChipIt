@@ -29,7 +29,6 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipView
 import kotlinx.android.synthetic.main.app_layout.*
 import kotlinx.android.synthetic.main.app_layout.view.*
-import kotlinx.android.synthetic.main.web_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
 import java.io.IOException
 
@@ -50,8 +49,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
-
-    private lateinit var toolbar: Toolbar
 
     private lateinit var chipView: ChipView
     private lateinit var chipHolder: SurfaceHolder
@@ -84,8 +81,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            toolbar = it.appToolbar
-
             recyclerAdapter = WebRecyclerAdapter(it, this@WebFragment)
         }
 
@@ -105,7 +100,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.web_layout, container, false)
 
-        view.toolbarImage?.apply {
+        view.toolbarDisplayImg?.apply {
             visibility = View.GONE
         }
 

@@ -5,7 +5,6 @@ import android.util.Log
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipChildrenDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 
 class AlbumRepository(chipDb: ChipDatabase,

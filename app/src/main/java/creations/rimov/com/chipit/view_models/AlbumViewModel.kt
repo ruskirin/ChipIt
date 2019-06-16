@@ -11,7 +11,6 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.repos.AlbumRepository
-import creations.rimov.com.chipit.fragments.AlbumFragment
 import creations.rimov.com.chipit.objects.ViewModelPrompts
 
 class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {

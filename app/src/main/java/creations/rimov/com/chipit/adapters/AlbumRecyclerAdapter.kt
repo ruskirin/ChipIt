@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import kotlinx.android.synthetic.main.album_recycler_chip_layout.view.*
-import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 

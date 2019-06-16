@@ -100,10 +100,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.web_layout, container, false)
 
-        view.toolbarDisplayImg?.apply {
-            visibility = View.GONE
-        }
-
         chipView = view.webSurfaceView.apply {
             setHandler(this@WebFragment)
             setOnTouchListener(this@WebFragment)

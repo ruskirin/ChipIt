@@ -11,6 +11,6 @@ interface TopicChipDao : BaseChipDao {
     @Query("SELECT * FROM chips WHERE id = :id AND is_topic")
     fun getTopicChip(id: Long): LiveData<Chip>
 
-    @Query("SELECT id, parent_id, description, image_location FROM chips WHERE is_topic")
+    @Query("SELECT id, description, image_location FROM chips WHERE is_topic")
     fun getTopicChipCards(): LiveData<List<ChipCard>>
 }

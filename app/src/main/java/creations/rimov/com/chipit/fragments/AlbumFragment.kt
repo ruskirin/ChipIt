@@ -101,6 +101,10 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
             val isTopic: Boolean = localViewModel.getParent().value?.isTopic ?: true
             globalViewModel.displayUp(!isTopic)
+
+            localViewModel.getParent().value?.let {
+                globalViewModel.setAlbumChip(it)
+            }
         })
 
         localViewModel.prompts.observe(this, Observer { prompt ->
@@ -184,7 +188,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
 
         //According to developer website, must return true to ensure gestures are not ignored
         override fun onDown(event: MotionEvent?): Boolean {
-            Log.i("Touch Event", "Album.ChipGestureDetector#onDown()!")
 
             return true
         }

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
@@ -13,10 +12,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.viewgroups.ToolbarDisplayView
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
@@ -27,27 +26,33 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         const val GESTURE_LONG_TOUCH = 402
     }
 
+    private var screenHeight: Float = 0f
+    private var screenWidth: Float = 0f
+
     private val globalViewModel: GlobalViewModel by lazy {
         ViewModelProviders.of(this).get(GlobalViewModel::class.java)
     }
 
-    private val toolbar: Toolbar by lazy { appToolbar }
-    private val toolbarImg by lazy { toolbarDisplayImg }
+    private val toolbarDisplay: ToolbarDisplayView by lazy {toolbarDisplayLayout}
 
-    private val navHostFragment: NavHostFragment by lazy { appNavHostFragment as NavHostFragment }
+    private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
 
-    private val navController: NavController by lazy { navHostFragment.navController }
+    private val navController: NavController by lazy {navHostFragment.navController}
 
-    private val branchUpButton: ImageButton by lazy { appButtonBranchup }
+    private val branchUpButton: ImageButton by lazy {appButtonBranchup}
 
-    private val actionFab: FloatingActionButton by lazy { appFab }
+    private val actionFab: FloatingActionButton by lazy {appFab}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_layout)
 
-        setActionBar(toolbar)
+        Log.i("Life Cycle", "MainActivity#onCreate(): created!")
+        setDisplayDimen()
+        toolbarDisplay.setDimen(screenHeight, screenWidth, 0.75f, 1f)
+
+        setActionBar(toolbarDisplay.getAppToolbar())
 
         navController.addOnDestinationChangedListener(this)
 
@@ -73,9 +78,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
             }
         })
-
-        //TODO NOW: work on converting everything you can into compound, reusable viewgroups; for guidance:
-        //           https://android.jlelse.eu/app-rating-bar-making-a-compound-viewgroup-in-android-adb2bd25f4cc
 
         globalViewModel.getUpFlag().observe(this, Observer { flag ->
 
@@ -105,8 +107,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
 
-                toolbar.visibility = View.VISIBLE
-                toolbarImg.visibility = View.GONE
+                toolbarDisplay.hideExtContent()
 
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
@@ -116,19 +117,22 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.albumFragment -> {
                 Log.i("Navigation", "Destination: Album")
 
-                toolbar.visibility = View.VISIBLE
-                toolbarImg.visibility = View.VISIBLE
+                toolbarDisplay.showExtContent()
 
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
 
                 globalViewModel.displayFab(true)
+
+                globalViewModel.getAlbumChip().removeObservers(this)
+                globalViewModel.getAlbumChip().observe(this, Observer { chip ->
+                    toolbarDisplay.setDisplay(chip, screenHeight, screenWidth, 0.75f)
+                })
             }
             R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
-                toolbar.visibility = View.GONE
-                toolbarImg.visibility = View.GONE
+                toolbarDisplay.hideExtContent()
             }
         }
     }
@@ -150,5 +154,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             }
         }
+    }
+
+    private fun setDisplayDimen() {
+        val displayMetrics = resources.displayMetrics
+
+        screenHeight = displayMetrics.heightPixels.toFloat()
+        screenWidth = displayMetrics.widthPixels.toFloat()
     }
 }

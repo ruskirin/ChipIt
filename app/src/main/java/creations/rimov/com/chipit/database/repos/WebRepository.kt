@@ -42,7 +42,7 @@ class WebRepository(chipDb: ChipDatabase,
             if(result == null)
                 return
 
-            Log.i("Touch Event", "AsyncGetIsChipTopic#onPostExecute(): is parent topic? $result")
+            Log.i("Touch Event", "AsyncGetIsChipTopic#onPostExecute(): is parent name? $result")
             chipHandler.isParentTopic(result)
         }
     }

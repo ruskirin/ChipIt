@@ -17,6 +17,8 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.database.repos.DirectoryRepository
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -24,8 +26,11 @@ import kotlinx.android.synthetic.main.app_layout.*
 import kotlinx.android.synthetic.main.directory_layout.*
 import kotlinx.android.synthetic.main.directory_layout.view.*
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
-class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler, View.OnClickListener {
+class DirectoryFragment
+    : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler, View.OnClickListener {
 
     private lateinit var globalViewModel: GlobalViewModel
 
@@ -43,6 +48,8 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         super.onCreate(savedInstanceState)
 
         Log.i("Life Event", "DirectoryFragment#onCreate()")
+
+        localViewModel.updateTopics()
 
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
@@ -78,31 +85,32 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         })
 
         localViewModel.getTopics().observe(this, Observer { topics ->
+
             recyclerAdapter.setTopics(topics)
         })
 
-        localViewModel.prompts.observe(this, Observer { prompt ->
-            val id = recyclerAdapter.getSelectedId()
-
-            if(id == -1L)
-                return@Observer
-
-            when {
-                prompt.toNextScreen -> {
-                    //Edit screen out, cannot click on the view till it's closed
-                    if(recyclerAdapter.isEditing())
-                        return@Observer
-
-                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(id)
-                    findNavController().navigate(directions)
-                }
-
-                prompt.editChip -> {
-
-                    recyclerAdapter.toggleEditing()
-                }
-            }
-        })
+//        localViewModel.prompts.observe(this, Observer { prompt ->
+//            val id = recyclerAdapter.getSelectedId()
+//
+//            if(id == -1L)
+//                return@Observer
+//
+//            when {
+//                prompt.toNextScreen -> {
+//                    //Edit screen out, cannot click on the view till it's closed
+//                    if(recyclerAdapter.isEditing())
+//                        return@Observer
+//
+//                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(id)
+//                    findNavController().navigate(directions)
+//                }
+//
+//                prompt.editChip -> {
+//
+//                    recyclerAdapter.toggleEditing()
+//                }
+//            }
+//        })
 
         return view
     }
@@ -112,32 +120,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         when(view?.id) {
 
             R.id.dirTopicAddCamera -> {
-                val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                //Verifies that an application that can handle this intent exists
-                addChipCameraIntent.resolveActivity(activity!!.packageManager)
-
-                //TODO: handle error
-                val imageFile = try {
-                    CameraUtil.createImageFile(activity!!)
-
-                } catch(e: IOException) {
-                    e.printStackTrace()
-                    null
-                }
-
-                if(imageFile != null) {
-                    val imageUri = FileProvider.getUriForFile(activity!!,
-                        CameraUtil.IMAGE_PROVIDER_AUTHORITY,
-                        imageFile.file)
-
-                    addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                    startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
-
-                    //TODO: Change passed in values to variables
-                    localViewModel.insertTopic(
-                        Chip(0L, 0L, true,
-                            resources.getString(R.string.directory_recycler_topic_desc_default), imageFile.storagePath))
-                }
+                //TODO: Change passed in values to variables
+                localViewModel.insertTopic(
+                    Chip(0L, 0L, true,
+                        desc = resources.getString(R.string.directory_recycler_topic_desc_default),
+                        created = SimpleDateFormat("MM-dd-yyyy", Locale.US).format(Date())))
             }
 
             R.id.dirTopicAddFiles -> {
@@ -153,11 +140,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun topicEditImage(id: Long, event: MotionEvent) {
-
+        TODO()
     }
 
     override fun topicEditDesc(id: Long, text: String) {
-
+        TODO()
     }
 
     override fun topicDelete(id: Long) {

@@ -1,24 +1,28 @@
 package creations.rimov.com.chipit.view_models
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.database.objects.TopicAndChildren
 import creations.rimov.com.chipit.database.repos.DirectoryRepository
 import creations.rimov.com.chipit.objects.ViewModelPrompts
 
-class DirectoryViewModel : ViewModel() {
+class DirectoryViewModel : ViewModel(), DirectoryRepository.DirRepoHandler {
 
-    private val topicRepo: DirectoryRepository = DirectoryRepository(DatabaseApplication.database!!)
+    //TODO NOW: have to send the DirHandler below, don't know how my head hurts
+    private val topicRepo: DirectoryRepository = DirectoryRepository(DatabaseApplication.database!!, this)
 
-    private val topics: LiveData<List<ChipCard>> = topicRepo.getTopics()
+    private val topics: MutableLiveData<List<TopicAndChildren>> = MutableLiveData()
 
     val prompts = MutableLiveData<ViewModelPrompts>()
 
 
+    fun updateTopics() {
+        topicRepo.setTopics()
+    }
     /** Repository functions **/
     fun getTopics() = topics
 
@@ -50,5 +54,9 @@ class DirectoryViewModel : ViewModel() {
                 prompts.postValue(ViewModelPrompts(true))
             }
         }
+    }
+
+    override fun setTopics(topics: List<TopicAndChildren>) {
+        this.topics.postValue(topics)
     }
 }

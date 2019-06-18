@@ -15,7 +15,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import creations.rimov.com.chipit.viewgroups.ToolbarDisplayView
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
@@ -33,8 +32,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         ViewModelProviders.of(this).get(GlobalViewModel::class.java)
     }
 
-    private val toolbarDisplay: ToolbarDisplayView by lazy {toolbarDisplayLayout}
-
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
 
     private val navController: NavController by lazy {navHostFragment.navController}
@@ -50,9 +47,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         Log.i("Life Cycle", "MainActivity#onCreate(): created!")
         setDisplayDimen()
-        toolbarDisplay.setDimen(screenHeight, screenWidth, 0.75f, 1f)
-
-        setActionBar(toolbarDisplay.getAppToolbar())
 
         navController.addOnDestinationChangedListener(this)
 
@@ -107,8 +101,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
 
-                toolbarDisplay.hideExtContent()
-
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
 
@@ -117,22 +109,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.albumFragment -> {
                 Log.i("Navigation", "Destination: Album")
 
-                toolbarDisplay.showExtContent()
-
                 actionFab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
 
                 globalViewModel.displayFab(true)
-
-                globalViewModel.getAlbumChip().removeObservers(this)
-                globalViewModel.getAlbumChip().observe(this, Observer { chip ->
-                    toolbarDisplay.setDisplay(chip, screenHeight, screenWidth, 0.75f)
-                })
             }
             R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
-                toolbarDisplay.hideExtContent()
             }
         }
     }
@@ -142,14 +126,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(navController.currentDestination?.id) {
 
             R.id.albumFragment -> {
-                globalViewModel.displayFab(true)
-
                 navController.navigate(R.id.action_albumFragment_to_directoryFragment)
 
             }
             R.id.webFragment -> {
-                globalViewModel.displayFab(true)
-
                 navController.navigate(R.id.action_webFragment_to_albumFragment)
 
             }

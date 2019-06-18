@@ -11,6 +11,8 @@ import creations.rimov.com.chipit.database.repos.WebRepository
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
 
@@ -32,7 +34,7 @@ class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
 
     //Flag to redraw background bitmap
     var backgroundChanged = false
-    //Is the parent of the current parent a topic? Used to toggle branch up navigation
+    //Is the parent of the current parent a name? Used to toggle branch up navigation
     var canNavigateUp = false
 
 
@@ -103,7 +105,10 @@ class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
     }
 
     fun saveChip(name: String, imgLocation: String?, vertices: List<CoordPoint>?) {
-        val chip = Chip(0, parentId.value ?: -1L, false, name, imgLocation ?: "", vertices)
+        val chip = Chip(0, parentId.value ?: -1L, false,
+            name, "",
+            SimpleDateFormat("MM-dd-yyy", Locale.US).format(Date()),
+            imgLocation = imgLocation ?: "", vertices = vertices)
 
         Log.i("Chip Creation", "WebViewModel#saveChip(): saving chip under parent $parentId")
 

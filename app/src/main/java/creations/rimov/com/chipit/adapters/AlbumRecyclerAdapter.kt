@@ -151,7 +151,7 @@ class AlbumRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ChipViewHolder, position: Int) {
 
-        holder.topic.text = chips[position].description
+        holder.topic.text = chips[position].name
         //TODO: load a default image if none can be found
         Glide.with(context)
             .load(chips[position].imgLocation)

@@ -12,6 +12,8 @@ import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.repos.AlbumRepository
 import creations.rimov.com.chipit.objects.ViewModelPrompts
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
 
@@ -45,7 +47,10 @@ class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
 
     /**Insert child into horizontal chip row**/
     fun saveChip(name: String, imgLocation: String?) {
-        val chip = Chip(0, getParentId(), false, name, imgLocation ?: "", null)
+        val chip = Chip(0, getParentId(), false,
+            name, "",
+            SimpleDateFormat("MM-dd-yyyy", Locale.US).format(Date()),
+            imgLocation = imgLocation ?: "")
 
         repository.insertChip(chip)
     }

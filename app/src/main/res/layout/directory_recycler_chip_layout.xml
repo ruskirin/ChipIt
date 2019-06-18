@@ -6,63 +6,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/directory_recycler_margin">
 
-    <LinearLayout
-            android:id="@+id/dirRecyclerTopicLayout"
+    <creations.rimov.com.chipit.viewgroups.TopicLayout
+            android:id="@+id/dirRecyclerTopic"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-        <ImageView
-                android:id="@+id/dirRecyclerTopicImage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"/>
-
-        <TextView
-                android:id="@+id/dirRecyclerTopicDescription"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:padding="@dimen/directory_recycler_desc_padding"
-                android:gravity="center_vertical"
-                android:textStyle="italic"
-                android:textSize="14sp"
-                android:background="@color/colorTextBackground"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/dirRecyclerEditLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:alpha="0.7"
-            android:background="@android:color/darker_gray"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-        <Button
-                android:id="@+id/dirRecyclerEditImage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/recycler_button_edit_image"/>
-
-        <Button
-                android:id="@+id/dirRecyclerEditDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/recycler_button_edit_desc"/>
-
-        <Button
-                android:id="@+id/dirRecyclerEditDelete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/recycler_button_edit_delete"/>
-
-    </LinearLayout>
+            android:layout_height="wrap_content"/>
 
 </androidx.cardview.widget.CardView>

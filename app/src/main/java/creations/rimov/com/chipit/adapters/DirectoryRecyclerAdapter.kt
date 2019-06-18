@@ -8,6 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.database.objects.TopicAndChildren
+import creations.rimov.com.chipit.viewgroups.TopicLayout
+import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
 
 /**
  * TODO: add Glide Recyclerview integration if scrolling causes stuttering
@@ -16,7 +20,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
                                private val touchHandler: DirectoryAdapterHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
-    private lateinit var topics: List<ChipCard>
+    private lateinit var topics: List<TopicAndChildren>
     //Reference to selected ViewHolder
     private lateinit var selectedTopic: DirectoryViewHolder
 
@@ -25,7 +29,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
         setHasStableIds(true)
     }
 
-    fun setTopics(topics: List<ChipCard>) {
+    fun setTopics(topics: List<TopicAndChildren>) {
         this.topics = topics
 
         notifyDataSetChanged()
@@ -36,59 +40,40 @@ class DirectoryRecyclerAdapter(private val context: Context,
             selectedTopic.itemId
         else -1L
 
-    fun isEditing() = selectedTopic.isEditing()
+//    fun isEditing() = selectedTopic.isEditing()
+//
+//    fun toggleEditing() {
+//        selectedTopic.toggleEditing()
+//    }
 
-    fun toggleEditing() {
-        selectedTopic.toggleEditing()
-    }
-
-    /**
-     * VIEW HOLDER
-     * @param: touchHandler = interface for communicating touched events' information to activity
-     */
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
-        val layout: LinearLayout = itemView.findViewById(R.id.dirRecyclerTopicLayout)
-        val image: ImageView = itemView.findViewById(R.id.dirRecyclerTopicImage)
-        val description: TextView = itemView.findViewById(R.id.dirRecyclerTopicDescription)
-
-        private val editLayout: LinearLayout = itemView.findViewById(R.id.dirRecyclerEditLayout)
-        private val editButtonImage: Button = itemView.findViewById(R.id.dirRecyclerEditImage)
-        private val editButtonDesc: Button = itemView.findViewById(R.id.dirRecyclerEditDesc)
-        private val editButtonDelete: Button = itemView.findViewById(R.id.dirRecyclerEditDelete)
-
-        init {
-            layout.setOnTouchListener(this)
-
-            editButtonImage.setOnTouchListener(this)
-            editButtonDesc.setOnTouchListener(this)
-            editButtonDelete.setOnTouchListener(this)
-        }
+        val topicChip: TopicLayout = itemView.dirRecyclerTopic
 
         private fun setSelectedTopic(topic: DirectoryViewHolder) {
 
-            if(!::selectedTopic.isInitialized)
+            if(!::selectedTopic.isInitialized || selectedTopic.itemId != itemId)
                 selectedTopic = topic
 
-            if(selectedTopic.itemId != itemId) {
-
-                if(selectedTopic.isEditing())
-                    selectedTopic.toggleEditing()
-
-                selectedTopic = topic
-            }
+//            if(selectedTopic.itemId != itemId) {
+//
+//                if(selectedTopic.isEditing())
+//                    selectedTopic.toggleEditing()
+//
+//                selectedTopic = topic
+//            }
         }
 
-        fun isEditing() = editLayout.isVisible
-        //Toggle visibility of editLayout
-        fun toggleEditing() {
-
-            if(this.isEditing()) {
-                editLayout.visibility = View.GONE
-
-            } else
-                editLayout.visibility = View.VISIBLE
-        }
+//        fun isEditing() = editLayout.isVisible
+//        //Toggle visibility of editLayout
+//        fun toggleEditing() {
+//
+//            if(this.isEditing()) {
+//                editLayout.visibility = View.GONE
+//
+//            } else
+//                editLayout.visibility = View.VISIBLE
+//        }
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
@@ -98,28 +83,26 @@ class DirectoryRecyclerAdapter(private val context: Context,
             val id = itemId
 
             when(view?.id) {
-                R.id.dirRecyclerTopicLayout -> {
-
-                    if(event.action == MotionEvent.ACTION_DOWN)
-                        setSelectedTopic(this)
-
-                    touchHandler.topicTouch(id, event)
-                }
-
-                R.id.dirRecyclerEditImage -> {
-                    touchHandler.topicEditImage(id, event)
-                }
-
-                R.id.dirRecyclerEditDesc -> {
-
-
-                }
-
-                R.id.dirRecyclerEditDelete -> {
+                R.id.dirRecyclerTopic -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicDelete(id)
+                        setSelectedTopic(this)
                 }
+//
+//                R.id.dirRecyclerEditImage -> {
+//                    touchHandler.topicEditImage(id, event)
+//                }
+//
+//                R.id.dirRecyclerEditDesc -> {
+//
+//
+//                }
+//
+//                R.id.dirRecyclerEditDelete -> {
+//
+//                    if(event.action == MotionEvent.ACTION_UP)
+//                        touchHandler.topicDelete(id)
+//                }
             }
 
             view?.performClick()
@@ -134,7 +117,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
         return 0
     }
 
-    override fun getItemId(position: Int) = topics[position].id
+    override fun getItemId(position: Int) = topics[position].topic.id
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
         val chipHolder =
@@ -147,10 +130,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
     //                   https://stackoverflow.com/questions/49513726/android-memory-leak-with-fragments
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
 
-        holder.description.text = topics[position].description
-        Glide.with(context)
-            .load(topics[position].imgLocation)
-            .into(holder.image)
+        holder.topicChip.setTopic(topics[position])
     }
 
     interface DirectoryAdapterHandler {

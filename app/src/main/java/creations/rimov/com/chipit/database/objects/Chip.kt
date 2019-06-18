@@ -17,10 +17,18 @@ data class Chip(
 
     @ColumnInfo(name = "parent_id") val parentId: Long,
 
-    @ColumnInfo(name = "is_topic") val isTopic: Boolean,
+    @ColumnInfo(name = "is_topic") val isTopic: Boolean = false,
+
+    var name: String = "NAME",
 
     @ColumnInfo(name = "description") var desc: String,
 
-    @ColumnInfo(name = "image_location") var imgLocation: String,
+    @ColumnInfo(name = "date_create") val created: String,
 
-    var vertices: List<CoordPoint>? = mutableListOf())
+    @ColumnInfo(name = "date_update") var updated: String = "",
+
+    @ColumnInfo(name = "num_children") var counter: Int = 0,
+
+    @ColumnInfo(name = "image_location") var imgLocation: String = "",
+
+    val vertices: List<CoordPoint>? = mutableListOf())

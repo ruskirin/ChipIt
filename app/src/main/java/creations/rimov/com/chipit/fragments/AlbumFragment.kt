@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -20,10 +19,7 @@ import creations.rimov.com.chipit.adapters.AlbumRecyclerAdapter
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.AlbumViewModel
-import kotlinx.android.synthetic.main.album_layout.*
 import kotlinx.android.synthetic.main.album_layout.view.*
-import kotlinx.android.synthetic.main.app_layout.*
-import kotlinx.android.synthetic.main.app_layout.view.*
 import java.io.IOException
 
 class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.AlbumAdapterHandler {

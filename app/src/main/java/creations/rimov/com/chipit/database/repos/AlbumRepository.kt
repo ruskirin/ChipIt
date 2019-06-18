@@ -27,7 +27,7 @@ class AlbumRepository(chipDb: ChipDatabase,
     fun insertChip(chip: Chip) {
 
         if(chip.parentId == -1L && !chip.isTopic) {
-            Log.e("TopicChipRepo", "#insertChip: can't insert a chip that is not a topic and has parent id == -1L")
+            Log.e("TopicChipRepo", "#insertChip: can't insert a chip that is not a name and has parent id == -1L")
             return
         }
 

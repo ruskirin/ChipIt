@@ -14,6 +14,6 @@ class DatabaseApplication : Application() {
         super.onCreate()
 
         database = Room.databaseBuilder(
-            this, ChipDatabase::class.java, "topic-db").build()
+            this, ChipDatabase::class.java, "name-db").build()
     }
 }

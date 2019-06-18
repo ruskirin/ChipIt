@@ -22,4 +22,6 @@
 
     <dimen name="album_recycler_button_expand_margin">8dp</dimen>
     <dimen name="album_recycler_button_expand_side">32dp</dimen>
+
+    <dimen name="topic_counter_side">40dp</dimen>
 </resources>

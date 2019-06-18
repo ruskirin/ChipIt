@@ -23,11 +23,11 @@ interface ChipChildrenDao : BaseChipDao {
     fun getChipChildrenLive(parentId: Long): LiveData<List<Chip>>
 
     @Transaction
-    @Query("SELECT id, description, image_location FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipChildrenCards(parentId: Long): List<ChipCard>
 
     @Transaction
-    @Query("SELECT id, description, image_location FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipChildrenCardsLive(parentId: Long): LiveData<List<ChipCard>>
 
     @Transaction

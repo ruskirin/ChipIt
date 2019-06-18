@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/topicLayoutTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="TITLE"/>
+
+    <TextView
+            android:id="@+id/topicLayoutChildCount"
+            android:layout_width="@dimen/topic_counter_side"
+            android:layout_height="@dimen/topic_counter_side"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/topicLayoutDesc"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@drawable/fab_button_round"
+            android:text="YY"/>
+
+    <TextView
+            android:id="@+id/topicLayoutDateCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/topicLayoutTitle"
+            app:layout_constraintBottom_toTopOf="@id/topicLayoutDesc"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="CREATED: 01-01-01"/>
+
+    <TextView
+            android:id="@+id/topicLayoutDateUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topicLayoutTitle"
+            app:layout_constraintBottom_toTopOf="@id/topicLayoutDesc"
+            app:layout_constraintLeft_toRightOf="@id/topicLayoutDateCreate"
+            android:text="UPDATED: 06-16-19" />
+
+    <TextView
+            android:id="@+id/topicLayoutDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/topicLayoutDateCreate"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/directory_recycler_topic_desc_default"/>
+
+    <ImageButton
+            android:id="@+id/topicLayoutBtnExpand"
+            android:layout_width="@dimen/topic_counter_side"
+            android:layout_height="@dimen/topic_counter_side"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:adjustViewBounds="true"
+            android:background="@drawable/fab_button_round"
+            android:src="@drawable/ic_add_fab_image"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/topicLayoutChildren"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintTop_toBottomOf="@id/topicLayoutDesc"
+            android:visibility="gone"/>
+
+</merge>

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">ChipIt</string>
 
+    <string name="editor_name_def">topic name</string>
+    <string name="editor_desc_def">topic description</string>
+
     <string name="dir_fragment_name">Topics</string>
 
     <string name="toolbar_web_left">Adjacent Left</string>

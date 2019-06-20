@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+    <EditText
+            android:id="@+id/editorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/editorImageFrame"
+            android:inputType="textCapCharacters"
+            android:textAllCaps="true"
+            android:background="@android:color/holo_purple"/>
+
+    <FrameLayout
+            android:id="@+id/editorImageFrame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintTop_toBottomOf="@id/editorName"
+            android:visibility="gone">
+
+        <ImageView
+                android:id="@+id/editorImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"/>
+
+    </FrameLayout>
+
+    <EditText
+            android:id="@+id/editorDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/editor_desc_padding_top"
+            android:paddingBottom="@dimen/editor_desc_padding_bot"
+            android:paddingStart="@dimen/editor_desc_padding_horiz"
+            android:paddingEnd="@dimen/editor_desc_padding_horiz"
+            app:layout_constraintTop_toBottomOf="@id/editorName"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:inputType="textMultiLine"/>
+
+    <LinearLayout
+            android:id="@+id/editorBtnsFinish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/editorDesc"
+            android:orientation="horizontal">
+
+        <ImageButton
+                android:id="@+id/editorBtnSave"
+                android:layout_width="@dimen/editor_button_width"
+                android:layout_height="@dimen/editor_button_width"
+                android:layout_marginEnd="@dimen/editor_button_margin_horiz"
+                android:adjustViewBounds="true"
+                android:background="@drawable/button_round"
+                android:src="@drawable/ic_check"/>
+
+        <ImageButton
+                android:id="@+id/editorBtnCancel"
+                android:layout_width="@dimen/editor_button_width"
+                android:layout_height="@dimen/editor_button_width"
+                android:layout_marginStart="@dimen/editor_button_margin_horiz"
+                android:adjustViewBounds="true"
+                android:background="@drawable/button_round"
+                android:src="@drawable/ic_cancel"/>
+
+    </LinearLayout>
+
+    <ImageButton
+            android:id="@+id/editorBtnDelete"
+            android:layout_width="@dimen/editor_button_width"
+            android:layout_height="@dimen/editor_button_width"
+            app:layout_constraintTop_toBottomOf="@id/editorDesc"
+            app:layout_constraintEnd_toEndOf="@id/editorDesc"
+            android:adjustViewBounds="true"
+            android:background="@drawable/button_round"
+            android:src="@drawable/ic_delete"/>
+
+</merge>

@@ -1,36 +1,24 @@
 package creations.rimov.com.chipit.fragments
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
-import android.widget.Toolbar
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.repos.DirectoryRepository
-import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import kotlinx.android.synthetic.main.app_layout.*
-import kotlinx.android.synthetic.main.directory_layout.*
 import kotlinx.android.synthetic.main.directory_layout.view.*
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DirectoryFragment
-    : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler, View.OnClickListener {
+class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
     private lateinit var globalViewModel: GlobalViewModel
 
@@ -70,20 +58,6 @@ class DirectoryFragment
         gestureDetector = GestureDetector(activity, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        val addTopicLayout: LinearLayout = view.dirTopicAddLayout
-        view.dirTopicAddCamera.setOnClickListener(this)
-        view.dirTopicAddFiles.setOnClickListener(this)
-
-        globalViewModel.getFabFlag().observe(this, Observer { flag ->
-
-            if(flag.touched) {
-                addTopicLayout.visibility = View.VISIBLE
-
-            } else {
-                addTopicLayout.visibility = View.GONE
-            }
-        })
-
         localViewModel.getTopics().observe(this, Observer { topics ->
 
             recyclerAdapter.setTopics(topics)
@@ -115,24 +89,6 @@ class DirectoryFragment
         return view
     }
 
-    override fun onClick(view: View?) {
-
-        when(view?.id) {
-
-            R.id.dirTopicAddCamera -> {
-                //TODO: Change passed in values to variables
-                localViewModel.insertTopic(
-                    Chip(0L, 0L, true,
-                        desc = resources.getString(R.string.directory_recycler_topic_desc_default),
-                        created = SimpleDateFormat("MM-dd-yyyy", Locale.US).format(Date())))
-            }
-
-            R.id.dirTopicAddFiles -> {
-
-            }
-        }
-    }
-
     //Handle recyclerview's touched events
     override fun topicTouch(id: Long, event: MotionEvent) {
 
@@ -148,9 +104,8 @@ class DirectoryFragment
     }
 
     override fun topicDelete(id: Long) {
-        localViewModel.deleteTopic(id)
+        TODO()
     }
-
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
 

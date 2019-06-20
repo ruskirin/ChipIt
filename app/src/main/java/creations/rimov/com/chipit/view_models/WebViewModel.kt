@@ -7,25 +7,25 @@ import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
-import creations.rimov.com.chipit.database.repos.WebRepository
+import creations.rimov.com.chipit.database.repos.AccessRepo
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
+class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
-    private val repository = WebRepository(DatabaseApplication.database!!, this)
+    private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
     private val parentId: MutableLiveData<Long> = MutableLiveData()
     //The chip currently viewed in the background and being worked on
     private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
-        repository.getChipIdentity(it)
+        repository.getChipIdentityLive(it)
     }
     //Children of the main chip
     private val children: LiveData<List<ChipPath>> = Transformations.switchMap(parentId) {
-        repository.getChildrenPaths(it)
+        repository.getChipPathsLive(it)
     }
 
     private lateinit var bitmap: Bitmap
@@ -35,7 +35,7 @@ class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
     //Flag to redraw background bitmap
     var backgroundChanged = false
     //Is the parent of the current parent a name? Used to toggle branch up navigation
-    var canNavigateUp = false
+//    var canNavigateUp = false
 
 
     fun setParentId(parentId: Long) {
@@ -53,9 +53,9 @@ class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
 
     fun getChildren(): LiveData<List<ChipPath>>? = children
 
-    fun checkUpNavigation() {
-        repository.isChipTopic(parent.value?.parentId ?: -1L)
-    }
+//    fun checkUpNavigation() {
+//        repository.isChipTopic(parent.value?.parentId ?: -1L)
+//    }
 
     /**Check if point landed inside one of the children**/
     fun getTouchedChip(point: CoordPoint): ChipPath? {
@@ -96,28 +96,7 @@ class WebViewModel : ViewModel(), WebRepository.ChipRepoHandler {
         if(::bitmap.isInitialized) bitmap.height
         else 0
 
-    fun updateChip(id: Long,
-                   name: String = "",
-                   imgLocation: String? = null,
-                   vertices: List<CoordPoint>? = null) {
-
-        repository.updateChip(id, name, imgLocation, vertices)
-    }
-
-    fun saveChip(name: String, imgLocation: String?, vertices: List<CoordPoint>?) {
-        val chip = Chip(0, parentId.value ?: -1L, false,
-            name, "",
-            SimpleDateFormat("MM-dd-yyy", Locale.US).format(Date()),
-            imgLocation = imgLocation ?: "", vertices = vertices)
-
-        Log.i("Chip Creation", "WebViewModel#saveChip(): saving chip under parent $parentId")
-
-        repository.insertChip(chip)
-    }
-
-    override fun isParentTopic(isTopic: Boolean) {
-
-
-        this.canNavigateUp = !isTopic
+    override fun <T> setData(data: T) {
+        TODO()
     }
 }

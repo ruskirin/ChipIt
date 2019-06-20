@@ -86,15 +86,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
 
         if(localViewModel.getParentId() != passedArgs.parentId)
             localViewModel.setParentId(passedArgs.parentId)
-
-        globalViewModel.getUpFlag().observe(this, Observer { flag ->
-            //Navigate up to the parent of the currently displayed chip
-            if(flag.touched) {
-                val id = localViewModel.getParentIdOfParent()
-
-                localViewModel.setParentId(id)
-            }
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -119,17 +110,10 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
             setHasFixedSize(true)
         }
 
-        val pathPanelLayout: LinearLayout = view.webPathAddButtonLayout
-
-        view.webPathAddButtonCamera.setOnTouchListener(this)
-        view.webPathAddButtonPhotos.setOnTouchListener(this)
-        view.webPathAddButtonCancel.setOnTouchListener(this)
-
-
         localViewModel.getParent()?.observe(this, Observer { parent ->
             Log.i("Life Event", "WebFragment#parentObserver: triggered!")
 
-            localViewModel.checkUpNavigation()
+//            localViewModel.checkUpNavigation()
 
             localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
@@ -142,13 +126,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
         })
 
         localTouchViewModel.pathCreated.observe(this, Observer { created ->
-
-            if(created) {
-                pathPanelLayout.visibility = View.VISIBLE
-
-            } else {
-                pathPanelLayout.visibility = View.GONE
-            }
+            TODO()
         })
 
         return view
@@ -280,9 +258,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
     //TODO: (FUTURE) should not be able to draw outside background rectangle
     override fun touchDown(x: Float, y: Float) {
 
-        globalViewModel.displayFab(false)
-        globalViewModel.displayUp(false)
-
         when(surfaceAction) {
 
             Constant.DRAW_PATH -> {
@@ -300,16 +275,7 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
             }
 
             Constant.SWIPE_EDGE -> {
-                if((point0.y - y) > Constant.SWIPE_BUFFER) {
-                    globalViewModel.displayFab(true)
-
-                    if(localViewModel.canNavigateUp)
-                        globalViewModel.displayUp(true)
-
-                } else {
-                    globalViewModel.displayFab(false)
-                    globalViewModel.displayUp(false)
-                }
+                TODO()
             }
         }
     }
@@ -346,64 +312,6 @@ class WebFragment : Fragment(), ChipView.ChipHandler, WebRecyclerAdapter.WebAdap
             R.id.webBtnRecyclerVis -> {
 
                 toggleRecyclerVis()
-            }
-
-            R.id.webPathAddButtonCamera -> {
-
-                val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                //Verifies that an application that can handle this intent exists
-                addChipCameraIntent.resolveActivity(activity!!.packageManager)
-
-                //TODO: handle error
-                val imageFile = try {
-                    CameraUtil.createImageFile(activity!!)
-
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    null
-                }
-
-                if (imageFile != null) {
-                    val imageUri = FileProvider.getUriForFile(
-                        activity!!,
-                        CameraUtil.IMAGE_PROVIDER_AUTHORITY,
-                        imageFile.file
-                    )
-
-                    addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                    startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
-
-                    //TODO (FUTURE): verify that the id exists (here or elsewhere)
-                    if (imageFile.storagePath.isNotEmpty()) {
-                        localViewModel.saveChip("", imageFile.storagePath, localTouchViewModel.getPathVertices())
-                        //Toggle flag
-                        localTouchViewModel.pathCreated.postValue(false)
-
-                        Log.i("Chip Creation",
-                            "ChipActivity#onTouch(): new chip inserted! Image location: ${imageFile.storagePath}")
-                    }
-
-                    return true
-                }
-            }
-
-            R.id.webPathAddButtonPhotos -> {
-
-                if(event.action == MotionEvent.ACTION_UP)
-                    return true
-
-                return false
-            }
-
-            R.id.webPathAddButtonCancel -> {
-
-                if(event.action == MotionEvent.ACTION_UP) {
-                    localTouchViewModel.pathCreated.postValue(false)
-
-                    return true
-                }
-
-                return false
             }
         }
 

@@ -46,47 +46,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-            android:id="@+id/webPathAddButtonLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/web_pathpanel_button_margin_vert"
-            android:layout_marginTop="@dimen/web_pathpanel_button_margin_vert"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-        <ImageButton
-                android:id="@+id/webPathAddButtonCamera"
-                android:layout_width="@dimen/web_pathpanel_button_side"
-                android:layout_height="@dimen/web_pathpanel_button_side"
-                android:layout_marginStart="@dimen/web_pathpanel_button_margin_horiz"
-                android:layout_marginEnd="@dimen/web_pathpanel_button_margin_horiz"
-                android:scaleType="fitXY"
-                android:background="@drawable/fab_button_round"
-                android:src="@mipmap/ic_add_camera"/>
-
-        <ImageButton
-                android:id="@+id/webPathAddButtonPhotos"
-                android:layout_width="@dimen/web_pathpanel_button_side"
-                android:layout_height="@dimen/web_pathpanel_button_side"
-                android:layout_marginStart="@dimen/web_pathpanel_button_margin_horiz"
-                android:layout_marginEnd="@dimen/web_pathpanel_button_margin_horiz"
-                android:scaleType="fitXY"
-                android:background="@drawable/fab_button_round"
-                android:src="@mipmap/ic_add_files"/>
-
-        <ImageButton
-                android:id="@+id/webPathAddButtonCancel"
-                android:layout_width="@dimen/web_pathpanel_button_side"
-                android:layout_height="@dimen/web_pathpanel_button_side"
-                android:layout_marginStart="@dimen/web_pathpanel_button_margin_horiz"
-                android:layout_marginEnd="@dimen/web_pathpanel_button_margin_horiz"
-                android:scaleType="fitXY"
-                android:background="@drawable/fab_button_round"
-                android:src="@mipmap/ic_cancel"/>
-
-    </LinearLayout>
-
 </FrameLayout>

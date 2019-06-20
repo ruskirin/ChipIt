@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_elevation_def">4dp</dimen>
-    <dimen name="directory_addpanel_button_margin_horiz">4dp</dimen>
-    <dimen name="directory_addpanel_button_margin_vert">2dp</dimen>
+    <dimen name="elevation_def">4dp</dimen>
+
+    <dimen name="editor_button_width">40dp</dimen>
+    <dimen name="editor_button_margin_horiz">4dp</dimen>
+    <dimen name="editor_button_negmargin_bot">-20dp</dimen>
+    <dimen name="editor_button_negmargin_end">-20dp</dimen>
+    <dimen name="editor_margin_horiz">16dp</dimen>
+    <dimen name="editor_desc_padding_top">8dp</dimen>
+    <dimen name="editor_desc_padding_horiz">8dp</dimen>
+    <dimen name="editor_desc_padding_bot">16dp</dimen>
+
     <dimen name="directory_addpanel_margin_bot">8dp</dimen>
     <dimen name="directory_addpanel_margin_end">8dp</dimen>
     <dimen name="directory_addpanel_button_side">64dp</dimen>
@@ -17,11 +25,9 @@
     <dimen name="web_recycler_chips_margin_vert">8dp</dimen>
     <dimen name="web_recycler_chips_margin_horiz">4dp</dimen>
 
-    <dimen name="directory_layout_button_branchup_width">60dp</dimen>
-    <dimen name="directory_recycler_button_edit_desc_next_side">32dp</dimen>
-
     <dimen name="album_recycler_button_expand_margin">8dp</dimen>
     <dimen name="album_recycler_button_expand_side">32dp</dimen>
 
-    <dimen name="topic_counter_side">40dp</dimen>
+    <dimen name="topic_btn_expand_side">24dp</dimen>
+    <dimen name="topic_counter_side">32dp</dimen>
 </resources>

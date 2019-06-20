@@ -4,20 +4,23 @@ import androidx.room.*
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.objects.CoordPoint
 
-interface BaseChipDao {
-
-    @Query("SELECT * FROM chips WHERE id = :id")
-    fun getChip(id: Long): Chip
+@Dao
+interface EditDao {
 
     @Query("SELECT image_location FROM chips WHERE id = :id")
     fun getChipImage(id: Long): String
 
-    @Transaction
-    @Query("SELECT id FROM chips WHERE parent_id = :id")
-    fun getChildrenIds(id: Long): List<Long>
+    @Query("SELECT id FROM chips WHERE parent_id = :parentId")
+    fun getChildrenIds(parentId: Long): List<Long>
+
+    @Query("UPDATE chips SET name = :name WHERE id = :id")
+    fun updateName(id: Long, name: String)
 
     @Query("UPDATE chips SET description = :desc WHERE id = :id")
-    fun updateDescription(id: Long, desc: String): Int
+    fun updateDescription(id: Long, desc: String)
+
+    @Query("UPDATE chips SET date_update = :date WHERE id = :id")
+    fun updateDate(id: Long, date: String)
 
     @Query("UPDATE chips SET image_location = :imgLocation WHERE id = :id")
     fun updateImage(id: Long, imgLocation: String): Int

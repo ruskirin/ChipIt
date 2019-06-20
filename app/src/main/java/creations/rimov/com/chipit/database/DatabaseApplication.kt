@@ -13,7 +13,6 @@ class DatabaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        database = Room.databaseBuilder(
-            this, ChipDatabase::class.java, "name-db").build()
+        database = Room.databaseBuilder(this, ChipDatabase::class.java, "name-db").build()
     }
 }

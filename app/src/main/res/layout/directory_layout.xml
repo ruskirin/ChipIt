@@ -9,41 +9,4 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    <LinearLayout
-            android:id="@+id/dirTopicAddLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/directory_addpanel_margin_bot"
-            android:layout_marginEnd="@dimen/directory_addpanel_margin_end"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-        <ImageButton
-                android:id="@+id/dirTopicAddCamera"
-                android:layout_width="@dimen/directory_addpanel_button_side"
-                android:layout_height="@dimen/directory_addpanel_button_side"
-                android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"
-                android:layout_marginEnd="@dimen/directory_addpanel_button_margin_horiz"
-                android:layout_marginTop="@dimen/directory_addpanel_button_margin_vert"
-                android:layout_marginBottom="@dimen/directory_addpanel_button_margin_vert"
-                android:scaleType="fitXY"
-                android:background="@drawable/fab_button_round"
-                android:src="@mipmap/ic_add_camera"/>
-
-        <ImageButton
-                android:id="@+id/dirTopicAddFiles"
-                android:layout_width="@dimen/directory_addpanel_button_side"
-                android:layout_height="@dimen/directory_addpanel_button_side"
-                android:layout_marginStart="@dimen/directory_addpanel_button_margin_horiz"
-                android:layout_marginEnd="@dimen/directory_addpanel_button_margin_horiz"
-                android:layout_marginTop="@dimen/directory_addpanel_button_margin_vert"
-                android:layout_marginBottom="@dimen/directory_addpanel_button_margin_vert"
-                android:scaleType="fitXY"
-                android:background="@drawable/fab_button_round"
-                android:src="@mipmap/ic_add_files"/>
-
-    </LinearLayout>
-
 </FrameLayout>

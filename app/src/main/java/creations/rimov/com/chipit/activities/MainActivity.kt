@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -15,9 +13,10 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.viewgroups.EditorLayout
 import kotlinx.android.synthetic.main.app_layout.*
 
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
 
     object Constants {
         const val GESTURE_DOWN = 400
@@ -25,6 +24,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         const val GESTURE_LONG_TOUCH = 402
     }
 
+    //TODO FUTURE: maybe move screen dimen to globalViewModel?
     private var screenHeight: Float = 0f
     private var screenWidth: Float = 0f
 
@@ -33,12 +33,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
-
     private val navController: NavController by lazy {navHostFragment.navController}
 
-    private val branchUpButton: ImageButton by lazy {appButtonBranchup}
+    private val editor: EditorLayout by lazy {appEditor}
 
-    private val actionFab: FloatingActionButton by lazy {appFab}
+    private val fab: FloatingActionButton by lazy {appFab}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,43 +49,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         navController.addOnDestinationChangedListener(this)
 
-        actionFab.setOnClickListener {
-            globalViewModel.touchFab(true)
-        }
-
-        branchUpButton.setOnClickListener {
-            globalViewModel.touchUp(true)
-        }
-
-        globalViewModel.getFabFlag().observe(this, Observer { flag ->
-
-            when {
-                flag.display -> {
-                    actionFab.show()
-                }
-                !flag.display -> {
-                    actionFab.hide()
-                }
-                flag.touched -> {
-                    actionFab.hide()
-                }
-            }
-        })
-
-        globalViewModel.getUpFlag().observe(this, Observer { flag ->
-
-            when {
-                flag.display -> {
-                    branchUpButton.visibility = View.VISIBLE
-                }
-                !flag.display -> {
-                    branchUpButton.visibility = View.GONE
-                }
-                flag.touched -> {
-                    actionFab.hide()
-                }
-            }
-        })
+        editor.setClickListener(this)
+        fab.setOnClickListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -101,19 +65,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
 
-                actionFab.setImageDrawable(
+                fab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
-
-                globalViewModel.displayFab(true)
             }
+
             R.id.albumFragment -> {
                 Log.i("Navigation", "Destination: Album")
 
-                actionFab.setImageDrawable(
+                fab.setImageDrawable(
                     ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
-
-                globalViewModel.displayFab(true)
             }
+
             R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
@@ -134,6 +96,61 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             }
         }
+    }
+
+    override fun onClick(view: View?) {
+
+        when(view?.id) {
+            //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
+            R.id.appFab -> {
+                when(navController.currentDestination?.id) {
+
+                    R.id.directoryFragment -> {
+                        editor.startTopicEdit()
+                    }
+
+                    R.id.albumFragment -> {
+                        editor.startChipEdit()
+                    }
+                }
+            }
+
+            R.id.editorName -> {
+
+
+            }
+
+            R.id.editorImage -> {
+
+
+            }
+
+            R.id.editorDesc -> {
+
+
+            }
+
+            R.id.editorBtnSave -> {
+
+
+            }
+
+            R.id.editorBtnCancel -> {
+
+
+            }
+
+            R.id.editorBtnDelete -> {
+
+
+            }
+        }
+    }
+
+    private fun toggleFab() {
+
+        if(fab.isOrWillBeShown) fab.hide()
+        else fab.show()
     }
 
     private fun setDisplayDimen() {

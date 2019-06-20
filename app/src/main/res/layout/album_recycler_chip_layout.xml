@@ -32,7 +32,7 @@
             android:layout_marginEnd="@dimen/album_recycler_button_expand_margin"
             android:layout_marginTop="@dimen/album_recycler_button_expand_margin"
             android:scaleType="fitXY"
-            android:background="@drawable/fab_button_round"
+            android:background="@drawable/button_round"
             android:src="@drawable/ic_expand"/>
 
     <LinearLayout

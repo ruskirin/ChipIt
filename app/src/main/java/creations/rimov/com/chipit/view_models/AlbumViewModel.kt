@@ -10,14 +10,14 @@ import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
-import creations.rimov.com.chipit.database.repos.AlbumRepository
+import creations.rimov.com.chipit.database.repos.AccessRepo
 import creations.rimov.com.chipit.objects.ViewModelPrompts
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
+class AlbumViewModel : ViewModel(), AccessRepo.RepoHandler {
 
-    private val repository = AlbumRepository(DatabaseApplication.database!!, this)
+    private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
     private val parentUpper = MutableLiveData<ChipIdentity>()
 
@@ -45,20 +45,6 @@ class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
         repository.getChipChildrenCardsLive(it.id)
     }
 
-    /**Insert child into horizontal chip row**/
-    fun saveChip(name: String, imgLocation: String?) {
-        val chip = Chip(0, getParentId(), false,
-            name, "",
-            SimpleDateFormat("MM-dd-yyyy", Locale.US).format(Date()),
-            imgLocation = imgLocation ?: "")
-
-        repository.insertChip(chip)
-    }
-
-    fun deleteChip(chipId: Long) {
-        repository.deleteChipAndChildren(chipId)
-    }
-
     fun handleChipGesture(gesture: Int) {
 
         when(gesture) {
@@ -79,7 +65,7 @@ class AlbumViewModel : ViewModel(), AlbumRepository.WebRepoHandler {
         repository.setParentIdentity(getParentIdOfParent(), false)
     }
 
-    override fun updateParent(parent: ChipIdentity) {
-        parentUpper.postValue(parent)
+    override fun <ChipIdentity> setData(data: ChipIdentity) {
+        parentUpper.postValue(data as creations.rimov.com.chipit.database.objects.ChipIdentity)
     }
 }

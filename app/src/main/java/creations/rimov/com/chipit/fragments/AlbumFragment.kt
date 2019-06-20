@@ -22,7 +22,7 @@ import creations.rimov.com.chipit.view_models.AlbumViewModel
 import kotlinx.android.synthetic.main.album_layout.view.*
 import java.io.IOException
 
-class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.AlbumAdapterHandler {
+class AlbumFragment : Fragment(), AlbumRecyclerAdapter.AlbumAdapterHandler {
 
     private lateinit var globalViewModel: GlobalViewModel
 
@@ -59,21 +59,10 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
             else
                 localViewModel.setParent(globalViewModel.chipFragParentId)
         }
-
-        globalViewModel.getUpFlag().observe(this, Observer { flag ->
-
-            if(flag.touched)
-                localViewModel.navigateUpBranch()
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.album_layout, container, false)
-
-        val addChipLayout = view.albumAddLayout
-        //TODO: create a custom button
-        view.albumAddCamera.setOnClickListener(this)
-        view.albumAddPhotos.setOnClickListener(this)
 
         //Horizontal recycler view for "sibling" children
         view.albumRecycler.apply {
@@ -82,21 +71,10 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
             setHasFixedSize(true)
         }
 
-        globalViewModel.getFabFlag().observe(this, Observer { flag ->
-
-            if(flag.touched) {
-                addChipLayout.visibility = View.VISIBLE
-
-            } else {
-                addChipLayout.visibility = View.GONE
-            }
-        })
-
         localViewModel.getChips().observe(this, Observer { chips ->
             recyclerAdapter.setChips(chips)
 
             val isTopic: Boolean = localViewModel.getParent().value?.isTopic ?: true
-            globalViewModel.displayUp(!isTopic)
 
             localViewModel.getParent().value?.let {
                 globalViewModel.setAlbumChip(it)
@@ -132,42 +110,6 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
         return view
     }
 
-    override fun onClick(view: View?) {
-
-        when(view?.id) {
-
-            R.id.albumAddCamera -> {
-                val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                //Verifies that an application that can handle this intent exists
-                addChipCameraIntent.resolveActivity(activity!!.packageManager)
-
-                //TODO: handle error
-                val imageFile = try {
-                    CameraUtil.createImageFile(activity!!)
-
-                } catch(e: IOException) {
-                    e.printStackTrace()
-                    null
-                }
-
-                if(imageFile != null) {
-                    val imageUri = FileProvider.getUriForFile(activity!!,
-                        CameraUtil.IMAGE_PROVIDER_AUTHORITY,
-                        imageFile.file)
-
-                    addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                    startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
-
-                    if(imageFile.storagePath.isNotEmpty())
-                        localViewModel.saveChip("Lorem Ipsum", imageFile.storagePath)
-                }
-            }
-            R.id.albumAddPhotos -> {
-
-            }
-        }
-    }
-
     override fun topicTouch(id: Long, event: MotionEvent) {
         gestureDetector.onTouchEvent(event)
     }
@@ -177,7 +119,7 @@ class AlbumFragment : Fragment(), View.OnClickListener, AlbumRecyclerAdapter.Alb
     }
 
     override fun topicDelete(id: Long) {
-        localViewModel.deleteChip(id)
+        TODO()
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

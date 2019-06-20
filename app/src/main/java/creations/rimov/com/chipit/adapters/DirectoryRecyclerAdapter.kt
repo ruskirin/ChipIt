@@ -2,13 +2,8 @@ package creations.rimov.com.chipit.adapters
 
 import android.content.Context
 import android.view.*
-import android.widget.*
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.database.objects.TopicAndChildren
 import creations.rimov.com.chipit.viewgroups.TopicLayout
 import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*

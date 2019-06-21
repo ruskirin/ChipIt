@@ -1,34 +1,30 @@
 package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
-import android.graphics.drawable.Drawable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.textfield.TextInputEditText
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.objects.Chip
 import kotlinx.android.synthetic.main.editor_layout.view.*
 
 class EditorLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
 
-    private val image: ImageView by lazy {editorImage}
-    private val name: EditText by lazy {editorName}
-    private val desc: EditText by lazy {editorDesc}
-    private val btnDelete: ImageButton by lazy {editorBtnDelete}
+    private lateinit var chipEdit: Chip
 
-    private val DEF_NAME: String
-    private val DEF_DESC: String
-    private val DEF_IMAGE: Drawable
+    private val imageFrame: FrameLayout by lazy {editorImageFrame}
+    private val image: ImageView by lazy {editorImage}
+    private val name: TextInputEditText by lazy {editorName}
+    private val desc: TextInputEditText by lazy {editorDesc}
+    private val btnDelete: ImageButton by lazy {editorBtnDelete}
 
     init {
         View.inflate(context, R.layout.editor_layout, this)
-
-        DEF_NAME = resources.getString(R.string.editor_name_def)
-        DEF_DESC = resources.getString(R.string.editor_desc_def)
-        DEF_IMAGE = resources.getDrawable(R.drawable.ic_photo_empty, null)
     }
 
     fun setClickListener(listener: OnClickListener) {
@@ -41,47 +37,78 @@ class EditorLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(con
         btnDelete.setOnClickListener(listener)
     }
 
+    fun createTopic() {
+
+        startTopicEdit()
+    }
+
+    fun createChip(parentId: Long?) {
+
+        startChipEdit()
+    }
+
     /**Display the necessary windows, and set the initial EditText values**/
-    fun startTopicEdit(name: String = DEF_NAME,
-                       desc: String = DEF_DESC) {
+    fun editTopic(chip: Chip) {
 
-        this.visibility = View.VISIBLE
+        chipEdit = chip
 
-        setEditTextDef(name, desc)
+        setNameAndDesc(chip.name, chip.desc)
 
-        showImage(false)
-        showDelete(false)
+        startTopicEdit()
     }
 
-    fun startChipEdit(name: String = DEF_NAME,
-                      desc: String = DEF_DESC,
-                      imageLoc: String = "") {
+    fun editChip(chip: Chip) {
 
-        TODO()
+        chipEdit = chip
+
+        setNameAndDesc(chip.name, chip.desc)
+
+        startChipEdit()
     }
 
-    private fun saveEdit() {
+    fun finishEdit(save: Boolean): Chip? {
+
+        if(save) {
+            if(!::chipEdit.isInitialized || !chipEdit.isTopic)
+                TODO("save image")
+
+            chipEdit.name = name.text.toString()
+            chipEdit.desc = desc.text.toString()
+
+            return chipEdit
+        }
 
         this.visibility = View.GONE
+        return null
     }
 
-    private fun showImage(show: Boolean) {
-
-        image.visibility =
-            if(show) View.VISIBLE
-            else View.GONE
+    fun setNameTextWatcher(textWatcher: TextWatcher) {
+        name.addTextChangedListener(textWatcher)
     }
 
-    private fun showDelete(show: Boolean) {
-
-        btnDelete.visibility =
-            if(show) View.VISIBLE
-            else View.GONE
+    fun setDescTextWatcher(textWatcher: TextWatcher) {
+        desc.addTextChangedListener(textWatcher)
     }
 
-    private fun setEditTextDef(name: String, desc: String) {
+    private fun startTopicEdit() {
 
-        this.name.setText(name)
-        this.desc.setText(desc)
+        this.visibility = View.VISIBLE
+        imageFrame.visibility = View.GONE
+        btnDelete.visibility = View.VISIBLE
+    }
+
+    private fun startChipEdit() {
+
+        this.visibility = View.VISIBLE
+        imageFrame.visibility = View.VISIBLE
+        btnDelete.visibility = View.VISIBLE
+    }
+
+    private fun setNameAndDesc(name: String, desc: String) {
+
+        if(name.isNotEmpty())
+            this.name.setText(name)
+        if(desc.isNotEmpty())
+            this.desc.setText(desc)
     }
 }

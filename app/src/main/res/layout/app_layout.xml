@@ -30,7 +30,7 @@
             <FrameLayout
                     android:id="@+id/toolbarExtLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     app:layout_collapseMode="parallax">
 
                 <ImageView
@@ -45,7 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="@string/directory_recycler_topic_desc_default"
+                        android:text="@string/editor_desc_def"
                         android:visibility="gone"/>
 
             </FrameLayout>
@@ -84,8 +84,6 @@
             android:layout_marginStart="@dimen/editor_margin_horiz"
             android:layout_marginEnd="@dimen/editor_margin_horiz"
             android:elevation="@dimen/elevation_def"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

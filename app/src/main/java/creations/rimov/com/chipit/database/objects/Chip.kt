@@ -5,30 +5,32 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import creations.rimov.com.chipit.objects.CoordPoint
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(
     tableName = "chips",
     indices = [Index(value = ["id"], unique = true)]
 )
 
-data class Chip(
+data class Chip(@PrimaryKey(autoGenerate = true) val id: Long,
 
-    @PrimaryKey(autoGenerate = true) val id: Long,
+                @ColumnInfo(name = "parent_id") var parentId: Long? = null,
 
-    @ColumnInfo(name = "parent_id") val parentId: Long,
+                @ColumnInfo(name = "is_topic") var isTopic: Boolean = false,
 
-    @ColumnInfo(name = "is_topic") val isTopic: Boolean = false,
+                var name: String = "",
 
-    var name: String = "NAME",
+                @ColumnInfo(name = "description") var desc: String = "",
 
-    @ColumnInfo(name = "description") var desc: String,
+                @ColumnInfo(name = "date_create") val created: String =
+                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Date()),
 
-    @ColumnInfo(name = "date_create") val created: String,
+                @ColumnInfo(name = "date_update") var updated: String =
+                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Date()),
 
-    @ColumnInfo(name = "date_update") var updated: String = "",
+                @ColumnInfo(name = "num_children") var counter: Int = 0,
 
-    @ColumnInfo(name = "num_children") var counter: Int = 0,
+                @ColumnInfo(name = "image_location") var imgLocation: String = "",
 
-    @ColumnInfo(name = "image_location") var imgLocation: String = "",
-
-    val vertices: List<CoordPoint>? = mutableListOf())
+                var vertices: MutableList<CoordPoint>? = null)

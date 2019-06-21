@@ -3,9 +3,11 @@ package creations.rimov.com.chipit.activities
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -51,6 +53,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         editor.setClickListener(this)
         fab.setOnClickListener(this)
+
+        globalViewModel.getChipToEdit().observe(this, Observer { chip ->
+
+            if(chip.isTopic) editor.editTopic(chip)
+            else editor.editChip(chip)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -64,16 +72,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
-
-                fab.setImageDrawable(
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
             }
 
             R.id.albumFragment -> {
                 Log.i("Navigation", "Destination: Album")
-
-                fab.setImageDrawable(
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_add_fab_image, null))
             }
 
             R.id.webFragment -> {
@@ -86,11 +88,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onBackPressed() {
 
         when(navController.currentDestination?.id) {
-
             R.id.albumFragment -> {
                 navController.navigate(R.id.action_albumFragment_to_directoryFragment)
 
             }
+
             R.id.webFragment -> {
                 navController.navigate(R.id.action_webFragment_to_albumFragment)
 
@@ -98,19 +100,25 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
+    private var create: Boolean = false //Flag to indicate the action performed in Editor
+
     override fun onClick(view: View?) {
+
+        create = false
 
         when(view?.id) {
             //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
             R.id.appFab -> {
+                create = true //Creating a new Chip
+
                 when(navController.currentDestination?.id) {
 
                     R.id.directoryFragment -> {
-                        editor.startTopicEdit()
+                        editor.createTopic()
                     }
 
                     R.id.albumFragment -> {
-                        editor.startChipEdit()
+//                        editor.createChip(parentid)
                     }
                 }
             }
@@ -132,12 +140,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.editorBtnSave -> {
 
+                val chip = editor.finishEdit(true)
 
+                chip?.let {
+                    if(create) globalViewModel.insertChip(it)
+                    else globalViewModel.updateChip(it)
+                }
             }
 
             R.id.editorBtnCancel -> {
 
-
+                editor.finishEdit(false)
             }
 
             R.id.editorBtnDelete -> {

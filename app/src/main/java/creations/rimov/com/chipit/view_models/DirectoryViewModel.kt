@@ -13,7 +13,6 @@ import creations.rimov.com.chipit.objects.ViewModelPrompts
 
 class DirectoryViewModel : ViewModel(), AccessRepo.RepoHandler {
 
-    //TODO NOW: have to send the DirHandler below, don't know how my head hurts
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
     private val topics: MutableLiveData<List<TopicAndChildren>> = MutableLiveData()
@@ -21,7 +20,6 @@ class DirectoryViewModel : ViewModel(), AccessRepo.RepoHandler {
     val prompts = MutableLiveData<ViewModelPrompts>()
 
 
-    /** Repository functions **/
     fun getTopics() = topics
 
     fun updateTopics() {

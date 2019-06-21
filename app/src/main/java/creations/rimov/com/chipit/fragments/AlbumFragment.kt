@@ -97,7 +97,7 @@ class AlbumFragment : Fragment(), AlbumRecyclerAdapter.AlbumAdapterHandler {
                     val directions = AlbumFragmentDirections.actionAlbumFragmentToWebFragment(id)
                     findNavController().navigate(directions)
 
-                    globalViewModel.saveChipFragParentId(localViewModel.getParentId())
+                    globalViewModel.chipFragParentId = localViewModel.getParentId()
                 }
 
                 prompt.editChip -> {

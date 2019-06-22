@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.database.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.database.repos.EditRepo
 
 class GlobalViewModel : ViewModel() {
@@ -28,24 +29,28 @@ class GlobalViewModel : ViewModel() {
         albumChip.postValue(chip)
     }
 
-    fun updateChip(chip: Chip) {
-        repository.updateChip(chip)
+    fun updateChipBasic(id: Long, name: String, desc: String, imgLocation: String) {
+
+        val chip = ChipUpdateBasic.set(id, name, desc, imgLocation)
+
+        repository.updateChipBasic(chip)
     }
 
     /**Insert a Chip into the database "chips"**/
     fun insertChip(chip: Chip) {
 
         val save = Chip(
-            0L,
+            chip.id,
             chip.parentId,
             chip.isTopic,
             chip.name,
-            chip.desc)
+            chip.desc,
+            counter = chip.counter)
 
         repository.insertChip(save)
     }
 
-    fun deleteChip(chip: Chip) {
-        repository.deleteChip(chip)
+    fun deleteChip(id: Long, parentId: Long?, counter: Int) {
+        repository.deleteChip(Chip(id, parentId, counter = counter))
     }
 }

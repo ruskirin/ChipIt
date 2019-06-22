@@ -73,11 +73,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 Log.i("Navigation", "Destination: Directory")
             }
 
-            R.id.albumFragment -> {
+            R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Album")
             }
 
-            R.id.webFragment -> {
+            R.id.chipperFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
             }
@@ -87,13 +87,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onBackPressed() {
 
         when(navController.currentDestination?.id) {
-            R.id.albumFragment -> {
-                navController.navigate(R.id.action_albumFragment_to_directoryFragment)
+            R.id.webFragment -> {
+                navController.navigate(R.id.action_webFragment_to_directoryFragment)
 
             }
 
-            R.id.webFragment -> {
-                navController.navigate(R.id.action_webFragment_to_albumFragment)
+            R.id.chipperFragment -> {
+                navController.navigate(R.id.action_chipperFragment_to_webFragment)
 
             }
         }
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                         editor.createTopic()
                     }
 
-                    R.id.albumFragment -> {
+                    R.id.webFragment -> {
 //                        editor.createChip(parentid)
                     }
                 }
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     Log.i("Touch Event", "MainActivity#onClick(): chip saved! Topic? ${it.isTopic}")
 
                     if(create) globalViewModel.insertChip(it)
-                    else globalViewModel.updateChip(it)
+                    else globalViewModel.updateChipBasic(chip.id, chip.name, chip.desc, chip.imgLocation)
                 }
 
                 create = false

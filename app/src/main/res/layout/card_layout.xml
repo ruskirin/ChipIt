@@ -1,48 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <ImageView
+            android:id="@+id/cardImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_alignParentTop="true"/>
 
-        <ImageView
-                android:id="@+id/cardImage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/cardName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cardImage"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/cardCounter"
+            android:gravity="center_horizontal"
+            android:background="@color/colorTextBackground"/>
 
-        <TextView
-                android:id="@+id/cardName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:background="@color/colorTextBackground"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/cardRecyclerEditLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+    <TextView
+            android:id="@+id/cardCounter"
+            android:layout_width="@dimen/topic_counter_side"
+            android:layout_height="@dimen/topic_counter_side"
+            android:layout_below="@id/cardImage"
+            android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:background="@android:drawable/screen_background_dark_transparent"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-        <ImageButton
-                android:id="@+id/cardRecyclerBtnEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/recycler_butotn_edit_topic"/>
-
-        <ImageButton
-                android:id="@+id/cardRecyclerBtnDelete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/recycler_button_edit_delete"/>
-
-    </LinearLayout>
+            android:background="@drawable/button_round"/>
 
 </merge>

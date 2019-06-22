@@ -21,17 +21,17 @@ interface ChipDao {
     fun getChipTopicsLive(): LiveData<List<ChipTopic>>
 
     @Transaction
-    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, num_children, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipCards(parentId: Long): List<ChipCard>
 
     @Transaction
-    @Query("SELECT id, name, image_location FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, num_children, image_location FROM chips WHERE parent_id = :parentId")
     fun getChipCardsLive(parentId: Long): LiveData<List<ChipCard>>
 
-    @Query("SELECT id, parent_id, is_topic, description, image_location FROM chips WHERE id = :id")
+    @Query("SELECT id, parent_id, is_topic, name, description, date_create, num_children, image_location FROM chips WHERE id = :id")
     fun getChipIdentity(id: Long): ChipIdentity
 
-    @Query("SELECT id, parent_id, is_topic, description, image_location FROM chips WHERE id = :id")
+    @Query("SELECT id, parent_id, is_topic, name, description, date_create, num_children, image_location FROM chips WHERE id = :id")
     fun getChipIdentityLive(id: Long): LiveData<ChipIdentity>
 
     @Transaction
@@ -69,8 +69,9 @@ interface ChipDao {
     @Query("UPDATE chips SET vertices = :vertices WHERE id = :id")
     fun updateVertices(id: Long, vertices: List<CoordPoint>)
 
-    @Update
-    fun updateChip(chip: Chip)
+    /**Update the standard information**/
+    @Query("UPDATE chips SET name = :name, description = :desc, image_location = :imgLocation WHERE id = :id")
+    fun updateChipBasic(id: Long, name: String, desc: String, imgLocation: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChip(chip: Chip): Long

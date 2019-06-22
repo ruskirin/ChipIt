@@ -51,7 +51,7 @@ data class ChipPath(
         }
 
         list.forEachIndexed { i, point ->
-            //if (first vertex OR last vertex then only create 1 copy)
+            //if (first vertex OR last vertex then only dateCreate 1 copy)
             if (i == 0 || i == list.lastIndex) {
                 verticesF[idx] = point.x
                 verticesF[++idx] = point.y

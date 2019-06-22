@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.chipper_recycler_chip_layout.view.*
 
 class ChipperRecyclerAdapter(
     private val context: Context,
-    private val touchHandler: WebAdapterHandler) : RecyclerView.Adapter<ChipperRecyclerAdapter.WebViewHolder>() {
+    private val touchHandler: WebAdapterHandler) : RecyclerView.Adapter<ChipperRecyclerAdapter.ChipperViewHolder>() {
 
     private lateinit var chips: List<ChipPath>
 
@@ -30,10 +30,10 @@ class ChipperRecyclerAdapter(
     }
 
     //TODO NOW: ImageView below throws IllegalStateException
-    inner class WebViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    inner class ChipperViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val image: ImageView = itemView.chipperRecyclerImage.apply {
-            setOnTouchListener(this@WebViewHolder)
+            setOnTouchListener(this@ChipperViewHolder)
         }
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
@@ -59,16 +59,16 @@ class ChipperRecyclerAdapter(
 
     override fun getItemId(position: Int) = chips[position].id
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipperViewHolder {
         val chipHolder =
             LayoutInflater.from(context).inflate(R.layout.chipper_recycler_chip_layout, parent, false)
 
-        return WebViewHolder(chipHolder)
+        return ChipperViewHolder(chipHolder)
     }
 
     //TODO (IMPORTANT): might be a memory leak with TextView here, check logs for the message, then follow:
     //                   https://stackoverflow.com/questions/49513726/android-memory-leak-with-fragments
-    override fun onBindViewHolder(holder: WebViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ChipperViewHolder, position: Int) {
 
         Glide.with(context)
             .load(chips[position].imgLocation)

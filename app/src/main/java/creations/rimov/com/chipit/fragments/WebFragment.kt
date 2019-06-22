@@ -13,11 +13,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.web_layout.view.*
 
-class WebFragment : Fragment(), WebRecyclerAdapter.AlbumAdapterHandler {
+class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
 
     private lateinit var globalViewModel: GlobalViewModel
 
@@ -105,16 +108,20 @@ class WebFragment : Fragment(), WebRecyclerAdapter.AlbumAdapterHandler {
         return view
     }
 
-    override fun topicTouch(id: Long, event: MotionEvent) {
+    override fun chipTouch(event: MotionEvent) {
         gestureDetector.onTouchEvent(event)
     }
 
-    override fun topicExpand(id: Long) {
-        localViewModel.setParent(id)
+    override fun chipEdit(chip: ChipIdentity) {
+
+        globalViewModel.setChipToEdit(
+            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
+                created = chip.dateCreate, counter = chip.counter))
     }
 
-    override fun topicDelete(id: Long) {
-        TODO()
+    override fun chipDelete(chip: ChipCard) {
+
+        globalViewModel.deleteChip(chip.id, localViewModel.getParentId(), chip.counter)
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

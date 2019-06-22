@@ -76,7 +76,7 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
             bitmap = TextureUtil.convertPathToBitmap(imgLocation)!!
 
         } catch(e: Exception) {
-            Log.e("ChipperViewModel", "#setBitmap(): could not create bitmap from passed image path!")
+            Log.e("ChipperViewModel", "#setBitmap(): could not dateCreate bitmap from passed image path!")
             e.printStackTrace()
 
         } finally {

@@ -5,23 +5,24 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
-import kotlinx.android.synthetic.main.card_layout.view.*
+import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.viewgroups.CardLayout
+import creations.rimov.com.chipit.viewgroups.ChipEditorLayout
+import kotlinx.android.synthetic.main.web_recycler_chip_layout.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
 class WebRecyclerAdapter(
     private val context: Context,
-    private val touchHandler: AlbumAdapterHandler) : RecyclerView.Adapter<WebRecyclerAdapter.ChipViewHolder>() {
+    private val touchHandler: WebAdapterHandler) : RecyclerView.Adapter<WebRecyclerAdapter.WebViewHolder>() {
 
     private lateinit var chips: List<ChipCard>
     //Reference to the touched chip
-    private lateinit var selectedChip: ChipViewHolder
+    lateinit var selectedChip: WebViewHolder
 
     init {
         //Adapter does not return proper id from overriden #getItemId() otherwise
@@ -39,55 +40,36 @@ class WebRecyclerAdapter(
             selectedChip.itemId
         else -1L
 
-    fun isEditing() = selectedChip.isEditing()
-
-    fun toggleEditing() {
-
-        if (::selectedChip.isInitialized)
-            selectedChip.toggleEditing()
-    }
-
     /**
      * VIEW HOLDER
      */
-    inner class ChipViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    inner class WebViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
-        val image: ImageView = itemView.cardImage
-        val topic: TextView = itemView.cardName
-
-        private val editLayout: LinearLayout = itemView.cardRecyclerEditLayout
+        val cardLayout: CardLayout = itemView.webRecyclerCard
+        val editLayout: ChipEditorLayout = itemView.webRecyclerEditor
 
         init {
-            itemView.albumRecyclerChipLayout.setOnTouchListener(this)
-
-            itemView.albumRecyclerBtnExpand.setOnTouchListener(this)
-            itemView.albumRecyclerEditImage.setOnTouchListener(this)
-            itemView.cardRecyclerBtnEdit.setOnTouchListener(this)
-            itemView.cardRecyclerBtnDelete.setOnTouchListener(this)
+            cardLayout.setOnTouchListener(this)
+            editLayout.setTouchListener(this)
         }
 
-        private fun setSelectedChip(chip: ChipViewHolder) {
+        private fun setSelectedChip(chip: WebViewHolder) {
 
             if(!::selectedChip.isInitialized)
                 selectedChip = chip
 
-            if(selectedChip.itemId != itemId) {
+            if(selectedChip.itemId == itemId)
+                return
 
-                if(selectedChip.isEditing())
-                    selectedChip.toggleEditing()
+            selectedChip.edit(false)
 
-                selectedChip = chip
-            }
+            selectedChip = chip
         }
 
-        fun isEditing() = selectedChip.editLayout.isVisible
+        fun isEditing() = editLayout.isVisible
 
-        fun toggleEditing() {
-
-            if (selectedChip.isEditing())
-                selectedChip.editLayout.visibility = View.GONE
-            else
-                selectedChip.editLayout.visibility = View.VISIBLE
+        fun edit(edit: Boolean) {
+            editLayout.show(edit)
         }
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
@@ -99,32 +81,18 @@ class WebRecyclerAdapter(
 
             when (view?.id) {
 
-                R.id.albumRecyclerChipLayout -> {
+                R.id.webRecyclerCard -> {
 
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedChip(this)
 
-                    touchHandler.topicTouch(id, event)
+                    touchHandler.chipTouch(event)
                 }
 
-                R.id.albumRecyclerBtnExpand -> {
+                R.id.chipEditorBtnDelete -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicExpand(id)
-                }
-
-                R.id.albumRecyclerEditImage -> {
-
-                }
-
-                R.id.cardRecyclerBtnEdit -> {
-
-                }
-
-                R.id.cardRecyclerBtnDelete -> {
-
-                    if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicDelete(id)
+                        touchHandler.chipDelete(chips[adapterPosition])
                 }
             }
 
@@ -134,36 +102,30 @@ class WebRecyclerAdapter(
     }
 
     override fun getItemCount() =
-        if (::chips.isInitialized)
-            chips.size
-        else
-            0
+        if (::chips.isInitialized) chips.size
+        else 0
 
     override fun getItemId(position: Int) = chips[position].id
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebViewHolder {
 
         val chipHolder = LayoutInflater.from(context)
             .inflate(R.layout.card_layout, parent, false)
 
-        return ChipViewHolder(chipHolder)
+        return WebViewHolder(chipHolder)
     }
 
-    override fun onBindViewHolder(holder: ChipViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: WebViewHolder, position: Int) {
 
-        holder.topic.text = chips[position].name
-        //TODO: load a default image if none can be found
-        Glide.with(context)
-            .load(chips[position].imgLocation)
-            .into(holder.image)
+        holder.cardLayout.setChip(chips[position])
     }
 
-    interface AlbumAdapterHandler {
+    interface WebAdapterHandler {
 
-        fun topicTouch(id: Long, event: MotionEvent)
+        fun chipTouch(event: MotionEvent)
 
-        fun topicExpand(id: Long)
+        fun chipEdit(chip: ChipIdentity)
 
-        fun topicDelete(id: Long)
+        fun chipDelete(chip: ChipCard)
     }
 }

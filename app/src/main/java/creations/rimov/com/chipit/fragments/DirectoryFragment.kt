@@ -81,9 +81,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
     override fun topicDelete(chip: ChipTopic) {
 
-        globalViewModel.deleteChip(
-            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
-                created = chip.dateCreate, updated = chip.dateUpdate, counter = chip.counter))
+        globalViewModel.deleteChip(chip.id, null, chip.counter)
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {

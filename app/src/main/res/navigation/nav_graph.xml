@@ -8,26 +8,20 @@
             android:id="@+id/directoryFragment"
             android:name="creations.rimov.com.chipit.fragments.DirectoryFragment"
             android:label="DirectoryFragment">
-        <action android:id="@+id/action_directoryFragment_to_albumFragment" app:destination="@id/albumFragment"/>
+        <action android:id="@+id/action_directoryFragment_to_webFragment" app:destination="@id/webFragment"/>
     </fragment>
-
-    <fragment
-            android:id="@+id/albumFragment"
-            android:name="creations.rimov.com.chipit.fragments.WebFragment"
-            android:label="AlbumFragment">
-        <action android:id="@+id/action_albumFragment_to_webFragment" app:destination="@id/webFragment"/>
-        <action android:id="@+id/action_albumFragment_to_directoryFragment" app:destination="@id/directoryFragment"
-                app:popUpToInclusive="true" app:popUpTo="@id/directoryFragment"/>
+    <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.fragments.WebFragment"
+              android:label="WebFragment">
+        <action android:id="@+id/action_webFragment_to_chipperFragment" app:destination="@id/chipperFragment"/>
+        <action android:id="@+id/action_webFragment_to_directoryFragment" app:destination="@id/directoryFragment"
+                app:popUpToInclusive="true"/>
         <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
-
-    <fragment
-            android:id="@+id/webFragment"
-            android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
-            android:label="WebFragment">
-        <action android:id="@+id/action_webFragment_to_albumFragment" app:destination="@id/albumFragment"
-                app:popUpToInclusive="true" app:popUpTo="@id/albumFragment"/>
-        <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
+    <fragment android:id="@+id/chipperFragment" android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
+              android:label="ChipperFragment">
+        <action android:id="@+id/action_chipperFragment_to_webFragment" app:destination="@id/webFragment"
+                app:popUpToInclusive="true"/>
+        <argument android:name="chipId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
 
 </navigation>

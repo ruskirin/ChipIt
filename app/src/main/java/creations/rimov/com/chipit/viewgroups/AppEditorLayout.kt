@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
 import kotlinx.android.synthetic.main.app_editor_layout.view.*
 
 class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {

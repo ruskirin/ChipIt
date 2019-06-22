@@ -8,7 +8,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
-class ChipView(cont: Context, attribs: AttributeSet)
+class ChipperView(cont: Context, attribs: AttributeSet)
     : SurfaceView(cont, attribs), SurfaceHolder.Callback {
 
     init {
@@ -19,19 +19,19 @@ class ChipView(cont: Context, attribs: AttributeSet)
     private lateinit var chipHandler: ChipHandler
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.i("ChipView", "#surfaceCreated()")
+        Log.i("ChipperView", "#surfaceCreated()")
 
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        Log.i("ChipView", "#surfaceChanged()")
+        Log.i("ChipperView", "#surfaceChanged()")
 
         chipHandler.setScreenDimen()
         chipHandler.setBitmapRect()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        Log.i("ChipView", "#surfaceDestroyed()")
+        Log.i("ChipperView", "#surfaceDestroyed()")
 
         //TODO (FUTURE): wrap up work
     }
@@ -42,7 +42,7 @@ class ChipView(cont: Context, attribs: AttributeSet)
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
 
-        Log.i("ChipView", "#dispatchDraw()")
+        Log.i("ChipperView", "#dispatchDraw()")
 
         if(canvas != null)
             chipHandler.drawScreen(canvas)

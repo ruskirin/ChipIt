@@ -3,19 +3,18 @@ package creations.rimov.com.chipit.activities
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import creations.rimov.com.chipit.viewgroups.EditorLayout
+import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
     private val navController: NavController by lazy {navHostFragment.navController}
 
-    private val editor: EditorLayout by lazy {appEditor}
+    private val editor: AppEditorLayout by lazy {appEditor}
 
     private val fab: FloatingActionButton by lazy {appFab}
 
@@ -104,8 +103,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onClick(view: View?) {
 
-        create = false
-
         when(view?.id) {
             //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
             R.id.appFab -> {
@@ -143,19 +140,26 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 val chip = editor.finishEdit(true)
 
                 chip?.let {
+                    Snackbar.make(fab, "Chip saved", Snackbar.LENGTH_SHORT)
+                    Log.i("Touch Event", "MainActivity#onClick(): chip saved! Topic? ${it.isTopic}")
+
                     if(create) globalViewModel.insertChip(it)
                     else globalViewModel.updateChip(it)
                 }
+
+                create = false
             }
 
             R.id.editorBtnCancel -> {
 
                 editor.finishEdit(false)
+
+                create = false
             }
 
             R.id.editorBtnDelete -> {
 
-
+                //TODO FUTURE: decide if you want to keep this
             }
         }
     }

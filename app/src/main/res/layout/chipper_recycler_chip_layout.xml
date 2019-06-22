@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ImageView
-        android:id="@+id/webRecyclerImage"
+        android:id="@+id/chipperRecyclerImage"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/web_recycler_chips_margin_horiz"

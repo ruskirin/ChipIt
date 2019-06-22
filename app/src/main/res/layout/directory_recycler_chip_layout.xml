@@ -11,4 +11,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+    <creations.rimov.com.chipit.viewgroups.ChipEditorLayout
+            android:id="@+id/dirRecyclerTopicEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="@android:drawable/screen_background_dark_transparent"
+            android:visibility="gone">
+
+    </creations.rimov.com.chipit.viewgroups.ChipEditorLayout>
+
 </androidx.cardview.widget.CardView>

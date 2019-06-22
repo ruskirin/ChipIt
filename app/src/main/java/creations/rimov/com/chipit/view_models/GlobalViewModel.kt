@@ -44,4 +44,8 @@ class GlobalViewModel : ViewModel() {
 
         repository.insertChip(save)
     }
+
+    fun deleteChip(chip: Chip) {
+        repository.deleteChip(chip)
+    }
 }

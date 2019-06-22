@@ -1,16 +1,17 @@
 package creations.rimov.com.chipit.view_models
 
-import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
-import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
-import creations.rimov.com.chipit.objects.CoordPoint
-import creations.rimov.com.chipit.util.TextureUtil
-import java.lang.Exception
+import creations.rimov.com.chipit.objects.ViewModelPrompts
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,85 +19,53 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
-    private val parentId: MutableLiveData<Long> = MutableLiveData()
-    //The chip currently viewed in the background and being worked on
-    private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
-        repository.getChipIdentityLive(it)
-    }
-    //Children of the main chip
-    private val children: LiveData<List<ChipPath>> = Transformations.switchMap(parentId) {
-        repository.getChipPathsLive(it)
-    }
+    private val parentUpper = MutableLiveData<ChipIdentity>()
 
-    private lateinit var bitmap: Bitmap
-    //Saved image path for present bitmap
-    private var imgLocation: String = ""
-
-    //Flag to redraw background bitmap
-    var backgroundChanged = false
-    //Is the parent of the current parent a name? Used to toggle branch up navigation
-//    var canNavigateUp = false
+    val prompts = MutableLiveData<ViewModelPrompts>()
 
 
-    fun setParentId(parentId: Long) {
+    fun setParent(parentId: Long) {
 
-        if(parentId != this.parentId.value) {
-            this.parentId.postValue(parentId)
+        if(parentId == -1L) {
+            Log.e("WebViewModel", "#setParentIdentity(): passed parentId == -1L")
+            return
         }
+
+        repository.setParentIdentity(parentId, false)
     }
 
-    fun getParentId() = parentId.value
+    fun getParent() = parentUpper
 
-    fun getParentIdOfParent() = parent.value?.parentId ?: -1L
+    fun getParentId() = parentUpper.value?.id ?: -1L
 
-    fun getParent(): LiveData<ChipIdentity>? = parent
+    fun getParentIdOfParent() = parentUpper.value?.parentId ?: -1L
 
-    fun getChildren(): LiveData<List<ChipPath>>? = children
+    //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
+    fun getChips(): LiveData<List<ChipCard>> = Transformations.switchMap(parentUpper) {
+        repository.getChipChildrenCardsLive(it.id)
+    }
 
-//    fun checkUpNavigation() {
-//        repository.isChipTopic(parent.value?.parentId ?: -1L)
-//    }
+    fun handleChipGesture(gesture: Int) {
 
-    /**Check if point landed inside one of the children**/
-    fun getTouchedChip(point: CoordPoint): ChipPath? {
+        when(gesture) {
 
-        children.value?.forEach { chip ->
-            if(chip.isInside(point)) {
-                return chip
+            MainActivity.Constants.GESTURE_UP -> {
+                prompts.postValue(ViewModelPrompts(toNextScreen = true))
+            }
+
+            MainActivity.Constants.GESTURE_LONG_TOUCH -> {
+                prompts.postValue(ViewModelPrompts(true))
             }
         }
-
-        return null
     }
 
-    fun setBitmap(imgLocation: String) {
-        this.imgLocation = imgLocation
+    /**Get the parent of parentUpper and set it as the current parent (sorry for the description); navigate up the "branch" of chips**/
+    fun navigateUpBranch() {
 
-        try {
-            bitmap = TextureUtil.convertPathToBitmap(imgLocation)!!
-
-        } catch(e: Exception) {
-            Log.e("WebViewModel", "#setBitmap(): could not create bitmap from passed image path!")
-            e.printStackTrace()
-
-        } finally {
-            backgroundChanged = true
-        }
+        repository.setParentIdentity(getParentIdOfParent(), false)
     }
 
-    fun getBitmap() =
-        if(::bitmap.isInitialized) bitmap
-        else null
-
-    fun getBitmapWidth() =
-        if(::bitmap.isInitialized) bitmap.width
-        else 0
-
-    fun getBitmapHeight() =
-        if(::bitmap.isInitialized) bitmap.height
-        else 0
-
-    override fun <T> setData(data: T) {
-        TODO()
+    override fun <ChipIdentity> setData(data: ChipIdentity) {
+        parentUpper.postValue(data as creations.rimov.com.chipit.database.objects.ChipIdentity)
     }
 }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterEnabled="true"
+            app:counterMaxLength="@integer/editor_name_maxlength">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editorName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:inputType="text"
+                android:maxLength="@integer/editor_name_maxlength"
+                android:maxLines="@integer/editor_name_maxline"
+                android:textSize="@dimen/appeditor_name_textsize"
+                android:textAllCaps="true"
+                android:hint="@string/editor_name_def"
+                android:background="@android:color/darker_gray"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/editorImage"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/app_editor_height"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_photo_empty"
+                android:visibility="gone"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:elevation="2dp"
+                android:paddingStart="@dimen/app_editor_desc_padding_horiz"
+                android:paddingEnd="@dimen/app_editor_desc_padding_horiz"
+                app:counterEnabled="true"
+                app:counterMaxLength="@integer/editor_desc_maxlength"
+                android:background="@android:drawable/screen_background_light_transparent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editorDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:maxLength="@integer/editor_desc_maxlength"
+                    android:hint="@string/editor_desc_def"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+            android:id="@+id/editorBtnsFinish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="horizontal">
+
+        <ImageButton
+                android:id="@+id/editorBtnSave"
+                android:layout_width="@dimen/app_editor_button_width"
+                android:layout_height="@dimen/app_editor_button_width"
+                android:layout_marginBottom="@dimen/app_editor_button_negmargin_bot"
+                android:layout_marginEnd="@dimen/app_editor_button_margin_horiz"
+                android:adjustViewBounds="true"
+                android:background="@drawable/button_round"
+                android:src="@drawable/ic_check"/>
+
+        <ImageButton
+                android:id="@+id/editorBtnCancel"
+                android:layout_width="@dimen/app_editor_button_width"
+                android:layout_height="@dimen/app_editor_button_width"
+                android:layout_marginBottom="@dimen/app_editor_button_negmargin_bot"
+                android:layout_marginStart="@dimen/app_editor_button_margin_horiz"
+                android:adjustViewBounds="true"
+                android:background="@drawable/button_round"
+                android:src="@drawable/ic_cancel"/>
+
+        <ImageButton
+                android:id="@+id/editorBtnDelete"
+                android:layout_width="@dimen/app_editor_button_width"
+                android:layout_height="@dimen/app_editor_button_width"
+                android:layout_marginBottom="@dimen/app_editor_button_negmargin_bot"
+                android:layout_marginStart="@dimen/app_editor_button_delete_margin_start"
+                android:adjustViewBounds="true"
+                android:background="@drawable/button_round"
+                android:src="@drawable/ic_delete"
+                android:visibility="gone"/>
+
+    </LinearLayout>
+
+</merge>

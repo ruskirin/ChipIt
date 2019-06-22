@@ -76,14 +76,16 @@
             app:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_add_fab_image"/>
 
-    <creations.rimov.com.chipit.viewgroups.EditorLayout
+    <creations.rimov.com.chipit.viewgroups.AppEditorLayout
             android:id="@+id/appEditor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/editor_margin_horiz"
-            android:layout_marginEnd="@dimen/editor_margin_horiz"
             android:elevation="@dimen/elevation_def"
+            android:layout_marginStart="@dimen/app_editor_margin_horiz"
+            android:layout_marginEnd="@dimen/app_editor_margin_horiz"
+            android:orientation="vertical"
+            android:background="@android:color/holo_orange_dark"
             android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

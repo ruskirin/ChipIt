@@ -7,11 +7,13 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import kotlinx.android.synthetic.main.directory_layout.view.*
@@ -37,8 +39,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
         Log.i("Life Event", "DirectoryFragment#onCreate()")
 
-        localViewModel.updateTopics()
-
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
@@ -63,48 +63,27 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
             recyclerAdapter.setTopics(topics)
         })
 
-//        localViewModel.prompts.observe(this, Observer { prompt ->
-//            val id = recyclerAdapter.getSelectedId()
-//
-//            if(id == -1L)
-//                return@Observer
-//
-//            when {
-//                prompt.toNextScreen -> {
-//                    //Edit screen out, cannot click on the view till it's closed
-//                    if(recyclerAdapter.isEditing())
-//                        return@Observer
-//
-//                    val directions = DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(id)
-//                    findNavController().navigate(directions)
-//                }
-//
-//                prompt.editChip -> {
-//
-//                    recyclerAdapter.toggleEditing()
-//                }
-//            }
-//        })
-
         return view
     }
 
     //Handle recyclerview's touched events
-    override fun topicTouch(id: Long, event: MotionEvent) {
+    override fun topicTouch(event: MotionEvent) {
 
         gestureDetector.onTouchEvent(event)
     }
 
-    override fun topicEditImage(id: Long, event: MotionEvent) {
-        TODO()
+    override fun topicEdit(chip: ChipTopic) {
+
+        globalViewModel.setChipToEdit(
+            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
+                created = chip.dateCreate, updated = chip.dateUpdate, counter = chip.counter))
     }
 
-    override fun topicEditDesc(id: Long, text: String) {
-        TODO()
-    }
+    override fun topicDelete(chip: ChipTopic) {
 
-    override fun topicDelete(id: Long) {
-        TODO()
+        globalViewModel.deleteChip(
+            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
+                created = chip.dateCreate, updated = chip.dateUpdate, counter = chip.counter))
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
@@ -119,7 +98,13 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
             Log.i("Touch Event", "onSingleTapUp()!")
 
-            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_UP)
+            //Edit screen out, cannot click on the view till it's closed
+            if(recyclerAdapter.selectedTopic.isEditing())
+                return false
+
+            val directions =
+                DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(recyclerAdapter.getSelectedId())
+            findNavController().navigate(directions)
 
             return true
         }
@@ -127,7 +112,10 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         override fun onLongPress(event: MotionEvent?) {
             Log.i("Touch Event", "onLongPress()!")
 
-            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_LONG_TOUCH)
+            if(recyclerAdapter.selectedTopic.isEditing())
+                recyclerAdapter.selectedTopic.edit(false)
+            else
+                recyclerAdapter.selectedTopic.edit(true)
         }
     }
 }

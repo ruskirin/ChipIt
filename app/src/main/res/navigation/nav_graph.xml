@@ -13,7 +13,7 @@
 
     <fragment
             android:id="@+id/albumFragment"
-            android:name="creations.rimov.com.chipit.fragments.AlbumFragment"
+            android:name="creations.rimov.com.chipit.fragments.WebFragment"
             android:label="AlbumFragment">
         <action android:id="@+id/action_albumFragment_to_webFragment" app:destination="@id/webFragment"/>
         <action android:id="@+id/action_albumFragment_to_directoryFragment" app:destination="@id/directoryFragment"
@@ -23,7 +23,7 @@
 
     <fragment
             android:id="@+id/webFragment"
-            android:name="creations.rimov.com.chipit.fragments.WebFragment"
+            android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
             android:label="WebFragment">
         <action android:id="@+id/action_webFragment_to_albumFragment" app:destination="@id/albumFragment"
                 app:popUpToInclusive="true" app:popUpTo="@id/albumFragment"/>

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.TopicChipAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.TopicAndChildren
+import creations.rimov.com.chipit.database.objects.ChipTopic
 import kotlinx.android.synthetic.main.topic_layout.view.*
 
 class TopicLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
@@ -45,22 +45,22 @@ class TopicLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         }
     }
 
-    fun setTopic(chipTopic: TopicAndChildren) {
+    fun setTopic(topic: ChipTopic) {
 
-        title.text = chipTopic.topic.name
-        counter.text = chipTopic.topic.counter.toString()
-        dateCreate.text = chipTopic.topic.dateCreate
-        dateUpdate.text = chipTopic.topic.dateUpdate
-        description.text = chipTopic.topic.desc
-
-        setChildren(chipTopic.children)
+        title.text = topic.name
+        counter.text = topic.counter.toString()
+        dateCreate.text = topic.dateCreate
+        dateUpdate.text = topic.dateUpdate
+        description.text = topic.desc
     }
 
     fun setChildren(chips: List<ChipCard>) {
         chipAdapter.setChildren(chips)
         chipAdapter.notifyDataSetChanged()
+    }
 
-        showChildren()
+    fun setClickListener(listener: OnClickListener) {
+        topicLayoutBtnExpand.setOnClickListener(listener)
     }
 
     fun showChildren() {

@@ -1,30 +1,28 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
-import android.util.Log
-import creations.rimov.com.chipit.database.daos.EditDao
+import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.util.CameraUtil
 
 object DbAsyncTasks {
 
-    class AsyncChipUpdate(private val editDao: EditDao,
-                          private val name: String?,
-                          private val imgLocation: String?) : AsyncTask<Long, Void, Void>() {
+    class AsyncChipUpdate(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
-        override fun doInBackground(vararg params: Long?): Void? {
+        override fun doInBackground(vararg params: Chip): Void? {
 
-            if(!name.isNullOrBlank()) editDao.updateDescription(params[0]!!, name)
-            if(!imgLocation.isNullOrBlank()) editDao.updateImage(params[0]!!, imgLocation)
+            dao.updateChip(params[0])
 
             return null
         }
     }
 
-    class InsertChip(private val dao: EditDao) : AsyncTask<Chip, Void, Void>() {
+    class InsertChip(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
+
             dao.insertChip(params[0])
+            dao.increaseCounter(params[0].parentId ?: return null, params[0].counter)
 
             return null
         }
@@ -67,15 +65,13 @@ object DbAsyncTasks {
 //        }
 //    }
 
-    //TODO FUTURE: this could be a long-running task, see if loading indication is needed
-    class DeleteChipsById(private val dao: EditDao) : AsyncTask<List<Long>, Void, Void>() {
+    class DeleteChipTree(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
-        override fun doInBackground(vararg params: List<Long>): Void? {
+        override fun doInBackground(vararg params: Chip): Void? {
 
-            params[0].forEach { id ->
-                CameraUtil.deleteImageFile(dao.getChipImage(id))
-                dao.deleteChip(id)
-            }
+            //TODO FUTURE: if you need to delete the stored, linked material as well then that has to be incorporated
+            dao.deleteChipTree(params[0].id)
+            dao.decreaseCounter(params[0].parentId ?: return null, params[0].counter)
 
             return null
         }

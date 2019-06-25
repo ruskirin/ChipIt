@@ -1,29 +1,29 @@
 package creations.rimov.com.chipit.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
-
-    object Constants {
-        const val GESTURE_DOWN = 400
-        const val GESTURE_UP = 401
-        const val GESTURE_LONG_TOUCH = 402
-    }
 
     //TODO FUTURE: maybe move screen dimen to globalViewModel?
     private var screenHeight: Float = 0f
@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
     private val navController: NavController by lazy {navHostFragment.navController}
 
+    private val toolbarConfig: AppBarConfiguration by lazy { AppBarConfiguration(navController.graph)}
+    private val toolbar: Toolbar by lazy {appToolbar}
+    private val toolbarWebExt: FrameLayout by lazy {toolbarExtWebLayout}
+
     private val editor: AppEditorLayout by lazy {appEditor}
 
     private val fab: FloatingActionButton by lazy {appFab}
@@ -45,8 +49,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_layout)
 
-        Log.i("Life Cycle", "MainActivity#onCreate(): created!")
         setDisplayDimen()
+
+        toolbarCollapseLayout.setupWithNavController(toolbar, navController, toolbarConfig)
 
         navController.addOnDestinationChangedListener(this)
 
@@ -67,19 +72,26 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
 
+        //TODO FUTURE: can add some init tasks or loading screens from here
+
         when(destination.id) {
 
             R.id.directoryFragment -> {
                 Log.i("Navigation", "Destination: Directory")
+
+                toolbarWebExt.visibility = View.GONE
             }
 
             R.id.webFragment -> {
                 Log.i("Navigation", "Destination: Album")
+
+                toolbarWebExt.visibility = View.VISIBLE
             }
 
             R.id.chipperFragment -> {
                 Log.i("Navigation", "Destination: Web")
 
+                toolbarWebExt.visibility = View.GONE
             }
         }
     }
@@ -115,7 +127,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     }
 
                     R.id.webFragment -> {
-//                        editor.createChip(parentid)
+                        editor.createChip(globalViewModel.getObservedChipId())
                     }
                 }
             }
@@ -127,7 +139,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.editorImage -> {
 
-
+                takePicture()
             }
 
             R.id.editorDesc -> {
@@ -136,25 +148,25 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
 
             R.id.editorBtnSave -> {
-
                 val chip = editor.finishEdit(true)
 
                 chip?.let {
-                    Snackbar.make(fab, "Chip saved", Snackbar.LENGTH_SHORT)
-                    Log.i("Touch Event", "MainActivity#onClick(): chip saved! Topic? ${it.isTopic}")
+                    //TODO FUTURE: add a snackbar here
 
-                    if(create) globalViewModel.insertChip(it)
-                    else globalViewModel.updateChipBasic(chip.id, chip.name, chip.desc, chip.imgLocation)
+                    if(create)
+                        globalViewModel.insertChip(it.parentId, it.isTopic, it.name, it.desc, it.counter, it.imgLocation)
+                    else
+                        globalViewModel.updateChipBasic(it.id, it.name, it.desc, it.imgLocation)
                 }
 
-                create = false
+                create = false //Reset flag
             }
 
             R.id.editorBtnCancel -> {
 
                 editor.finishEdit(false)
 
-                create = false
+                create = false //Reset flag
             }
 
             R.id.editorBtnDelete -> {
@@ -162,6 +174,22 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 //TODO FUTURE: decide if you want to keep this
             }
         }
+    }
+
+    private fun takePicture() {
+
+        val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        //Verifies that an application that can handle this intent exists
+        addChipCameraIntent.resolveActivity(this.packageManager)
+
+        val imageFile = CameraUtil.getImageFile(applicationContext) ?: return
+        val imageUri = CameraUtil.getImageUri(applicationContext, imageFile.file)
+
+        addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
+
+        if(imageFile.storagePath.isNotEmpty())
+            editor.setImage(imageFile.storagePath)
     }
 
     private fun toggleFab() {

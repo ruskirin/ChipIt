@@ -16,9 +16,8 @@ import kotlinx.android.synthetic.main.web_recycler_chip_layout.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
-class WebRecyclerAdapter(
-    private val context: Context,
-    private val touchHandler: WebAdapterHandler) : RecyclerView.Adapter<WebRecyclerAdapter.WebViewHolder>() {
+class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
+    : RecyclerView.Adapter<WebRecyclerAdapter.WebViewHolder>() {
 
     private lateinit var chips: List<ChipCard>
     //Reference to the touched chip
@@ -69,7 +68,9 @@ class WebRecyclerAdapter(
         fun isEditing() = editLayout.isVisible
 
         fun edit(edit: Boolean) {
-            editLayout.show(edit)
+
+            if(edit) editLayout.show(true)
+            else editLayout.hide()
         }
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
@@ -77,9 +78,7 @@ class WebRecyclerAdapter(
             if (event == null)
                 return false
 
-            val id = itemId
-
-            when (view?.id) {
+            when(view?.id) {
 
                 R.id.webRecyclerCard -> {
 
@@ -109,8 +108,8 @@ class WebRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebViewHolder {
 
-        val chipHolder = LayoutInflater.from(context)
-            .inflate(R.layout.card_layout, parent, false)
+        val chipHolder = LayoutInflater.from(parent.context)
+            .inflate(R.layout.web_recycler_chip_layout, parent, false)
 
         return WebViewHolder(chipHolder)
     }

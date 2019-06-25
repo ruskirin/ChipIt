@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputEditText
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
@@ -38,14 +39,14 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
     fun createTopic() {
 
-        initChip(true)
+        initChip(null, true)
 
         startTopicEdit(true)
     }
 
     fun createChip(parentId: Long?) {
 
-        initChip(false)
+        initChip(parentId, false)
 
         startChipEdit(true)
     }
@@ -76,14 +77,20 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
             return null
         }
 
-        if(::chipEdit.isInitialized && !chipEdit.isTopic)
-            TODO("save image")
-
         chipEdit.name = name.text.toString()
         chipEdit.desc = desc.text.toString()
 
         this.visibility = View.GONE
         return chipEdit
+    }
+
+    fun setImage(imgPath: String) {
+
+        chipEdit.imgLocation = imgPath
+
+        Glide.with(image.context)
+            .load(imgPath)
+            .into(image)
     }
 
     fun setNameTextWatcher(textWatcher: TextWatcher) {
@@ -120,10 +127,13 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
             this.desc.setText(desc)
     }
 
-    private fun initChip(isTopic: Boolean) {
-        chipEdit = Chip(0, isTopic = isTopic)
+    private fun initChip(parentId: Long?, isTopic: Boolean) {
+        chipEdit = Chip(0L, parentId, isTopic = isTopic)
 
         name.setText("")
         desc.setText("")
+        Glide.with(image.context)
+            .load(resources.getDrawable(R.drawable.ic_photo_empty, null))
+            .into(image)
     }
 }

@@ -19,46 +19,33 @@
             android:id="@+id/toolbarDisplayLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Widget.AppCompat.ActionBar">
+            android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/toolbarCollapseLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+                app:contentScrim="@color/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-            <FrameLayout
-                    android:id="@+id/toolbarExtLayout"
+            <creations.rimov.com.chipit.viewgroups.WebDetailLayout
+                    android:id="@+id/toolbarExtWebLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_collapseMode="parallax">
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="parallax"
+                    android:background="@android:color/black"
+                    android:visibility="gone">
 
-                <ImageView
-                        android:id="@+id/toolbarExtImg"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerInside"
-                        android:adjustViewBounds="true"/>
+            </creations.rimov.com.chipit.viewgroups.WebDetailLayout>
 
-                <TextView
-                        android:id="@+id/toolbarExtDesc"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/editor_desc_def"
-                        android:visibility="gone"/>
-
-            </FrameLayout>
-
-            <Toolbar
+            <androidx.appcompat.widget.Toolbar
                     android:id="@+id/appToolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:gravity="end|center_horizontal"
-                    app:popupTheme="@style/Widget.AppCompat.ActionBar"
-                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
-                    app:layout_collapseMode="pin"
-                    app:title="@string/dir_fragment_name"/>
+                    android:background="@color/colorPrimary"
+                    app:layout_collapseMode="pin"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -69,11 +56,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="@dimen/directory_addpanel_margin_bot"
-            android:layout_marginEnd="@dimen/directory_addpanel_margin_end"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/fab_margin"
+            app:layout_anchor="@id/appNavHostFragment"
+            app:layout_anchorGravity="bottom|end|right"
             app:fabSize="normal"
             app:elevation="@dimen/elevation_def"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorAccent"
             android:src="@drawable/ic_add_fab_image"/>
 
     <creations.rimov.com.chipit.viewgroups.AppEditorLayout

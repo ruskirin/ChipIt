@@ -2,66 +2,73 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-            android:id="@+id/topicLayoutTitle"
-            android:layout_width="wrap_content"
+    <RelativeLayout
+            android:id="@+id/topicLayoutHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            android:background="@android:color/holo_orange_dark"
+            android:elevation="@dimen/elevation_small">
 
-    <TextView
-            android:id="@+id/topicLayoutChildCount"
-            android:layout_width="@dimen/topic_counter_side"
-            android:layout_height="@dimen/topic_counter_side"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:background="@drawable/button_round"/>
+        <TextView
+                android:id="@+id/topicLayoutTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@id/topicLayoutChildCount"
+                android:textSize="@dimen/topic_name_textsize"/>
 
-    <TextView
-            android:id="@+id/topicLayoutDateCreate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/topicLayoutTitle"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+        <TextView
+                android:id="@+id/topicLayoutChildCount"
+                android:layout_width="@dimen/topic_counter_side"
+                android:layout_height="@dimen/topic_counter_side"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:gravity="center"
+                android:background="@drawable/button_round"/>
 
-    <TextView
-            android:id="@+id/topicLayoutDateUpdate"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/topicLayoutTitle"
-            app:layout_constraintLeft_toRightOf="@id/topicLayoutDateCreate"/>
+        <ImageButton
+                android:id="@+id/topicLayoutBtnCount"
+                android:layout_width="@dimen/topic_counter_side"
+                android:layout_height="@dimen/topic_counter_side"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/button_round"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_arrow_forward"
+                android:visibility="gone"/>
+
+        <TextView
+                android:id="@+id/topicLayoutDateCreate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/topicLayoutTitle"
+                android:layout_alignParentStart="true"
+                android:textSize="@dimen/topic_date_textsize"/>
+
+        <TextView
+                android:id="@+id/topicLayoutDateUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/topicLayoutTitle"
+                android:layout_toEndOf="@id/topicLayoutDateCreate"
+                android:layout_toStartOf="@id/topicLayoutChildCount"
+                android:textSize="@dimen/topic_date_textsize"/>
+
+    </RelativeLayout>
 
     <TextView
             android:id="@+id/topicLayoutDesc"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topicLayoutDateCreate"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:text="@string/editor_desc_def"/>
-
-    <ImageButton
-            android:id="@+id/topicLayoutBtnExpand"
-            android:layout_width="@dimen/topic_btn_expand_side"
-            android:layout_height="@dimen/topic_btn_expand_side"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:adjustViewBounds="true"
-            android:background="@drawable/button_round"
-            android:src="@drawable/ic_add_fab_image"/>
+            android:padding="@dimen/topic_desc_padding"
+            android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/topicLayoutChildren"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topicLayoutDesc"
-            app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent="0.2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/topic_children_height"
+            android:paddingBottom="@dimen/topic_desc_padding"
             android:visibility="gone"/>
 
 </merge>

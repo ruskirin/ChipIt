@@ -1,27 +1,24 @@
 package creations.rimov.com.chipit.adapters
 
-import android.content.Context
 import android.util.Log
 import android.view.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.viewgroups.ChipEditorLayout
 import creations.rimov.com.chipit.viewgroups.TopicLayout
 import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
 
-/**
- * TODO: add Glide Recyclerview integration if scrolling causes stuttering
- */
+
+//TODO: add Glide Recyclerview integration if scrolling causes stuttering
 
 //TODO (IMPORTANT): might be a memory leak with TextView here, check logs for the message, then follow:
 //                   https://stackoverflow.com/questions/49513726/android-memory-leak-with-fragments
 
 
-class DirectoryRecyclerAdapter(private val context: Context,
-                               private val touchHandler: DirectoryAdapterHandler)
+class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
     private lateinit var topics: List<ChipTopic>
@@ -39,6 +36,13 @@ class DirectoryRecyclerAdapter(private val context: Context,
         notifyDataSetChanged()
     }
 
+    fun setChildren(children: List<ChipCard>) {
+
+        if(::selectedTopic.isInitialized)
+            selectedTopic.setChildren(children)
+        else return
+    }
+
     fun getSelectedId() =
         if(::selectedTopic.isInitialized)
             selectedTopic.itemId
@@ -51,7 +55,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
         val editLayout: ChipEditorLayout = itemView.dirRecyclerTopicEdit
 
         init {
-            topicChip.setOnTouchListener(this)
+            topicChip.setTouchListener(this)
             editLayout.setTouchListener(this)
         }
 
@@ -68,10 +72,18 @@ class DirectoryRecyclerAdapter(private val context: Context,
             selectedTopic = topic
         }
 
+        fun setChildren(children: List<ChipCard>) {
+            topicChip.setChildren(children)
+        }
+
         fun isEditing() = editLayout.isVisible
 
+        fun isExpanded() = topicChip.isExpanded
+
         fun edit(edit: Boolean) {
-            editLayout.show(edit)
+
+            if(edit) editLayout.show(false)
+            else editLayout.hide()
         }
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
@@ -80,14 +92,26 @@ class DirectoryRecyclerAdapter(private val context: Context,
                 return false
 
             when(view?.id) {
-                R.id.dirRecyclerTopic -> {
 
-                    Log.i("Touch Event", "DirectoryViewHolder#onTouch(): recyclerTopic $itemId touched!")
+                R.id.topicLayoutHeader -> {
+
+                    Log.i("Touch Event", "DirectoryViewHolder#onTouch(): RecyclerTopic touched!")
 
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedTopic(this)
 
                     touchHandler.topicTouch(event)
+                }
+
+                R.id.topicLayoutBtnCount -> {
+
+                    Log.i("Touch Event", "DirectoryViewHolder#onTouch(): BtnCount touched!")
+
+                    if(event.action == MotionEvent.ACTION_DOWN)
+                        setSelectedTopic(this)
+
+                    if(event.action == MotionEvent.ACTION_UP)
+                        touchHandler.topicToWeb()
                 }
 
                 R.id.chipEditorBtnEdit -> {
@@ -117,7 +141,7 @@ class DirectoryRecyclerAdapter(private val context: Context,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
 
         val chipHolder =
-            LayoutInflater.from(context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
 
         return DirectoryViewHolder(chipHolder)
     }
@@ -130,6 +154,8 @@ class DirectoryRecyclerAdapter(private val context: Context,
     interface DirectoryAdapterHandler {
 
         fun topicTouch(event: MotionEvent)
+
+        fun topicToWeb()
 
         fun topicEdit(chip: ChipTopic)
 

@@ -21,8 +21,6 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val parentUpper = MutableLiveData<ChipIdentity>()
 
-    val prompts = MutableLiveData<ViewModelPrompts>()
-
 
     fun setParent(parentId: Long) {
 
@@ -43,20 +41,6 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
     //TODO: (FUTURE) if return an empty list trigger a display saying list is empty
     fun getChips(): LiveData<List<ChipCard>> = Transformations.switchMap(parentUpper) {
         repository.getChipChildrenCardsLive(it.id)
-    }
-
-    fun handleChipGesture(gesture: Int) {
-
-        when(gesture) {
-
-            MainActivity.Constants.GESTURE_UP -> {
-                prompts.postValue(ViewModelPrompts(toNextScreen = true))
-            }
-
-            MainActivity.Constants.GESTURE_LONG_TOUCH -> {
-                prompts.postValue(ViewModelPrompts(true))
-            }
-        }
     }
 
     /**Get the parent of parentUpper and set it as the current parent (sorry for the description); navigate up the "branch" of chips**/

@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,7 +12,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import kotlinx.android.synthetic.main.topic_chip_layout.view.*
 
-class TopicChipAdapter(private val context: Context) : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>() {
+class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>() {
 
     private lateinit var children: List<ChipCard>
 
@@ -31,25 +30,10 @@ class TopicChipAdapter(private val context: Context) : RecyclerView.Adapter<Topi
     /**
      * VIEW HOLDER
      */
-    inner class ChipViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
+    inner class ChipViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val image: ImageView = itemView.topicChipImage
         val name: TextView = itemView.topicChipName
-
-        override fun onTouch(view: View?, event: MotionEvent?): Boolean {
-
-            if (event == null)
-                return false
-
-            val id = itemId
-
-            when (view?.id) {
-
-            }
-
-            view?.performClick()
-            return true
-        }
     }
 
     override fun getItemCount() =
@@ -60,7 +44,7 @@ class TopicChipAdapter(private val context: Context) : RecyclerView.Adapter<Topi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
 
-        val chipHolder = LayoutInflater.from(context)
+        val chipHolder = LayoutInflater.from(parent.context)
             .inflate(R.layout.topic_chip_layout, parent, false)
 
         return ChipViewHolder(chipHolder)
@@ -70,7 +54,7 @@ class TopicChipAdapter(private val context: Context) : RecyclerView.Adapter<Topi
 
         holder.name.text = children[position].name
         //TODO: load a default image if none can be found
-        Glide.with(context)
+        Glide.with(holder.image.context)
             .load(children[position].imgLocation)
             .into(holder.image)
     }

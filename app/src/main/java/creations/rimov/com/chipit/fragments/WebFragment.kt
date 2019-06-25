@@ -6,19 +6,20 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
+import creations.rimov.com.chipit.viewgroups.WebDetailLayout
+import kotlinx.android.synthetic.main.web_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
+import kotlinx.android.synthetic.main.web_layout.view.webParentView
 
 class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
 
@@ -29,9 +30,10 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
     }
 
     //Passed Bundle from DirectoryFragment
-    private val passedArgs by navArgs<AlbumFragmentArgs>()
+    private val passedArgs by navArgs<WebFragmentArgs>()
 
-    private lateinit var recyclerAdapter: WebRecyclerAdapter
+    private val parentView: WebDetailLayout by lazy {webParentView}
+    private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -42,20 +44,21 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            recyclerAdapter = WebRecyclerAdapter(it, this@WebFragment)
-
             gestureDetector = GestureDetector(it, ChipGestureDetector())
             gestureDetector.setIsLongpressEnabled(true)
         }
 
-        Log.i("Life Event", "WebFragment#onCreate(): passed parent id: ${passedArgs.parentId}")
-
         if(localViewModel.getParentId() == -1L) {
 
-            if(passedArgs.parentId != -1L)
-                localViewModel.setParent(passedArgs.parentId)
-            else
-                localViewModel.setParent(globalViewModel.chipFragParentId)
+            if(passedArgs.parentId != -1L) {
+                val id = passedArgs.parentId
+
+                localViewModel.setParent(id)
+                globalViewModel.setObservedChipId(id)
+
+            } else {
+                localViewModel.setParent(globalViewModel.getObservedChipId())
+            }
         }
     }
 
@@ -63,46 +66,14 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
         val view = inflater.inflate(R.layout.web_layout, container, false)
 
         //Horizontal recycler view for "sibling" children
-        view.webRecycler.apply {
-            adapter = recyclerAdapter
+        view.webChildrenView.apply {
+            adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
             setHasFixedSize(true)
         }
 
         localViewModel.getChips().observe(this, Observer { chips ->
-            recyclerAdapter.setChips(chips)
-
-            val isTopic: Boolean = localViewModel.getParent().value?.isTopic ?: true
-
-            localViewModel.getParent().value?.let {
-                globalViewModel.setAlbumChip(it)
-            }
-        })
-
-        localViewModel.prompts.observe(this, Observer { prompt ->
-
-            val id = recyclerAdapter.getSelectedId()
-
-            if(id == -1L)
-                return@Observer
-
-            when {
-                prompt.toNextScreen -> {
-                    //No clicking through the edit screen
-                    if(recyclerAdapter.isEditing())
-                        return@Observer
-
-                    val directions = AlbumFragmentDirections.actionAlbumFragmentToWebFragment(id)
-                    findNavController().navigate(directions)
-
-                    globalViewModel.chipFragParentId = localViewModel.getParentId()
-                }
-
-                prompt.editChip -> {
-
-                    recyclerAdapter.toggleEditing()
-                }
-            }
+            childrenAdapter.setChips(chips)
         })
 
         return view
@@ -120,7 +91,6 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
     }
 
     override fun chipDelete(chip: ChipCard) {
-
         globalViewModel.deleteChip(chip.id, localViewModel.getParentId(), chip.counter)
     }
 
@@ -133,17 +103,20 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
-            Log.i("Touch Event", "Album.ChipGestureDetector#onUp()!")
+            Log.i("Touch Event", "Web.ChipGestureDetector#onUp()!")
 
-            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_UP)
+            localViewModel.setParent(childrenAdapter.getSelectedId())
 
             return true
         }
 
         override fun onLongPress(event: MotionEvent?) {
-            Log.i("Touch Event", "Album.ChipGestureDetector#onLongPress()!")
+            Log.i("Touch Event", "Web.ChipGestureDetector#onLongPress()!")
 
-            localViewModel.handleChipGesture(MainActivity.Constants.GESTURE_LONG_TOUCH)
+            if(childrenAdapter.selectedChip.isEditing())
+                childrenAdapter.selectedChip.edit(false)
+            else
+                childrenAdapter.selectedChip.edit(true)
         }
     }
 }

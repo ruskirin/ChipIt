@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="elevation_def">4dp</dimen>
+    <dimen name="elevation_small">2dp</dimen>
+
+    <dimen name="fab_margin">8dp</dimen>
 
     <dimen name="appeditor_name_textsize">16sp</dimen>
 
@@ -15,10 +18,6 @@
     <dimen name="app_editor_desc_padding_horiz">8dp</dimen>
     <dimen name="app_editor_desc_padding_bot">16dp</dimen>
 
-    <dimen name="directory_addpanel_margin_bot">8dp</dimen>
-    <dimen name="directory_addpanel_margin_end">8dp</dimen>
-    <dimen name="directory_addpanel_button_side">64dp</dimen>
-    <dimen name="directory_recycler_desc_padding">8dp</dimen>
     <dimen name="directory_recycler_margin">4dp</dimen>
 
     <dimen name="web_pathpanel_button_side">48dp</dimen>
@@ -29,9 +28,19 @@
     <dimen name="web_recycler_chips_margin_vert">8dp</dimen>
     <dimen name="web_recycler_chips_margin_horiz">4dp</dimen>
 
+    <dimen name="web_detail_image_height">500dp</dimen>
+    <dimen name="web_detail_desc_height">200dp</dimen>
+
     <dimen name="album_recycler_button_expand_margin">8dp</dimen>
     <dimen name="album_recycler_button_expand_side">32dp</dimen>
 
+    <dimen name="card_counter_width">24dp</dimen>
+
+    <dimen name="topic_name_textsize">20sp</dimen>
+    <dimen name="topic_date_textsize">12sp</dimen>
     <dimen name="topic_btn_expand_side">24dp</dimen>
     <dimen name="topic_counter_side">32dp</dimen>
+    <dimen name="topic_desc_padding">8dp</dimen>
+    <dimen name="topic_expand_margin_horiz">16dp</dimen>
+    <dimen name="topic_children_height">100dp</dimen>
 </resources>

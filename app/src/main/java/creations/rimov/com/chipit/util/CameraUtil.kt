@@ -2,6 +2,7 @@ package creations.rimov.com.chipit.util
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -18,48 +19,42 @@ object CameraUtil {
     const val CODE_TAKE_PICTURE = 1
     const val IMAGE_PROVIDER_AUTHORITY = "com.rimov.creations.chipit.imageprovider"
 
+    @JvmStatic
+    fun getImageFile(context: Context,
+                     fileName: String = "chipit_chip_",
+                     storageDir: File? = null): ImageFile? {
+        //TODO: handle error
+        return try {
+            createImageFile(
+                context,
+                fileName,
+                storageDir ?: context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+
+        } catch(e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    @JvmStatic
+    fun getImageUri(context: Context, imageFile: File): Uri {
+
+        return FileProvider.getUriForFile(context, IMAGE_PROVIDER_AUTHORITY, imageFile)
+    }
+
+    //TODO: consider adding a verification method to ensure no unnecessary files are somehow deleted
+    @JvmStatic
+    fun deleteImageFile(imagePath: String) = File(imagePath).delete()
+
     //TODO: handle IOException
     @JvmStatic
-    fun createImageFile(context: Context): ImageFile {
+    private fun createImageFile(context: Context, fileName: String, storageDir: File): ImageFile {
         //TODO: consider modifying locale based on phone location
-        val time = SimpleDateFormat("yyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val file = File.createTempFile("chipit_topic_$time", ".jpg", storageDir)
+        val time = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
+        val file = File.createTempFile("$fileName$time", ".jpg", storageDir)
 
         Log.i("ImageFile", "File path: ${file.absoluteFile}")
 
         return ImageFile(file, file.absolutePath)
     }
-
-    //TODO: consider adding a verification method to ensure no unnecessary files are somehow deleted
-    @JvmStatic
-    fun deleteImageFile(imagePath: String): Boolean {
-
-        return File(imagePath).delete()
-    }
-
-//    val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//    //Verifies that an application that can handle this intent exists
-//    addChipCameraIntent.resolveActivity(activity!!.packageManager)
-//
-//    //TODO: handle error
-//    val imageFile = try {
-//        CameraUtil.createImageFile(activity!!)
-//
-//    } catch(e: IOException) {
-//        e.printStackTrace()
-//        null
-//    }
-//
-//    if(imageFile != null) {
-//        val imageUri = FileProvider.getUriForFile(activity!!,
-//            CameraUtil.IMAGE_PROVIDER_AUTHORITY,
-//            imageFile.file)
-//
-//        addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-//        startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
-//
-//        if(imageFile.storagePath.isNotEmpty())
-//            localViewModel.saveChip("Lorem Ipsum", imageFile.storagePath)
-//    }
 }

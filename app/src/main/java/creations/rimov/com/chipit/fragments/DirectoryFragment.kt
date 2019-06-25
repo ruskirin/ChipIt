@@ -3,22 +3,18 @@ package creations.rimov.com.chipit.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import kotlinx.android.synthetic.main.directory_layout.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
@@ -42,7 +38,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
-            recyclerAdapter = DirectoryRecyclerAdapter(it, this@DirectoryFragment)
+            recyclerAdapter = DirectoryRecyclerAdapter(this@DirectoryFragment)
         }
     }
 
@@ -59,8 +55,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         gestureDetector.setIsLongpressEnabled(true)
 
         localViewModel.getTopics().observe(this, Observer { topics ->
-
             recyclerAdapter.setTopics(topics)
+        })
+
+        localViewModel.getChildren().observe(this, Observer { children ->
+            recyclerAdapter.setChildren(children)
         })
 
         return view
@@ -72,6 +71,13 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         gestureDetector.onTouchEvent(event)
     }
 
+    override fun topicToWeb() {
+
+        val directions =
+            DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(recyclerAdapter.getSelectedId())
+        findNavController().navigate(directions)
+    }
+
     override fun topicEdit(chip: ChipTopic) {
 
         globalViewModel.setChipToEdit(
@@ -80,7 +86,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun topicDelete(chip: ChipTopic) {
-
         globalViewModel.deleteChip(chip.id, null, chip.counter)
     }
 
@@ -100,9 +105,10 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
             if(recyclerAdapter.selectedTopic.isEditing())
                 return false
 
-            val directions =
-                DirectoryFragmentDirections.actionDirectoryFragmentToAlbumFragment(recyclerAdapter.getSelectedId())
-            findNavController().navigate(directions)
+            recyclerAdapter.selectedTopic.topicChip.toggleDetail()
+
+            if(recyclerAdapter.selectedTopic.isExpanded())
+                localViewModel.setTopicChildren(recyclerAdapter.getSelectedId())
 
             return true
         }

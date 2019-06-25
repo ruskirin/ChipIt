@@ -3,6 +3,7 @@ package creations.rimov.com.chipit.database.repos
 import android.os.AsyncTask
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipDao
+import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 
 class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandler) {
@@ -23,24 +24,42 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
 
     fun getChipIdentityLive(id: Long) = dao.getChipIdentityLive(id)
 
+    fun getChipCards(id: Long) {
+        AsyncGetChipCards(dao, accessRepoHandler).execute(id)
+    }
+
     fun getChipChildrenCardsLive(parentId: Long) = dao.getChipCardsLive(parentId)
 
     fun getChipPathsLive(parentId: Long) = dao.getChipPathsLive(parentId)
 
 
+    class AsyncGetChipCards(
+        private val chipDao: ChipDao,
+        private val repoHandler: RepoHandler) : AsyncTask<Long, Void, List<ChipCard>>() {
+
+        override fun doInBackground(vararg params: Long?): List<ChipCard>? {
+
+            return chipDao.getChipCards(params[0] ?: return null)
+        }
+
+        override fun onPostExecute(result: List<ChipCard>?) {
+
+            repoHandler.setData(result)
+        }
+    }
 
     /**
      * @param repoHandler: interface to communicate with WebFragment
      * @param getParent: use chip's parent?
      */
     class AsyncGetChipIdentity(
-        private val chipAndChildrenDao: ChipDao,
+        private val chipDao: ChipDao,
         private val repoHandler: RepoHandler,
         private val getParent: Boolean) : AsyncTask<Long, Void, ChipIdentity>() {
 
         override fun doInBackground(vararg params: Long?): ChipIdentity? {
 
-            return chipAndChildrenDao.getChipIdentity(params[0] ?: return null)
+            return chipDao.getChipIdentity(params[0] ?: return null)
         }
 
         override fun onPostExecute(result: ChipIdentity?) {
@@ -49,31 +68,11 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
                 return
 
             if(getParent)
-                AsyncGetChipIdentity(chipAndChildrenDao, repoHandler, false).execute(result.parentId)
+                AsyncGetChipIdentity(chipDao, repoHandler, false).execute(result.parentId)
             else
                 repoHandler.setData(result)
         }
     }
-
-//    class AsyncGetIsChipTopic(
-//        private val chipDao: ChipChildrenDao,
-//        private val chipHandler: WebRepository.ChipRepoHandler
-//    ) : AsyncTask<Long, Void, Boolean>() {
-//
-//        override fun doInBackground(vararg params: Long?): Boolean? {
-//
-//            return chipDao.isChipTopic(params[0] ?: return null)
-//        }
-//
-//        override fun onPostExecute(result: Boolean?) {
-//
-//            if(result == null)
-//                return
-//
-//            Log.i("Touch Event", "AsyncGetIsChipTopic#onPostExecute(): is parent name? $result")
-//            chipHandler.isParentTopic(result)
-//        }
-//    }
 
     interface RepoHandler {
 

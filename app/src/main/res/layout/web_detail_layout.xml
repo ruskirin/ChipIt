@@ -4,8 +4,8 @@
 
     <ImageView
             android:id="@+id/webDetailImg"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/web_detail_image_height"
             android:adjustViewBounds="true"
             android:background="@android:color/black"/>
 
@@ -13,7 +13,18 @@
             android:id="@+id/webDetailDesc"
             android:layout_width="match_parent"
             android:layout_height="@dimen/web_detail_desc_height"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@android:drawable/screen_background_dark_transparent"/>
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:background="@android:drawable/screen_background_dark_transparent"
+            android:visibility="gone"/>
+
+    <ImageButton
+            android:id="@+id/webDetailBtnDesc"
+            android:layout_width="@dimen/topic_btn_expand_side"
+            android:layout_height="@dimen/topic_btn_expand_side"
+            android:layout_gravity="top|end"
+            android:adjustViewBounds="true"
+            android:background="@drawable/button_round"
+            android:src="@drawable/ic_info"/>
 
 </merge>

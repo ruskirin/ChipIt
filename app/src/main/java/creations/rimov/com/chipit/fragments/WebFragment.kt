@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -19,21 +18,20 @@ import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
 import kotlinx.android.synthetic.main.web_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
-import kotlinx.android.synthetic.main.web_layout.view.webParentView
 
-class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
-
-    private lateinit var globalViewModel: GlobalViewModel
-
-    private val localViewModel: WebViewModel by lazy {
-        ViewModelProviders.of(this).get(WebViewModel::class.java)
-    }
+class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
-    private val parentView: WebDetailLayout by lazy {webParentView}
+    private lateinit var globalViewModel: GlobalViewModel
+    private val localViewModel: WebViewModel by lazy {
+        ViewModelProviders.of(this).get(WebViewModel::class.java)
+    }
+
     private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
+
+    private lateinit var detailLayout: WebDetailLayout
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -54,7 +52,6 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
                 val id = passedArgs.parentId
 
                 localViewModel.setParent(id)
-                globalViewModel.setObservedChipId(id)
 
             } else {
                 localViewModel.setParent(globalViewModel.getObservedChipId())
@@ -65,18 +62,43 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.web_layout, container, false)
 
-        //Horizontal recycler view for "sibling" children
+        detailLayout = view.webParentView
+
         view.webChildrenView.apply {
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
             setHasFixedSize(true)
         }
 
-        localViewModel.getChips().observe(this, Observer { chips ->
-            childrenAdapter.setChips(chips)
+        localViewModel.getParent().observe(this, Observer {
+
+            globalViewModel.setObservedChipId(it.id) //Set focused chip id for editor chip creation
+
+            detailLayout.setChip(it)
         })
 
+        localViewModel.getChildren().observe(this, Observer {
+            childrenAdapter.setChips(it)
+        })
+
+        detailLayout.setTouchListener(this)
+
         return view
+    }
+
+    override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+
+        if(event == null) return false
+
+        when(view?.id) {
+
+            R.id.webDetailBtnDesc -> {
+                if(event.action == MotionEvent.ACTION_UP)
+                    detailLayout.toggleDesc()
+            }
+        }
+
+        return true
     }
 
     override fun chipTouch(event: MotionEvent) {
@@ -84,7 +106,6 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
     }
 
     override fun chipEdit(chip: ChipIdentity) {
-
         globalViewModel.setChipToEdit(
             Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
                 created = chip.dateCreate, counter = chip.counter))
@@ -96,14 +117,13 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
 
-        //According to developer website, must return true to ensure gestures are not ignored
+        //Must return true to ensure gestures are not ignored
         override fun onDown(event: MotionEvent?): Boolean {
 
             return true
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
-            Log.i("Touch Event", "Web.ChipGestureDetector#onUp()!")
 
             localViewModel.setParent(childrenAdapter.getSelectedId())
 
@@ -111,7 +131,6 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler {
         }
 
         override fun onLongPress(event: MotionEvent?) {
-            Log.i("Touch Event", "Web.ChipGestureDetector#onLongPress()!")
 
             if(childrenAdapter.selectedChip.isEditing())
                 childrenAdapter.selectedChip.edit(false)

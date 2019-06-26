@@ -99,4 +99,8 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
     override fun <T> setData(data: T) {
         TODO()
     }
+
+    override fun <T> setDataList(data: List<T>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

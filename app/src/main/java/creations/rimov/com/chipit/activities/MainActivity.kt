@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
@@ -14,13 +14,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.fragments.DirectoryFragment
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.viewgroups.AppDrawerLayout
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
+import kotlinx.android.synthetic.main.app_content_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
@@ -36,9 +37,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
     private val navController: NavController by lazy {navHostFragment.navController}
 
-    private val toolbarConfig: AppBarConfiguration by lazy { AppBarConfiguration(navController.graph)}
+    private val drawerView: AppDrawerLayout by lazy {appDrawerView}
     private val toolbar: Toolbar by lazy {appToolbar}
-    private val toolbarWebExt: FrameLayout by lazy {toolbarExtWebLayout}
 
     private val editor: AppEditorLayout by lazy {appEditor}
 
@@ -51,11 +51,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         setDisplayDimen()
 
-        toolbarCollapseLayout.setupWithNavController(toolbar, navController, toolbarConfig)
+        setSupportActionBar(toolbar)
 
         navController.addOnDestinationChangedListener(this)
 
         editor.setClickListener(this)
+        drawerView.setClickListener(this)
         fab.setOnClickListener(this)
 
         globalViewModel.getChipToEdit().observe(this, Observer { chip ->
@@ -66,8 +67,26 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater: MenuInflater = menuInflater
 
-        return true
+        when(navController.currentDestination?.id) {
+
+            R.id.directoryFragment -> {
+
+            }
+
+            R.id.webFragment -> {
+                menuInflater.inflate(R.menu.web_toolbar, menu)
+                return true
+            }
+
+            R.id.chipperFragment -> {
+
+
+            }
+        }
+
+        return false
     }
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
@@ -77,36 +96,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
-                Log.i("Navigation", "Destination: Directory")
 
-                toolbarWebExt.visibility = View.GONE
             }
 
             R.id.webFragment -> {
-                Log.i("Navigation", "Destination: Album")
-
-                toolbarWebExt.visibility = View.VISIBLE
-            }
-
-            R.id.chipperFragment -> {
                 Log.i("Navigation", "Destination: Web")
-
-                toolbarWebExt.visibility = View.GONE
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-
-        when(navController.currentDestination?.id) {
-            R.id.webFragment -> {
-                navController.navigate(R.id.action_webFragment_to_directoryFragment)
-
             }
 
             R.id.chipperFragment -> {
-                navController.navigate(R.id.action_chipperFragment_to_webFragment)
-
+                Log.i("Navigation", "Destination: Chipper")
             }
         }
     }
@@ -116,6 +114,19 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onClick(view: View?) {
 
         when(view?.id) {
+
+            R.id.drawerTopics -> {
+                navController.navigate(R.id.directoryFragment)
+            }
+
+            R.id.drawerChips -> {
+                navController.navigate(R.id.webFragment)
+            }
+
+            R.id.drawerChipper -> {
+                navController.navigate(R.id.chipperFragment)
+            }
+
             //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
             R.id.appFab -> {
                 create = true //Creating a new Chip
@@ -138,7 +149,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
 
             R.id.editorImage -> {
-
                 takePicture()
             }
 

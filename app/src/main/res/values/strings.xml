@@ -6,8 +6,11 @@
 
     <string name="dir_fragment_name">Topics</string>
 
-    <string name="toolbar_web_left">Adjacent Left</string>
-    <string name="toolbar_web_right">Adjact Right</string>
+    <string name="toolbar_web_parents">Parents</string>
+
+    <string name="drawer_btn_topics">Topics</string>
+    <string name="drawer_btn_chips">Chips</string>
+    <string name="drawer_btn_chipper">Chipper</string>
 
     <string name="recycler_button_edit_image">Change Image</string>
     <string name="recycler_button_edit_desc">Edit Description</string>

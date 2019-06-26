@@ -5,17 +5,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <creations.rimov.com.chipit.viewgroups.WebDetailLayout
-            android:id="@+id/webParentView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/web_detail_image_height"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/webChildrenView"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
-            android:nestedScrollingEnabled="false"
-            android:clipToPadding="false"/>
+            android:orientation="vertical">
+
+        <creations.rimov.com.chipit.viewgroups.WebDetailLayout
+                android:id="@+id/webParentView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/webChildrenView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"/>
+
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

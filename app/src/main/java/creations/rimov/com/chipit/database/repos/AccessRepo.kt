@@ -5,6 +5,7 @@ import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import kotlin.reflect.KClass
 
 class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandler) {
 
@@ -17,7 +18,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
     fun setParentIdentity(chipId: Long, useParent: Boolean) {
-        AsyncGetChipIdentity(dao, accessRepoHandler, useParent).execute(chipId)
+        AsyncGetChipIdentity(dao, accessRepoHandler).execute(chipId)
     }
 
     fun getChipIdentity(id: Long) = dao.getChipIdentity(id)
@@ -38,44 +39,32 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         private val repoHandler: RepoHandler) : AsyncTask<Long, Void, List<ChipCard>>() {
 
         override fun doInBackground(vararg params: Long?): List<ChipCard>? {
-
             return chipDao.getChipCards(params[0] ?: return null)
         }
 
-        override fun onPostExecute(result: List<ChipCard>?) {
-
-            repoHandler.setData(result)
+        override fun onPostExecute(result: List<ChipCard>) {
+            repoHandler.setDataList(result)
         }
     }
 
-    /**
-     * @param repoHandler: interface to communicate with WebFragment
-     * @param getParent: use chip's parent?
-     */
     class AsyncGetChipIdentity(
         private val chipDao: ChipDao,
-        private val repoHandler: RepoHandler,
-        private val getParent: Boolean) : AsyncTask<Long, Void, ChipIdentity>() {
+        private val repoHandler: RepoHandler) : AsyncTask<Long, Void, ChipIdentity>() {
 
         override fun doInBackground(vararg params: Long?): ChipIdentity? {
-
             return chipDao.getChipIdentity(params[0] ?: return null)
         }
 
         override fun onPostExecute(result: ChipIdentity?) {
 
-            if(result == null)
-                return
-
-            if(getParent)
-                AsyncGetChipIdentity(chipDao, repoHandler, false).execute(result.parentId)
-            else
-                repoHandler.setData(result)
+            repoHandler.setData(result ?: return)
         }
     }
 
     interface RepoHandler {
 
         fun <T> setData(data: T)
+
+        fun <T> setDataList(data: List<T>)
     }
 }

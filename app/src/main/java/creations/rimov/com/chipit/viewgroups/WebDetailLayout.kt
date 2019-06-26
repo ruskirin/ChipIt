@@ -2,8 +2,10 @@ package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -23,10 +25,25 @@ class WebDetailLayout(context: Context, attrs: AttributeSet) : FrameLayout(conte
 
     fun setChip(chip: ChipIdentity) {
 
+        if(chip.isTopic) {
+            this.visibility = View.GONE
+            return
+        }
+
+        this.visibility = View.VISIBLE
+
         desc.text = chip.desc
-        Glide.with(desc.context)
+        Glide.with(image.context)
             .load(chip.imgLocation)
             .into(image)
+    }
+
+    fun setTouchListener(listener: OnTouchListener) {
+        val btnDesc = webDetailBtnDesc
+
+        btnDesc.setOnTouchListener(null)
+
+        btnDesc.setOnTouchListener(listener)
     }
 
     fun toggleDesc() {

@@ -47,12 +47,12 @@ interface ChipDao {
     @Query("WITH RECURSIVE " +
             "get_children(x) AS (SELECT :parentId UNION ALL SELECT id FROM chips, get_children WHERE parent_id = get_children.x) " +
             "SELECT * FROM get_children;")
-    fun getAllChildrenIds(parentId: Long): List<Long>
+    fun getBranchChildrenIds(parentId: Long): List<Long>
 
     @Query("WITH RECURSIVE " +
             "get_parents(x) AS (SELECT :childId UNION ALL SELECT parent_id FROM chips, get_parents WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
             "SELECT * FROM get_parents;")
-    fun getAllParentIds(childId: Long): List<Long>
+    fun getBranchParentIds(childId: Long): List<Long>
 
     /**Starting from id, increase the counter up the parent tree by amt**/
     @Query("WITH RECURSIVE " +

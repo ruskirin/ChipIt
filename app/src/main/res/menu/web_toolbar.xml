@@ -2,9 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/toolbarWebParents"
-            android:title="@string/toolbar_web_parents"
-            android:icon="@drawable/ic_web_chip_left"
-            app:showAsAction="always"/>
+            android:id="@+id/toolbarWebSearch"
+            android:title="@string/toolbar_search"
+            android:icon="@drawable/ic_search"
+            app:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/toolbarWebSort"
+            android:title="@string/toolbar_sort"
+            android:icon="@drawable/ic_sort"
+            app:showAsAction="ifRoom"/>
 
 </menu>

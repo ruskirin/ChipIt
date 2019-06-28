@@ -10,4 +10,8 @@ data class ChipIdentity(
     @ColumnInfo(name = "description") var desc: String,
     @ColumnInfo(name = "date_create") val dateCreate: String,
     @ColumnInfo(name = "num_children") var counter: Int,
-    @ColumnInfo(name = "image_location") var imgLocation: String)
+    @ColumnInfo(name = "image_location") var imgLocation: String) {
+
+    fun getChip() = Chip(id, parentId, isTopic,
+            name, desc, dateCreate, counter = counter, imgLocation = imgLocation)
+}

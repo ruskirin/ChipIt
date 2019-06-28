@@ -33,6 +33,8 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getParent() = parentUpper
 
+    fun getParentAsChip() = parentUpper.value?.getChip()
+
     fun getParentId() = parentUpper.value?.id ?: -1L
 
     fun getChildren(): LiveData<List<ChipCard>> = children

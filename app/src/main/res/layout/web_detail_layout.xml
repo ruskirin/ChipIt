@@ -22,9 +22,26 @@
             android:id="@+id/webDetailBtnDesc"
             android:layout_width="@dimen/topic_btn_expand_side"
             android:layout_height="@dimen/topic_btn_expand_side"
-            android:layout_gravity="top|end"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/standard_button_margin"
+            android:layout_marginEnd="@dimen/standard_button_margin"
             android:adjustViewBounds="true"
             android:background="@drawable/button_round"
             android:src="@drawable/ic_info"/>
+
+    <include
+            layout="@layout/editor_detail_layout"
+            android:visibility="gone"/>
+
+    <ImageButton
+            android:id="@+id/webDetailBtnSettings"
+            android:layout_width="@dimen/topic_btn_expand_side"
+            android:layout_height="@dimen/topic_btn_expand_side"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="@dimen/standard_button_margin"
+            android:layout_marginEnd="@dimen/standard_button_margin"
+            android:adjustViewBounds="true"
+            android:background="@drawable/button_round"
+            android:src="@drawable/ic_wrench"/>
 
 </merge>

@@ -59,6 +59,8 @@ class TopicLayout(context: Context, attrs: AttributeSet) : LinearLayout(context,
         btnCount.setOnTouchListener(listener)
     }
 
+    //TODO URGENT: problem with visibility toggling of topics that have been used to navigate to Web, have to first toggle
+    //              another topic to get it working
     fun toggleDetail() {
 
         if(desc.visibility == View.VISIBLE) {

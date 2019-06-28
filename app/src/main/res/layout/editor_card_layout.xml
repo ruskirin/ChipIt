@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageButton
-            android:id="@+id/chipEditorBtnEdit"
+            android:id="@+id/cardEditorBtnEdit"
             android:layout_width="@dimen/app_editor_button_width"
             android:layout_height="@dimen/app_editor_button_width"
             android:layout_marginEnd="@dimen/app_editor_button_margin_horiz"
@@ -10,7 +10,7 @@
             android:src="@drawable/ic_edit"/>
 
     <ImageButton
-            android:id="@+id/chipEditorBtnDelete"
+            android:id="@+id/cardEditorBtnDelete"
             android:layout_width="@dimen/app_editor_button_width"
             android:layout_height="@dimen/app_editor_button_width"
             android:layout_marginStart="@dimen/app_editor_button_margin_horiz"

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipTopic
-import creations.rimov.com.chipit.viewgroups.ChipEditorLayout
+import creations.rimov.com.chipit.viewgroups.CardEditorLayout
 import creations.rimov.com.chipit.viewgroups.TopicLayout
 import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
 
@@ -52,7 +52,7 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
     inner class DirectoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val topicChip: TopicLayout = itemView.dirRecyclerTopic
-        val editLayout: ChipEditorLayout = itemView.dirRecyclerTopicEdit
+        val editLayout: CardEditorLayout = itemView.dirRecyclerTopicEdit
 
         init {
             topicChip.setTouchListener(this)
@@ -114,13 +114,13 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
                         touchHandler.topicToWeb()
                 }
 
-                R.id.chipEditorBtnEdit -> {
+                R.id.cardEditorBtnEdit -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
                         touchHandler.topicEdit(topics[adapterPosition])
                 }
 
-                R.id.chipEditorBtnDelete -> {
+                R.id.cardEditorBtnDelete -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
                         touchHandler.topicDelete(topics[adapterPosition])

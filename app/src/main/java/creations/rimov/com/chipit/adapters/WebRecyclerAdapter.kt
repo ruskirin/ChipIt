@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -11,7 +10,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.viewgroups.CardLayout
-import creations.rimov.com.chipit.viewgroups.ChipEditorLayout
+import creations.rimov.com.chipit.viewgroups.CardEditorLayout
 import kotlinx.android.synthetic.main.web_recycler_chip_layout.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
@@ -45,7 +44,7 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
     inner class WebViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener {
 
         val cardLayout: CardLayout = itemView.webRecyclerCard
-        val editLayout: ChipEditorLayout = itemView.webRecyclerEditor
+        val editLayout: CardEditorLayout = itemView.webRecyclerEditor
 
         init {
             cardLayout.setOnTouchListener(this)
@@ -88,7 +87,7 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
                     touchHandler.chipTouch(event)
                 }
 
-                R.id.chipEditorBtnDelete -> {
+                R.id.cardEditorBtnDelete -> {
 
                     if(event.action == MotionEvent.ACTION_UP)
                         touchHandler.chipDelete(chips[adapterPosition])

@@ -16,7 +16,6 @@ import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
-import kotlinx.android.synthetic.main.web_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
 
 class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
@@ -92,10 +91,37 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
         when(view?.id) {
 
+            R.id.webDetailBtnSettings -> {
+
+                if(event.action == MotionEvent.ACTION_UP)
+                    detailLayout.toggleEditor()
+            }
+
             R.id.webDetailBtnDesc -> {
+
+                if(detailLayout.isEditing()) return false
+
                 if(event.action == MotionEvent.ACTION_UP)
                     detailLayout.toggleDesc()
             }
+
+            R.id.detailEditorBtnEdit -> {
+
+                if(event.action == MotionEvent.ACTION_UP) {
+
+                    localViewModel.getParentAsChip()?.let {
+                        globalViewModel.setChipToEdit(it)
+                    }
+                }
+            }
+
+//            R.id.detailEditorBtnDelete -> {
+//                if(event.action == MotionEvent.ACTION_UP)
+//
+//                    localViewModel.getParentAsChip()?.let {
+//                        globalViewModel.deleteChip(it)
+//                    }
+//            }
         }
 
         return true
@@ -112,7 +138,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
     }
 
     override fun chipDelete(chip: ChipCard) {
-        globalViewModel.deleteChip(chip.id, localViewModel.getParentId(), chip.counter)
+        globalViewModel.deleteChip(chip.getChip(localViewModel.getParentId()))
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:id="@+id/webDetailEditorLayout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@android:drawable/screen_background_dark_transparent"
+        android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/detailEditorBtnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/standard_touch_smallsize"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/standard_button_margin"
+            android:drawableStart="@drawable/ic_edit"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/standard_prompt_textsize"
+            android:text="@string/editor_detail_btn_edit"/>
+
+    <TextView
+            android:id="@+id/detailEditorBtnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/standard_touch_smallsize"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/standard_button_margin"
+            android:drawableStart="@drawable/ic_delete"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/standard_prompt_textsize"
+            android:text="@string/editor_detail_btn_delete"/>
+
+</LinearLayout>

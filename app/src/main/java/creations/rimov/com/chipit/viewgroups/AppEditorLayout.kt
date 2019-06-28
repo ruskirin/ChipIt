@@ -67,6 +67,8 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
         setNameAndDesc(chip.name, chip.desc)
 
+        setImage()
+
         startChipEdit(false)
     }
 
@@ -84,12 +86,12 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
         return chipEdit
     }
 
-    fun setImage(imgPath: String) {
+    fun setImage(imgPath: String = "") {
 
-        chipEdit.imgLocation = imgPath
+        if(imgPath.isNotBlank()) chipEdit.imgLocation = imgPath
 
         Glide.with(image.context)
-            .load(imgPath)
+            .load(chipEdit.imgLocation)
             .into(image)
     }
 

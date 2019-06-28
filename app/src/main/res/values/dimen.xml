@@ -3,6 +3,11 @@
     <dimen name="elevation_def">4dp</dimen>
     <dimen name="elevation_small">2dp</dimen>
 
+    <dimen name="standard_button_margin">8dp</dimen>
+    <dimen name="standard_touch_smallsize">48dp</dimen>
+    <dimen name="standard_touch_regularsize">64dp</dimen>
+    <dimen name="standard_prompt_textsize">20sp</dimen>
+
     <dimen name="drawer_width">250dp</dimen>
     <dimen name="drawer_btn_side">64dp</dimen>
     <dimen name="drawer_btn_margin_horiz">8dp</dimen>

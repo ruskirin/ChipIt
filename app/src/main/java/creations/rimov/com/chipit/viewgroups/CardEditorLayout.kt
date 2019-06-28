@@ -6,15 +6,15 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import creations.rimov.com.chipit.R
-import kotlinx.android.synthetic.main.editor_chip_layout.view.*
+import kotlinx.android.synthetic.main.editor_card_layout.view.*
 
-class ChipEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class CardEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    private val btnEdit: ImageButton by lazy {chipEditorBtnEdit}
-    private val btnDelete: ImageButton by lazy {chipEditorBtnDelete}
+    private val btnEdit: ImageButton by lazy {cardEditorBtnEdit}
+    private val btnDelete: ImageButton by lazy {cardEditorBtnDelete}
 
     init {
-        View.inflate(context, R.layout.editor_chip_layout, this)
+        View.inflate(context, R.layout.editor_card_layout, this)
     }
 
     fun setTouchListener(listener: OnTouchListener) {

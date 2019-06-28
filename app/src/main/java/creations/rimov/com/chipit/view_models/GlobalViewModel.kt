@@ -37,26 +37,11 @@ class GlobalViewModel : ViewModel() {
     }
 
     /**Insert a Chip into the database "chips"**/
-    fun insertChip(parentId: Long?,
-                   isTopic: Boolean = false,
-                   name: String = "",
-                   desc: String = "",
-                   counter: Int = 0,
-                   imgLocation: String = "") {
-
-        val chip = Chip(
-            0L,
-            parentId,
-            isTopic,
-            name,
-            desc,
-            counter = counter,
-            imgLocation = imgLocation)
-
+    fun insertChip(chip: Chip) {
         repository.insertChip(chip)
     }
 
-    fun deleteChip(id: Long, parentId: Long?, counter: Int) {
-        repository.deleteChip(Chip(id, parentId, counter = counter))
+    fun deleteChip(chip: Chip) {
+        repository.deleteChip(chip)
     }
 }

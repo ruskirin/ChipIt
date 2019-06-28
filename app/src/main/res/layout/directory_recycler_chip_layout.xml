@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"/>
 
-    <creations.rimov.com.chipit.viewgroups.ChipEditorLayout
+    <creations.rimov.com.chipit.viewgroups.CardEditorLayout
             android:id="@+id/dirRecyclerTopicEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,6 +21,6 @@
             android:background="@android:drawable/screen_background_dark_transparent"
             android:visibility="gone">
 
-    </creations.rimov.com.chipit.viewgroups.ChipEditorLayout>
+    </creations.rimov.com.chipit.viewgroups.CardEditorLayout>
 
 </androidx.cardview.widget.CardView>

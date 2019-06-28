@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val drawerView: AppDrawerLayout by lazy {appDrawerView}
     private val toolbar: Toolbar by lazy {appToolbar}
 
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+
     private val editor: AppEditorLayout by lazy {appEditor}
 
     private val fab: FloatingActionButton by lazy {appFab}
@@ -52,6 +55,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setDisplayDimen()
 
         setSupportActionBar(toolbar)
+        setupDrawer()
+
+        //TODO NOW: set up way to edit Web item (still haven't done that!). THEN work on Chipper
+        //           THEN come back and work on toolbar
 
         navController.addOnDestinationChangedListener(this)
 
@@ -91,7 +98,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
 
-        //TODO FUTURE: can add some init tasks or loading screens from here
+        invalidateOptionsMenu()
 
         when(destination.id) {
 
@@ -115,6 +122,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         when(view?.id) {
 
+            //TODO FUTURE: do not like this direct navigation, feel like the backstack is stack-stack-stacking
             R.id.drawerTopics -> {
                 navController.navigate(R.id.directoryFragment)
             }
@@ -164,7 +172,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     //TODO FUTURE: add a snackbar here
 
                     if(create)
-                        globalViewModel.insertChip(it.parentId, it.isTopic, it.name, it.desc, it.counter, it.imgLocation)
+                        globalViewModel.insertChip(it)
                     else
                         globalViewModel.updateChipBasic(it.id, it.name, it.desc, it.imgLocation)
                 }
@@ -206,6 +214,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         if(fab.isOrWillBeShown) fab.hide()
         else fab.show()
+    }
+
+    private fun setupDrawer() {
+
+        drawerToggle = ActionBarDrawerToggle(
+            this, appDrawerLayout, toolbar, R.string.drawer_open_desc, R.string.drawer_close_desc)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setDisplayDimen() {

@@ -7,4 +7,8 @@ data class ChipTopic(val id: Long,
                      @ColumnInfo(name = "num_children") val counter: Int = 0,
                      @ColumnInfo(name = "description") val desc: String = "",
                      @ColumnInfo(name = "date_create") val dateCreate: String,
-                     @ColumnInfo(name = "date_update") val dateUpdate: String = "")
+                     @ColumnInfo(name = "date_update") val dateUpdate: String = "") {
+
+    fun getChip() = Chip(id, isTopic = true,
+                    name = name, desc = desc, created =  dateCreate, counter = counter)
+}

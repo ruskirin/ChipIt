@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.adapters.WebSpinnerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
+import kotlinx.android.synthetic.main.web_detail_layout.*
+import kotlinx.android.synthetic.main.web_detail_layout.view.*
 import kotlinx.android.synthetic.main.web_layout.view.*
 
 class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
@@ -28,6 +31,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
         ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
 
+    private val parentAdapter: WebSpinnerAdapter by lazy {WebSpinnerAdapter()}
     private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
 
     private lateinit var detailLayout: WebDetailLayout
@@ -63,6 +67,8 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
         detailLayout = view.webParentView
 
+        view.webDetailParentSpinner.adapter = parentAdapter
+
         view.webChildrenView.apply {
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
@@ -74,6 +80,10 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
             globalViewModel.setObservedChipId(it.id) //Set focused chip id for editor chip creation
 
             detailLayout.setChip(it)
+        })
+
+        localViewModel.getParents().observe(this, Observer {
+            parentAdapter.setParents(it)
         })
 
         localViewModel.getChildren().observe(this, Observer {
@@ -139,6 +149,10 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
     override fun chipDelete(chip: ChipCard) {
         globalViewModel.deleteChip(chip.getChip(localViewModel.getParentId()))
+    }
+
+    private fun addSpinnerToToolbar() {
+
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

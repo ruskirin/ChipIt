@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.database.repos.AccessRepo
 
 class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
@@ -16,6 +17,9 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val parentUpper: MutableLiveData<ChipIdentity> = MutableLiveData()
 
+    private val parents: LiveData<List<ChipReference>> = Transformations.switchMap(parentUpper) {
+        repository.getChipReferenceParentTreeLive(it.id)
+    }
     private val children: LiveData<List<ChipCard>> = Transformations.switchMap(parentUpper) {
         repository.getChipChildrenCardsLive(it.id)
     }
@@ -28,7 +32,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
             return
         }
 
-        repository.setParentIdentity(id, false)
+        repository.setParentIdentity(id)
     }
 
     fun getParent() = parentUpper
@@ -36,6 +40,8 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
     fun getParentAsChip() = parentUpper.value?.getChip()
 
     fun getParentId() = parentUpper.value?.id ?: -1L
+
+    fun getParents(): LiveData<List<ChipReference>> = parents
 
     fun getChildren(): LiveData<List<ChipCard>> = children
 

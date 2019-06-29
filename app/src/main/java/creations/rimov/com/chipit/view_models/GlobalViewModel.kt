@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.database.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.database.repos.EditRepo
 

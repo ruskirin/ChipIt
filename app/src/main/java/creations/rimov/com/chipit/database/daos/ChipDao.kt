@@ -12,6 +12,14 @@ interface ChipDao {
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")
     fun getChipsLive(parentId: Long): LiveData<List<Chip>>
 
+    @Query("WITH RECURSIVE get_parents(id, parent_id, name, image_location) " +
+            "AS (SELECT id, parent_id, name, image_location FROM chips WHERE id = :id " +
+                "UNION ALL " +
+            "SELECT get_parents.parent_id, chips.parent_id, chips.name, chips.image_location FROM chips, get_parents " +
+                "WHERE chips.id = get_parents.id) " +
+            "SELECT * FROM get_parents;")
+    fun getChipReferenceParentTreeLive(id: Long): LiveData<List<ChipReference>>
+
     @Transaction
     @Query("SELECT id, name, num_children, description, date_create, date_update FROM chips WHERE is_topic")
     fun getChipTopics(): List<ChipTopic>

@@ -13,11 +13,13 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
 
     fun getChipTopics() = dao.getChipTopicsLive()
 
+    fun getChipReferenceParentTreeLive(id: Long) = dao.getChipReferenceParentTreeLive(id)
+
     /**Get a ChipIdentity object and assign it as the parentChip in WebFragment
      * @param chipId: id of the object
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
-    fun setParentIdentity(chipId: Long, useParent: Boolean) {
+    fun setParentIdentity(chipId: Long) {
         AsyncGetChipIdentity(dao, accessRepoHandler).execute(chipId)
     }
 

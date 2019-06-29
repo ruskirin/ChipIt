@@ -17,7 +17,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.fragments.DirectoryFragment
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppDrawerLayout
@@ -57,9 +56,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setSupportActionBar(toolbar)
         setupDrawer()
 
-        //TODO NOW: set up way to edit Web item (still haven't done that!). THEN work on Chipper
-        //           THEN come back and work on toolbar
-
         navController.addOnDestinationChangedListener(this)
 
         editor.setClickListener(this)
@@ -84,11 +80,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.webFragment -> {
                 menuInflater.inflate(R.menu.web_toolbar, menu)
+
+
                 return true
             }
 
             R.id.chipperFragment -> {
-
 
             }
         }

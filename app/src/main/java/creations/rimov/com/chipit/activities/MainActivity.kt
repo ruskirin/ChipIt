@@ -4,12 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.widget.Spinner
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -17,14 +21,19 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.objects.ChipReference
+import creations.rimov.com.chipit.fragments.DirectoryFragment
+import creations.rimov.com.chipit.fragments.WebFragment
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppDrawerLayout
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
+import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
 import kotlinx.android.synthetic.main.app_content_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
+class MainActivity
+    : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
 
     //TODO FUTURE: maybe move screen dimen to globalViewModel?
     private var screenHeight: Float = 0f
@@ -38,7 +47,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navController: NavController by lazy {navHostFragment.navController}
 
     private val drawerView: AppDrawerLayout by lazy {appDrawerView}
-    private val toolbar: Toolbar by lazy {appToolbar}
+    private val toolbar: AppToolbarLayout by lazy {appToolbar}
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
@@ -67,6 +76,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             if(chip.isTopic) editor.editTopic(chip)
             else editor.editChip(chip)
         })
+
+        globalViewModel.getWebParents().observe(this, Observer {
+            toolbar.setParents(it)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -75,18 +88,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(navController.currentDestination?.id) {
 
             R.id.directoryFragment -> {
-
+                toolbar.hideSpinner()
             }
 
             R.id.webFragment -> {
                 menuInflater.inflate(R.menu.web_toolbar, menu)
-
+                toolbar.showSpinner()
 
                 return true
             }
 
             R.id.chipperFragment -> {
-
+                toolbar.hideSpinner()
             }
         }
 

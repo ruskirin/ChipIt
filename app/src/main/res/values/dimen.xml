@@ -7,6 +7,9 @@
     <dimen name="standard_touch_smallsize">48dp</dimen>
     <dimen name="standard_touch_regularsize">64dp</dimen>
     <dimen name="standard_prompt_textsize">20sp</dimen>
+    <dimen name="standard_info_textsize">16sp</dimen>
+
+    <dimen name="tab_padding_horiz">16dp</dimen>
 
     <dimen name="drawer_width">250dp</dimen>
     <dimen name="drawer_btn_side">64dp</dimen>

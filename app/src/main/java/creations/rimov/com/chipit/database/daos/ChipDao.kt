@@ -14,9 +14,9 @@ interface ChipDao {
 
     @Query("WITH RECURSIVE get_parents(id, parent_id, name, image_location) " +
             "AS (SELECT id, parent_id, name, image_location FROM chips WHERE id = :id " +
-                "UNION ALL " +
-            "SELECT get_parents.parent_id, chips.parent_id, chips.name, chips.image_location FROM chips, get_parents " +
-                "WHERE chips.id = get_parents.id) " +
+            "UNION ALL " +
+            "SELECT chips.parent_id, chips.parent_id, chips.name, chips.image_location FROM chips, get_parents " +
+            "WHERE chips.id = get_parents.parent_id) " +
             "SELECT * FROM get_parents;")
     fun getChipReferenceParentTreeLive(id: Long): LiveData<List<ChipReference>>
 
@@ -62,17 +62,25 @@ interface ChipDao {
             "SELECT * FROM get_parents;")
     fun getBranchParentIds(childId: Long): List<Long>
 
+    @Query("WITH RECURSIVE " +
+            "get_parents(x) AS (SELECT :id UNION ALL SELECT parent_id FROM chips, get_parents " +
+            "WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
+            "UPDATE chips SET date_update = :date WHERE id IN get_parents;")
+    fun setUpdateDate(id: Long, date: String)
+
     /**Starting from id, increase the counter up the parent tree by amt**/
     @Query("WITH RECURSIVE " +
-            "get_parents(x) AS (SELECT :id UNION ALL SELECT parent_id FROM chips, get_parents WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
-            "UPDATE chips SET num_children = num_children + :amt WHERE id IN get_parents;")
-    fun increaseCounter(id: Long, amt: Int)
+            "get_parents(x) AS (SELECT :id UNION ALL SELECT parent_id FROM chips, get_parents " +
+            "WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
+            "UPDATE chips SET num_children = num_children + :amt, date_update = :date WHERE id IN get_parents;")
+    fun increaseCounter(id: Long, amt: Int, date: String)
 
     /**Starting from id, decrease the counter up the parent tree by amt**/
     @Query("WITH RECURSIVE " +
-            "get_parents(x) AS (SELECT :id UNION ALL SELECT parent_id FROM chips, get_parents WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
-            "UPDATE chips SET num_children = num_children - :amt WHERE id IN get_parents;")
-    fun decreaseCounter(id: Long, amt: Int)
+            "get_parents(x) AS (SELECT :id UNION ALL SELECT parent_id FROM chips, get_parents " +
+            "WHERE id = get_parents.x AND parent_id IS NOT NULL) " +
+            "UPDATE chips SET num_children = num_children - :amt, date_update = :date WHERE id IN get_parents;")
+    fun decreaseCounter(id: Long, amt: Int, date: String)
 
     @Query("UPDATE chips SET vertices = :vertices WHERE id = :id")
     fun updateVertices(id: Long, vertices: List<CoordPoint>)

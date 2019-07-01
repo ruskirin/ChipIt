@@ -21,22 +21,20 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/toolbarCollapseLayout"
+        <creations.rimov.com.chipit.viewgroups.AppToolbarLayout
+                android:id="@+id/appToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorPrimary"
                 android:fitsSystemWindows="true"
-                app:contentScrim="@color/colorPrimary"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"/>
 
-            <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/appToolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="@color/colorPrimary"
-                    app:layout_collapseMode="pin"/>
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+        <creations.rimov.com.chipit.viewgroups.AppTabLayout
+                android:id="@+id/appTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/standard_touch_smallsize"
+                android:fitsSystemWindows="true"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

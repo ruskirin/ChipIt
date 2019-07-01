@@ -4,8 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import creations.rimov.com.chipit.extensions.getChipCreateDate
+import creations.rimov.com.chipit.extensions.getChipUpdateDate
 import creations.rimov.com.chipit.objects.CoordPoint
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity(
@@ -13,6 +14,7 @@ import java.util.*
     indices = [Index(value = ["id"], unique = true)]
 )
 
+//TODO IMPORTANT: SimpleDateFormat is supposedly expensive, move it out of the fields and have it called on background thread
 data class Chip(@PrimaryKey(autoGenerate = true) val id: Long,
 
                 @ColumnInfo(name = "parent_id") var parentId: Long? = null,
@@ -24,10 +26,9 @@ data class Chip(@PrimaryKey(autoGenerate = true) val id: Long,
                 @ColumnInfo(name = "description") var desc: String = "",
 
                 @ColumnInfo(name = "date_create") val created: String =
-                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Date()),
+                    Date().getChipCreateDate(),
 
-                @ColumnInfo(name = "date_update") var updated: String =
-                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Date()),
+                @ColumnInfo(name = "date_update") var updated: String = "",
 
                 @ColumnInfo(name = "num_children") var counter: Int = 0,
 

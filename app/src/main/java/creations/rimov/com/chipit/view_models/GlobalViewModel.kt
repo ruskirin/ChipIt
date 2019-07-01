@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.view_models
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
@@ -13,15 +12,23 @@ class GlobalViewModel : ViewModel() {
 
     private val repository = EditRepo(DatabaseApplication.database!!)
 
+    private val chipToEdit: MutableLiveData<Chip> = MutableLiveData()
+
     private var observedChipId: Long = -1L
 
-    private val chipToEdit: MutableLiveData<Chip> = MutableLiveData()
+    private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
 
 
     fun getObservedChipId() = observedChipId
 
     fun setObservedChipId(id: Long) {
         observedChipId = id
+    }
+
+    fun getWebParents() = webParents
+
+    fun setWebParents(parents: List<ChipReference>) {
+        webParents.postValue(parents)
     }
 
     fun getChipToEdit() = chipToEdit

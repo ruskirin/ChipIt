@@ -22,9 +22,9 @@ class WebDetailLayout(context: Context, attrs: AttributeSet) : FrameLayout(conte
         View.inflate(context, R.layout.web_detail_layout, this)
     }
 
-    fun setChip(chip: ChipIdentity) {
+    fun setChip(chip: ChipIdentity?) {
 
-        if(chip.isTopic) {
+        if(chip == null || chip.isTopic) {
             this.visibility = View.GONE
             return
         }

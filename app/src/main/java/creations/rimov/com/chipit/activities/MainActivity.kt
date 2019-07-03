@@ -4,16 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.widget.Spinner
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -21,15 +15,11 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.ChipReference
-import creations.rimov.com.chipit.fragments.DirectoryFragment
-import creations.rimov.com.chipit.fragments.WebFragment
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import creations.rimov.com.chipit.viewgroups.AppDrawerLayout
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
-import kotlinx.android.synthetic.main.app_content_layout.*
+import kotlinx.android.synthetic.main.app_fab_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity
@@ -46,35 +36,34 @@ class MainActivity
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
     private val navController: NavController by lazy {navHostFragment.navController}
 
-    private val drawerView: AppDrawerLayout by lazy {appDrawerView}
     private val toolbar: AppToolbarLayout by lazy {appToolbar}
-
-    private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private val editor: AppEditorLayout by lazy {appEditor}
 
-    private val fab: FloatingActionButton by lazy {appFab}
+    private val fabAction: FloatingActionButton by lazy {appFabAction}
+    private val fabCancel: FloatingActionButton by lazy {appFabCancel}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_layout)
 
-        setDisplayDimen()
+        initScreen()
+
+        appTabLayout.setNavController(navController)
 
         setSupportActionBar(toolbar)
-        setupDrawer()
 
         navController.addOnDestinationChangedListener(this)
 
         editor.setClickListener(this)
-        drawerView.setClickListener(this)
-        fab.setOnClickListener(this)
+        fabAction.setOnClickListener(this)
+        fabCancel.setOnClickListener(this)
 
         globalViewModel.getChipToEdit().observe(this, Observer { chip ->
 
             if(chip.isTopic) editor.editTopic(chip)
-            else editor.editChip(chip)
+            else editor.editChip(chip, chip.parentId)
         })
 
         globalViewModel.getWebParents().observe(this, Observer {
@@ -126,39 +115,47 @@ class MainActivity
         }
     }
 
-    private var create: Boolean = false //Flag to indicate the action performed in Editor
-
     override fun onClick(view: View?) {
 
         when(view?.id) {
 
-            //TODO FUTURE: do not like this direct navigation, feel like the backstack is stack-stack-stacking
-            R.id.drawerTopics -> {
-                navController.navigate(R.id.directoryFragment)
-            }
-
-            R.id.drawerChips -> {
-                navController.navigate(R.id.webFragment)
-            }
-
-            R.id.drawerChipper -> {
-                navController.navigate(R.id.chipperFragment)
-            }
-
             //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
-            R.id.appFab -> {
-                create = true //Creating a new Chip
+            R.id.appFabAction -> {
+
+                if(editor.isEditing) {
+                    val chip = editor.finishEdit(true)
+
+                    chip?.let {
+                        //TODO FUTURE: add a snackbar here
+                        if(editor.isCreating)
+                            globalViewModel.insertChip(it)
+                        else
+                            globalViewModel.updateChipBasic(it.id, it.name, it.desc, it.imgLocation)
+                    }
+
+                    setFabEdit(false)
+                    return
+                }
+
+                setFabEdit(true)
+                editor.isCreating = true //Creating a new Chip
 
                 when(navController.currentDestination?.id) {
 
                     R.id.directoryFragment -> {
-                        editor.createTopic()
+                        editor.editTopic()
                     }
 
                     R.id.webFragment -> {
-                        editor.createChip(globalViewModel.getObservedChipId())
+                        editor.editChip(parentId = globalViewModel.getObservedChipId())
                     }
                 }
+            }
+
+            R.id.appFabCancel -> {
+
+                editor.finishEdit(false)
+                setFabEdit(false)
             }
 
             R.id.editorName -> {
@@ -173,33 +170,6 @@ class MainActivity
             R.id.editorDesc -> {
 
 
-            }
-
-            R.id.editorBtnSave -> {
-                val chip = editor.finishEdit(true)
-
-                chip?.let {
-                    //TODO FUTURE: add a snackbar here
-
-                    if(create)
-                        globalViewModel.insertChip(it)
-                    else
-                        globalViewModel.updateChipBasic(it.id, it.name, it.desc, it.imgLocation)
-                }
-
-                create = false //Reset flag
-            }
-
-            R.id.editorBtnCancel -> {
-
-                editor.finishEdit(false)
-
-                create = false //Reset flag
-            }
-
-            R.id.editorBtnDelete -> {
-
-                //TODO FUTURE: decide if you want to keep this
             }
         }
     }
@@ -220,24 +190,25 @@ class MainActivity
             editor.setImage(imageFile.storagePath)
     }
 
-    private fun toggleFab() {
+    private fun setFabEdit(editing: Boolean) {
 
-        if(fab.isOrWillBeShown) fab.hide()
-        else fab.show()
+        if(editing) {
+            fabCancel.show()
+            fabAction.setImageResource(R.drawable.ic_check)
+
+        } else {
+            fabCancel.hide()
+            fabAction.setImageResource(R.drawable.ic_add_fab_image)
+        }
     }
 
-    private fun setupDrawer() {
+    private fun initScreen() {
 
-        drawerToggle = ActionBarDrawerToggle(
-            this, appDrawerLayout, toolbar, R.string.drawer_open_desc, R.string.drawer_close_desc)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    private fun setDisplayDimen() {
         val displayMetrics = resources.displayMetrics
 
         screenHeight = displayMetrics.heightPixels.toFloat()
         screenWidth = displayMetrics.widthPixels.toFloat()
+
+        fabCancel.hide()
     }
 }

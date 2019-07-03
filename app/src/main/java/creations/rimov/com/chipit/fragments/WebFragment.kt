@@ -3,8 +3,6 @@ package creations.rimov.com.chipit.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Spinner
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -16,7 +14,6 @@ import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
-import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
@@ -49,17 +46,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
             gestureDetector.setIsLongpressEnabled(true)
         }
 
-        if(localViewModel.getParentId() == -1L) {
-
-            if(passedArgs.parentId != -1L) {
-                val id = passedArgs.parentId
-
-                localViewModel.setParent(id)
-
-            } else {
-                localViewModel.setParent(globalViewModel.getObservedChipId())
-            }
-        }
+        localViewModel.setChip(passedArgs.parentId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,9 +60,9 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
             setHasFixedSize(true)
         }
 
-        localViewModel.getParent().observe(this, Observer {
+        localViewModel.getChip().observe(this, Observer {
 
-            globalViewModel.setObservedChipId(it.id) //Set focused chip id for editor chip creation
+            globalViewModel.setObservedChipId(it?.id) //Set focused chip id for editor chip creation
 
             detailLayout.setChip(it)
         })
@@ -85,6 +72,8 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
         })
 
         localViewModel.getChildren().observe(this, Observer {
+            Log.i("Life Event", "WebFragment#childrenObserver: ${it.size} children of chip")
+
             childrenAdapter.setChips(it)
         })
 
@@ -117,7 +106,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
                 if(event.action == MotionEvent.ACTION_UP) {
 
-                    localViewModel.getParentAsChip()?.let {
+                    localViewModel.getAsChip()?.let {
                         globalViewModel.setChipToEdit(it)
                     }
                 }
@@ -126,7 +115,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 //            R.id.detailEditorBtnDelete -> {
 //                if(event.action == MotionEvent.ACTION_UP)
 //
-//                    localViewModel.getParentAsChip()?.let {
+//                    localViewModel.getAsChip()?.let {
 //                        globalViewModel.deleteChip(it)
 //                    }
 //            }
@@ -146,7 +135,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
     }
 
     override fun chipDelete(chip: ChipCard) {
-        globalViewModel.deleteChip(chip.getChip(localViewModel.getParentId()))
+        globalViewModel.deleteChip(chip.getChip(localViewModel.getChipId()))
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
@@ -159,7 +148,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
 
-            localViewModel.setParent(childrenAdapter.getSelectedId())
+            localViewModel.setChip(childrenAdapter.getSelectedId())
 
             return true
         }

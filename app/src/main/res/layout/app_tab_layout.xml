@@ -28,7 +28,7 @@
             android:background="?attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_chips"/>
 
-    <TextView
+    <ImageButton
             android:id="@+id/tabChips"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -36,13 +36,12 @@
             android:paddingStart="@dimen/tab_padding_horiz"
             android:paddingEnd="@dimen/tab_padding_horiz"
             android:gravity="center"
-            android:text="@string/tab_name_chips"
-            android:textSize="@dimen/standard_info_textsize"
+            android:adjustViewBounds="true"
             android:background="?attr/selectableItemBackground"
-            android:drawableStart="@drawable/ic_chip"
+            android:src="@drawable/ic_chip"
             android:visibility="gone"/>
 
-    <TextView
+    <ImageButton
             android:id="@+id/tabStorage"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -50,10 +49,9 @@
             android:paddingStart="@dimen/tab_padding_horiz"
             android:paddingEnd="@dimen/tab_padding_horiz"
             android:gravity="center"
-            android:text="@string/tab_name_storage"
-            android:textSize="@dimen/standard_info_textsize"
+            android:adjustViewBounds="true"
             android:background="?attr/selectableItemBackground"
-            android:drawableStart="@drawable/ic_files"
+            android:src="@drawable/ic_files"
             android:visibility="gone"/>
 
 </merge>

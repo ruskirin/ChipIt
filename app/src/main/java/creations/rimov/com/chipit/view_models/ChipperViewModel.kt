@@ -96,7 +96,7 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         if(::bitmap.isInitialized) bitmap.height
         else 0
 
-    override fun <T> setData(data: T) {
+    override fun <T> setData(data: T?) {
         TODO()
     }
 

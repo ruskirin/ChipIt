@@ -3,6 +3,9 @@
 
     <string name="editor_name_def">topic name</string>
     <string name="editor_desc_def">topic description</string>
+    <string name="editor_btn_topic">Name?</string>
+    <string name="editor_btn_image">Image?</string>
+    <string name="editor_btn_desc">Description?</string>
 
     <string name="editor_detail_btn_edit">Edit</string>
     <string name="editor_detail_btn_delete">Delete</string>

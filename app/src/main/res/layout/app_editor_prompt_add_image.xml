@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+            android:id="@+id/editorTextImageAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/standard_prompt_textsize"
+            android:text="@string/editor_btn_image"/>
+
+    <ImageButton
+            android:id="@+id/editorBtnImageCamera"
+            android:layout_width="@dimen/standard_touch_smallsize"
+            android:layout_height="@dimen/standard_touch_smallsize"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/editorBtnImageStorage"
+            app:layout_constraintTop_toBottomOf="@id/editorTextImageAdd"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_camera"/>
+
+    <ImageButton
+            android:id="@+id/editorBtnImageStorage"
+            android:layout_width="@dimen/standard_touch_smallsize"
+            android:layout_height="@dimen/standard_touch_smallsize"
+            app:layout_constraintStart_toEndOf="@id/editorBtnImageCamera"
+            app:layout_constraintEnd_toStartOf="@id/editorBtnImageUrl"
+            app:layout_constraintTop_toBottomOf="@id/editorTextImageAdd"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_files"/>
+
+    <ImageButton
+            android:id="@+id/editorBtnImageUrl"
+            android:layout_width="@dimen/standard_touch_smallsize"
+            android:layout_height="@dimen/standard_touch_smallsize"
+            app:layout_constraintStart_toEndOf="@id/editorBtnImageStorage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editorTextImageAdd"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_http"/>
+
+</merge>

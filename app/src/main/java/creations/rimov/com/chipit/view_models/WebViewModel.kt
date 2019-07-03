@@ -15,38 +15,44 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
-    private val parentUpper: MutableLiveData<ChipIdentity> = MutableLiveData()
+    private val chip: MutableLiveData<ChipIdentity?> = MutableLiveData()
 
-    private val parents: LiveData<List<ChipReference>> = Transformations.switchMap(parentUpper) {
-        repository.getChipReferenceParentTreeLive(it.id)
+    private val parents: LiveData<List<ChipReference>> = Transformations.switchMap(chip) {
+        repository.getChipReferenceParentTreeLive(it?.id)
     }
-    private val children: LiveData<List<ChipCard>> = Transformations.switchMap(parentUpper) {
-        repository.getChipChildrenCardsLive(it.id)
+    private val children: LiveData<List<ChipCard>> = Transformations.switchMap(chip) {
+        repository.getChipChildrenCardsLive(it?.id)
     }
 
 
-    fun setParent(id: Long) {
-        //TODO ERROR: handle
+    fun setChip(id: Long?) {
+
         if(id == -1L) {
-            Log.e("WebViewModel", "#setParentIdentity(): passed id == -1L")
+            repository.setParentIdentity(null)
             return
         }
 
         repository.setParentIdentity(id)
     }
 
-    fun getParent() = parentUpper
+    fun getChip() = chip
 
-    fun getParentAsChip() = parentUpper.value?.getChip()
+    fun getAsChip() = chip.value?.getChip()
 
-    fun getParentId() = parentUpper.value?.id ?: -1L
+    fun getChipId() = chip.value?.id
 
     fun getParents(): LiveData<List<ChipReference>> = parents
 
     fun getChildren(): LiveData<List<ChipCard>> = children
 
-    override fun <T> setData(data: T) {
-        if(data is ChipIdentity) parentUpper.postValue(data)
+    override fun <T> setData(data: T?) {
+
+        if(data == null) {
+            chip.postValue(null)
+            return
+        }
+
+        if(data is ChipIdentity) chip.postValue(data)
     }
 
     override fun <T> setDataList(data: List<T>) {

@@ -16,13 +16,13 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
 
     fun getChipTopics() = dao.getChipTopicsLive()
 
-    fun getChipReferenceParentTreeLive(id: Long) = dao.getChipReferenceParentTreeLive(id)
+    fun getChipReferenceParentTreeLive(id: Long?): LiveData<List<ChipReference>> = dao.getChipReferenceParentTreeLive(id)
 
     /**Get a ChipIdentity object and assign it as the parentChip in WebFragment
      * @param chipId: id of the object
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
-    fun setParentIdentity(chipId: Long) {
+    fun setParentIdentity(chipId: Long?) {
         AsyncGetChipIdentity(dao, accessRepoHandler).execute(chipId)
     }
 
@@ -34,7 +34,12 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         AsyncGetChipCards(dao, accessRepoHandler).execute(id)
     }
 
-    fun getChipChildrenCardsLive(parentId: Long) = dao.getChipCardsLive(parentId)
+    fun getChipChildrenCardsLive(parentId: Long?): LiveData<List<ChipCard>> {
+
+        if(parentId == null) return dao.getChipCardsOfNullLive()
+
+        return dao.getChipCardsLive(parentId)
+    }
 
     fun getChipPathsLive(parentId: Long) = dao.getChipPathsLive(parentId)
 
@@ -54,21 +59,20 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
 
     class AsyncGetChipIdentity(
         private val chipDao: ChipDao,
-        private val repoHandler: RepoHandler) : AsyncTask<Long, Void, ChipIdentity>() {
+        private val repoHandler: RepoHandler) : AsyncTask<Long?, Void, ChipIdentity>() {
 
         override fun doInBackground(vararg params: Long?): ChipIdentity? {
             return chipDao.getChipIdentity(params[0] ?: return null)
         }
 
         override fun onPostExecute(result: ChipIdentity?) {
-
-            repoHandler.setData(result ?: return)
+            repoHandler.setData(result)
         }
     }
 
     interface RepoHandler {
 
-        fun <T> setData(data: T)
+        fun <T> setData(data: T?)
 
         fun <T> setDataList(data: List<T>)
     }

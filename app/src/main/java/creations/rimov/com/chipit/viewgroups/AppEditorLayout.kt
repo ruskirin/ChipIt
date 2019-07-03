@@ -1,27 +1,37 @@
 package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import com.bumptech.glide.Glide
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
+import creations.rimov.com.chipit.extensions.gone
+import creations.rimov.com.chipit.extensions.visible
 import kotlinx.android.synthetic.main.app_editor_layout.view.*
+import kotlinx.android.synthetic.main.app_editor_prompt_add_image.view.*
 
-class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class AppEditorLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
+
+    var isEditing = this.isVisible
 
     private lateinit var chipEdit: Chip
 
     private val image: ImageView by lazy {editorImage}
+    private val nameLayout: TextInputLayout by lazy {editorNameLayout}
     private val name: TextInputEditText by lazy {editorName}
+    private val descLayout: TextInputLayout by lazy {editorDescLayout}
     private val desc: TextInputEditText by lazy {editorDesc}
-    private val btnDelete: ImageButton by lazy {editorBtnDelete}
+    private val btnName: Button by lazy {editorBtnName}
+    private val btnDesc: Button by lazy {editorBtnDesc}
+    private val btnImageLayout by lazy {editorBtnImageLayout}
+    private val btnImageCamera: ImageButton by lazy {editorBtnImageCamera}
+    private val btnImageStorage: ImageButton by lazy {editorBtnImageStorage}
+    private val btnImageUrl: ImageButton by lazy {editorBtnImageUrl}
 
     init {
         View.inflate(context, R.layout.app_editor_layout, this)
@@ -29,113 +39,49 @@ class AppEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
     fun setClickListener(listener: OnClickListener) {
 
-        image.setOnClickListener(listener)
-        name.setOnClickListener(listener)
-        desc.setOnClickListener(listener)
-        editorBtnSave.setOnClickListener(listener)
-        editorBtnCancel.setOnClickListener(listener)
-        btnDelete.setOnClickListener(listener)
     }
 
-    fun createTopic() {
+    //Set up the view depending on whether editing or creating
+    fun setEdit(create: Boolean) {
 
-        initChip(null, true)
-
-        startTopicEdit(true)
+        showImage(!create)
+        showName(!create)
+        showDesc(!create)
     }
 
-    fun createChip(parentId: Long?) {
+    private fun showImage(show: Boolean) {
 
-        initChip(parentId, false)
+        if(show) {
+            btnImageLayout.gone()
+            image.visible()
 
-        startChipEdit(true)
-    }
-
-    /**Display the necessary windows, and set the initial EditText values**/
-    fun editTopic(chip: Chip) {
-
-        chipEdit = chip
-
-        setNameAndDesc(chip.name, chip.desc)
-
-        startTopicEdit(false)
-    }
-
-    fun editChip(chip: Chip) {
-
-        chipEdit = chip
-
-        setNameAndDesc(chip.name, chip.desc)
-
-        setImage()
-
-        startChipEdit(false)
-    }
-
-    fun finishEdit(save: Boolean): Chip? {
-
-        if(!save || name.text.isNullOrBlank()) {
-            this.visibility = View.GONE
-            return null
+        } else {
+            btnImageLayout.visible()
+            image.gone()
         }
-
-        chipEdit.name = name.text.toString()
-        chipEdit.desc = desc.text.toString()
-
-        this.visibility = View.GONE
-        return chipEdit
     }
 
-    fun setImage(imgPath: String = "") {
+    private fun showName(show: Boolean) {
 
-        if(imgPath.isNotBlank()) chipEdit.imgLocation = imgPath
+        if(show) {
+            btnName.gone()
+            nameLayout.visible()
 
-        Glide.with(image.context)
-            .load(chipEdit.imgLocation)
-            .into(image)
+        } else {
+            btnName.visible()
+            nameLayout.gone()
+        }
     }
 
-    fun setNameTextWatcher(textWatcher: TextWatcher) {
-        name.addTextChangedListener(textWatcher)
-    }
+    private fun showDesc(show: Boolean) {
 
-    fun setDescTextWatcher(textWatcher: TextWatcher) {
-        desc.addTextChangedListener(textWatcher)
-    }
+        if(show) {
+            btnDesc.gone()
+            descLayout.visible()
 
-    private fun startTopicEdit(create: Boolean) {
-
-        this.visibility = View.VISIBLE
-        image.visibility = View.GONE
-
-        if(!create) btnDelete.visibility = View.VISIBLE
-        else btnDelete.visibility = View.GONE
-    }
-
-    private fun startChipEdit(create: Boolean) {
-
-        this.visibility = View.VISIBLE
-        image.visibility = View.VISIBLE
-
-        if(!create) btnDelete.visibility = View.VISIBLE
-        else btnDelete.visibility = View.GONE
-    }
-
-    private fun setNameAndDesc(name: String, desc: String) {
-
-        if(name.isNotEmpty())
-            this.name.setText(name)
-        if(desc.isNotEmpty())
-            this.desc.setText(desc)
-    }
-
-    private fun initChip(parentId: Long?, isTopic: Boolean) {
-        chipEdit = Chip(0L, parentId, isTopic = isTopic)
-
-        name.setText("")
-        desc.setText("")
-        Glide.with(image.context)
-            .load(resources.getDrawable(R.drawable.ic_photo_empty, null))
-            .into(image)
+        } else {
+            btnDesc.visible()
+            descLayout.gone()
+        }
     }
 }

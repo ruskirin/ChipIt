@@ -14,14 +14,14 @@ class GlobalViewModel : ViewModel() {
 
     private val chipToEdit: MutableLiveData<Chip> = MutableLiveData()
 
-    private var observedChipId: Long = -1L
+    private var observedChipId: Long? = null
 
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
 
 
     fun getObservedChipId() = observedChipId
 
-    fun setObservedChipId(id: Long) {
+    fun setObservedChipId(id: Long?) {
         observedChipId = id
     }
 

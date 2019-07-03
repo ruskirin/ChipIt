@@ -46,6 +46,8 @@
     <include
             android:id="@+id/editorBtnImageLayout"
             layout="@layout/app_editor_prompt_add_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
             app:layout_constraintBottom_toTopOf="@id/editorImage"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +57,8 @@
             android:id="@+id/editorImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintVertical_weight="5"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.5"
             app:layout_constraintTop_toBottomOf="@id/editorBtnImageLayout"
             app:layout_constraintBottom_toTopOf="@id/editorBtnDesc"
             app:layout_constraintStart_toStartOf="parent"

@@ -2,14 +2,19 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/editorGuideTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.1"
+            android:orientation="horizontal"/>
+
     <Button
             android:id="@+id/editorBtnName"
             android:layout_width="0dp"
             android:layout_height="@dimen/standard_touch_smallsize"
             android:gravity="center"
-            app:layout_constraintVertical_chainStyle="spread"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/editorNameLayout"
+            app:layout_constraintTop_toTopOf="@id/editorGuideTop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:textSize="@dimen/standard_prompt_textsize"
@@ -21,7 +26,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/editorBtnName"
-            app:layout_constraintBottom_toTopOf="@id/editorBtnImageLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:counterEnabled="true"
@@ -43,24 +47,35 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+            android:id="@+id/editorTextImageAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
+            android:textAllCaps="true"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/standard_prompt_textsize"
+            android:text="@string/editor_btn_image"/>
+
     <include
             android:id="@+id/editorBtnImageLayout"
             layout="@layout/app_editor_prompt_add_image"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
-            app:layout_constraintBottom_toTopOf="@id/editorImage"
+            app:layout_constraintTop_toBottomOf="@id/editorTextImageAdd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
             android:id="@+id/editorImage"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent="0.5"
+            android:layout_height="wrap_content"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintHeight_max="@dimen/app_editor_image_maxheight"
             app:layout_constraintTop_toBottomOf="@id/editorBtnImageLayout"
-            app:layout_constraintBottom_toTopOf="@id/editorBtnDesc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:adjustViewBounds="true"
@@ -74,7 +89,6 @@
             android:layout_height="@dimen/standard_touch_smallsize"
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/editorImage"
-            app:layout_constraintBottom_toTopOf="@id/editorDescLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:textSize="@dimen/standard_prompt_textsize"
@@ -87,7 +101,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/editorBtnDesc"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:counterEnabled="true"

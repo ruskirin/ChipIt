@@ -47,6 +47,7 @@
             android:paddingStart="@dimen/app_editor_margin_horiz"
             android:paddingEnd="@dimen/app_editor_margin_horiz"
             android:paddingTop="?attr/actionBarSize"
+            android:paddingBottom="@dimen/app_editor_margin_horiz"
             android:background="@android:drawable/screen_background_dark_transparent"
             android:orientation="vertical"
             android:visibility="gone"/>

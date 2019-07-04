@@ -2,28 +2,18 @@ package creations.rimov.com.chipit.view_models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
-import creations.rimov.com.chipit.database.objects.ChipUpdateBasic
-import creations.rimov.com.chipit.database.repos.EditRepo
+import creations.rimov.com.chipit.objects.ChipAction
 
 class GlobalViewModel : ViewModel() {
 
-    private val repository = EditRepo(DatabaseApplication.database!!)
-
-    private val chipToEdit: MutableLiveData<Chip> = MutableLiveData()
-
-    private var observedChipId: Long? = null
+    private val chipAction: MutableLiveData<ChipAction> = MutableLiveData()
 
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
 
+    var observedChipId: Long? = null
 
-    fun getObservedChipId() = observedChipId
-
-    fun setObservedChipId(id: Long?) {
-        observedChipId = id
-    }
 
     fun getWebParents() = webParents
 
@@ -31,25 +21,9 @@ class GlobalViewModel : ViewModel() {
         webParents.postValue(parents)
     }
 
-    fun getChipToEdit() = chipToEdit
+    fun getChipAction() = chipAction
 
-    fun setChipToEdit(chip: Chip) {
-        chipToEdit.postValue(chip)
-    }
-
-    fun updateChipBasic(id: Long, name: String, desc: String, imgLocation: String) {
-
-        val chip = ChipUpdateBasic.set(id, name, desc, imgLocation)
-
-        repository.updateChipBasic(chip)
-    }
-
-    /**Insert a Chip into the database "chips"**/
-    fun insertChip(chip: Chip) {
-        repository.insertChip(chip)
-    }
-
-    fun deleteChip(chip: Chip) {
-        repository.deleteChip(chip)
+    fun setChipAction(chip: ChipAction) {
+        chipAction.postValue(chip)
     }
 }

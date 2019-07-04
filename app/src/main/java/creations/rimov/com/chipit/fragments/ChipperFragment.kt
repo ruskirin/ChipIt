@@ -238,7 +238,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
         if(touchedChip != null) {
             surfaceAction = Constant.NAV_CHIP
 
-            Log.i("Touch Event", "ChipperFragment#setAction(): touched chip: ${touchedChip.id}")
+            Log.i("Touch Event", "ChipperFragment#instance(): touched chip: ${touchedChip.id}")
 
             return
         }

@@ -10,10 +10,12 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
@@ -62,7 +64,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
         localViewModel.getChip().observe(this, Observer {
 
-            globalViewModel.setObservedChipId(it?.id) //Set focused chip id for editor chip creation
+            globalViewModel.observedChipId = it?.id //Set focused chip id for editor chip creation
 
             detailLayout.setChip(it)
         })
@@ -107,7 +109,8 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
                 if(event.action == MotionEvent.ACTION_UP) {
 
                     localViewModel.getAsChip()?.let {
-                        globalViewModel.setChipToEdit(it)
+                        globalViewModel.setChipAction(
+                            ChipAction.instance(it, MainActivity.EditorAction.EDIT))
                     }
                 }
             }
@@ -129,13 +132,13 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
     }
 
     override fun chipEdit(chip: ChipIdentity) {
-        globalViewModel.setChipToEdit(
-            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
-                created = chip.dateCreate, counter = chip.counter))
+        globalViewModel.setChipAction(
+            ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
     }
 
     override fun chipDelete(chip: ChipCard) {
-        globalViewModel.deleteChip(chip.getChip(localViewModel.getChipId()))
+        globalViewModel.setChipAction(
+            ChipAction.instance(chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {

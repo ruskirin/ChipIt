@@ -9,9 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import kotlinx.android.synthetic.main.directory_layout.view.*
@@ -79,14 +80,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun topicEdit(chip: ChipTopic) {
-
-        globalViewModel.setChipToEdit(
-            Chip(chip.id, isTopic = true, name = chip.name, desc = chip.desc,
-                created = chip.dateCreate, updated = chip.dateUpdate, counter = chip.counter))
+        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
     }
 
     override fun topicDelete(chip: ChipTopic) {
-        globalViewModel.deleteChip(chip.getChip())
+        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.DELETE))
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {

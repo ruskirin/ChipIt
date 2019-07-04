@@ -3,7 +3,7 @@ package creations.rimov.com.chipit.database.repos
 import android.os.AsyncTask
 import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipUpdateBasic
+import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.extensions.getChipUpdateDate
 import java.util.*
 

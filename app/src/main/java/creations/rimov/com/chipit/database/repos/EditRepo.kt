@@ -2,7 +2,7 @@ package creations.rimov.com.chipit.database.repos
 
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipUpdateBasic
+import creations.rimov.com.chipit.objects.ChipUpdateBasic
 
 class EditRepo(chipDb: ChipDatabase) {
 

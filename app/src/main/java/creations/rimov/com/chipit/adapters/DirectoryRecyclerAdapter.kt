@@ -95,8 +95,6 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
 
                 R.id.topicLayoutHeader -> {
 
-                    Log.i("Touch Event", "DirectoryViewHolder#onTouch(): RecyclerTopic touched!")
-
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedTopic(this)
 
@@ -104,8 +102,6 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
                 }
 
                 R.id.topicLayoutBtnCount -> {
-
-                    Log.i("Touch Event", "DirectoryViewHolder#onTouch(): BtnCount touched!")
 
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedTopic(this)

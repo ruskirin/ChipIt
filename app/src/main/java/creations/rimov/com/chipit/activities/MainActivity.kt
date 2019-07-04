@@ -3,6 +3,8 @@ package creations.rimov.com.chipit.activities
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,7 +17,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.util.CameraUtil
+import creations.rimov.com.chipit.view_models.EditorViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
@@ -23,7 +27,13 @@ import kotlinx.android.synthetic.main.app_fab_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity
-    : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener {
+    : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener, AppEditorLayout.EditorHandler {
+
+    object EditorAction {
+        const val EDIT = 301
+        const val UPDATE = 302
+        const val DELETE = 303
+    }
 
     //TODO FUTURE: maybe move screen dimen to globalViewModel?
     private var screenHeight: Float = 0f
@@ -31,6 +41,9 @@ class MainActivity
 
     private val globalViewModel: GlobalViewModel by lazy {
         ViewModelProviders.of(this).get(GlobalViewModel::class.java)
+    }
+    private val editViewModel: EditorViewModel by lazy {
+        ViewModelProviders.of(this).get(EditorViewModel::class.java)
     }
 
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
@@ -50,6 +63,8 @@ class MainActivity
 
         initScreen()
 
+        editor.setHandler(this)
+
         appTabLayout.setNavController(navController)
 
         setSupportActionBar(toolbar)
@@ -60,15 +75,91 @@ class MainActivity
         fabAction.setOnClickListener(this)
         fabCancel.setOnClickListener(this)
 
-        globalViewModel.getChipToEdit().observe(this, Observer { chip ->
+        globalViewModel.getChipAction().observe(this, Observer { chipAction ->
 
-            if(chip.isTopic) editor.editTopic(chip)
-            else editor.editChip(chip, chip.parentId)
+            //TODO NULL-CHECK (proper)
+            val chip = chipAction.getChip() ?: return@Observer
+
+            when(chipAction.getAction()) {
+
+                EditorAction.EDIT -> {
+                    setFabEdit(true)
+                    editViewModel.startEdit(chip)
+                    editor.startEdit(editViewModel.editingChip)
+                }
+
+                EditorAction.UPDATE -> {
+                    editViewModel.updateChipBasic(
+                        ChipUpdateBasic.instance(chip.id, chip.parentId, chip.isTopic, chip.name, chip.desc, chip.imgLocation))
+                }
+
+                EditorAction.DELETE -> {
+                    editViewModel.deleteChip(chip)
+                }
+            }
         })
 
         globalViewModel.getWebParents().observe(this, Observer {
             toolbar.setParents(it)
         })
+    }
+
+    override fun onClick(view: View?) {
+
+        when(view?.id) {
+
+            R.id.appFabAction -> {
+                //Saving startEdit
+                if(editViewModel.isEditing && editor.finishEdit(true)) {
+                    editViewModel.saveEdit()
+
+                    editor.clearData()
+                    setFabEdit(false)
+                    return
+                }
+
+                //Creating new Chip
+                setFabEdit(true)
+                editor.startEdit()
+
+                if(navController.currentDestination?.id == R.id.directoryFragment) {
+                    editViewModel.startCreate(true, null)
+                    return
+                }
+
+                editViewModel.startCreate(false, globalViewModel.observedChipId)
+                return
+            }
+
+            R.id.appFabCancel -> {
+
+                editor.finishEdit(false)
+                editViewModel.isEditing = false
+                setFabEdit(false)
+            }
+
+            R.id.editorName -> {
+
+
+            }
+
+            R.id.editorDesc -> {
+
+
+            }
+
+            R.id.editorBtnImageCamera -> {
+                takePicture()
+            }
+
+            R.id.editorBtnImageStorage -> {
+
+            }
+
+            R.id.editorBtnImageUrl -> {
+
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -106,72 +197,21 @@ class MainActivity
             }
 
             R.id.webFragment -> {
-                Log.i("Navigation", "Destination: Web")
+
             }
 
             R.id.chipperFragment -> {
-                Log.i("Navigation", "Destination: Chipper")
+
             }
         }
     }
 
-    override fun onClick(view: View?) {
+    override fun updateName(text: String) {
+        editViewModel.setName(text)
+    }
 
-        when(view?.id) {
-
-            //TODO FUTURE: looks like FABs have onVisibilityChangedListeners; could cut down some work
-            R.id.appFabAction -> {
-
-                if(editor.isEditing) {
-                    val chip = editor.finishEdit(true)
-
-                    chip?.let {
-                        //TODO FUTURE: add a snackbar here
-                        if(editor.isCreating)
-                            globalViewModel.insertChip(it)
-                        else
-                            globalViewModel.updateChipBasic(it.id, it.name, it.desc, it.imgLocation)
-                    }
-
-                    setFabEdit(false)
-                    return
-                }
-
-                setFabEdit(true)
-                editor.isCreating = true //Creating a new Chip
-
-                when(navController.currentDestination?.id) {
-
-                    R.id.directoryFragment -> {
-                        editor.editTopic()
-                    }
-
-                    R.id.webFragment -> {
-                        editor.editChip(parentId = globalViewModel.getObservedChipId())
-                    }
-                }
-            }
-
-            R.id.appFabCancel -> {
-
-                editor.finishEdit(false)
-                setFabEdit(false)
-            }
-
-            R.id.editorName -> {
-
-
-            }
-
-            R.id.editorImage -> {
-                takePicture()
-            }
-
-            R.id.editorDesc -> {
-
-
-            }
-        }
+    override fun updateDesc(text: String) {
+        editViewModel.setDesc(text)
     }
 
     private fun takePicture() {
@@ -186,8 +226,11 @@ class MainActivity
         addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-        if(imageFile.storagePath.isNotEmpty())
-            editor.setImage(imageFile.storagePath)
+        if(imageFile.storagePath.isNotEmpty()) {
+            editViewModel.editingChip?.imgLocation = imageFile.storagePath //Save
+
+            editor.showImage(imageFile.storagePath)
+        }
     }
 
     private fun setFabEdit(editing: Boolean) {
@@ -203,6 +246,11 @@ class MainActivity
     }
 
     private fun initScreen() {
+
+        if(editViewModel.isEditing) {
+            editor.startEdit(editViewModel.editingChip)
+            setFabEdit(true)
+        }
 
         val displayMetrics = resources.displayMetrics
 

@@ -9,7 +9,8 @@
     <dimen name="standard_prompt_textsize">20sp</dimen>
     <dimen name="standard_info_textsize">16sp</dimen>
 
-    <dimen name="tab_height">32dp</dimen>
+    <dimen name="tab_height">40dp</dimen>
+    <dimen name="tab_icon_size">32dp</dimen>
     <dimen name="tab_padding_horiz">16dp</dimen>
 
     <dimen name="fab_margin">8dp</dimen>

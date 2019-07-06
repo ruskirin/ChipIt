@@ -3,11 +3,9 @@
           package="creations.rimov.com.chipit">
 
     <uses-feature android:name="android.hardware.camera2"
-                  android:required="true"/>
+                  android:required="false"/>
 
-    <!--Permission to store to app's private storage (only necessary for API <18)-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-                     android:maxSdkVersion="18"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
             android:name=".database.DatabaseApplication"
@@ -21,10 +19,9 @@
         <!--Reference: https://developer.android.com/reference/android/support/v4/content/FileProvider.html-->
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="com.rimov.creations.chipit.imageprovider"
+                android:authorities="com.rimov.creations.chipit.fileprovider"
                 android:exported="false"
                 android:grantUriPermissions="true">
-
             <meta-data
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/file_paths"/>

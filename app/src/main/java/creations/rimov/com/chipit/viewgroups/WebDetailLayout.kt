@@ -32,9 +32,7 @@ class WebDetailLayout(context: Context, attrs: AttributeSet) : FrameLayout(conte
         this.visibility = View.VISIBLE
 
         desc.text = chip.desc
-        Glide.with(image.context)
-            .load(chip.imgLocation)
-            .into(image)
+        Glide.with(image.context).load(chip.imgLocation).into(image)
     }
 
     //TODO FUTURE: see if clearing listeners is necessary

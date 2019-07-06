@@ -27,12 +27,8 @@ class CardLayout(context: Context, attrs: AttributeSet) : RelativeLayout(context
 
     fun setChip(chip: ChipCard) {
 
-        Log.i("Chip Display", "CardLayout#setChip(): setting image located at: ${chip.imgLocation}")
-
         name.text = chip.name
         counter.text = chip.counter.toString()
-        Glide.with(image.context)
-            .load(chip.imgLocation)
-            .into(image)
+        Glide.with(image.context).load(chip.imgLocation).into(image)
     }
 }

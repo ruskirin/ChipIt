@@ -29,12 +29,29 @@
                 android:fitsSystemWindows="true"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"/>
 
-        <creations.rimov.com.chipit.viewgroups.AppTabLayout
+        <com.google.android.material.tabs.TabLayout
                 android:id="@+id/appTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_height"
                 android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"/>
+                app:tabGravity="fill"
+                app:layout_scrollFlags="scroll|enterAlways|snap">
+
+            <com.google.android.material.tabs.TabItem
+                    android:layout="@layout/tab_chip_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:icon="@drawable/ic_topics"
+                    android:text="@string/tab_name_topics"/>
+
+            <com.google.android.material.tabs.TabItem
+                    android:layout="@layout/tab_chip_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:icon="@drawable/ic_chips"
+                    android:text="@string/tab_name_web"/>
+
+        </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

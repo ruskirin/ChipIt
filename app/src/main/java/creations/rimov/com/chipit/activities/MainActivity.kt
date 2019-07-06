@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.tabs.TabLayout
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.util.CameraUtil
@@ -26,8 +27,8 @@ import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
 import kotlinx.android.synthetic.main.app_fab_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
-class MainActivity
-    : AppCompatActivity(), NavController.OnDestinationChangedListener, View.OnClickListener, AppEditorLayout.EditorHandler {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
+    View.OnClickListener, AppEditorLayout.EditorHandler {
 
     object EditorAction {
         const val EDIT = 301
@@ -50,6 +51,7 @@ class MainActivity
     private val navController: NavController by lazy {navHostFragment.navController}
 
     private val toolbar: AppToolbarLayout by lazy {appToolbar}
+    private val tabLayout: TabLayout by lazy {appTabLayout}
 
     private val editor: AppEditorLayout by lazy {appEditor}
 
@@ -65,9 +67,27 @@ class MainActivity
 
         editor.setHandler(this)
 
-        appTabLayout.setNavController(navController)
-
         setSupportActionBar(toolbar)
+
+        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                when(tab?.position) {
+                    0 -> {
+                        if(navController.currentDestination?.id == R.id.webFragment)
+                            navController.navigate(R.id.action_webFragment_to_directoryFragment)
+                    }
+
+                    1 -> {
+                        if(navController.currentDestination?.id == R.id.directoryFragment)
+                            navController.navigate(R.id.action_directoryFragment_to_webFragment)
+                    }
+                }
+            }
+        })
 
         navController.addOnDestinationChangedListener(this)
 
@@ -193,11 +213,11 @@ class MainActivity
         when(destination.id) {
 
             R.id.directoryFragment -> {
-
+                setSelectedTab(0)
             }
 
             R.id.webFragment -> {
-
+                setSelectedTab(1)
             }
 
             R.id.chipperFragment -> {
@@ -220,13 +240,14 @@ class MainActivity
         //Verifies that an application that can handle this intent exists
         addChipCameraIntent.resolveActivity(this.packageManager)
 
-        val imageFile = CameraUtil.getImageFile(applicationContext) ?: return
+        val imageFile = CameraUtil.getImageFile() ?: return
         val imageUri = CameraUtil.getImageUri(applicationContext, imageFile.file)
 
         addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
         if(imageFile.storagePath.isNotEmpty()) {
+
             editViewModel.editingChip?.imgLocation = imageFile.storagePath //Save
 
             editor.showImage(imageFile.storagePath)
@@ -243,6 +264,13 @@ class MainActivity
             fabCancel.hide()
             fabAction.setImageResource(R.drawable.ic_add_fab_image)
         }
+    }
+
+    //Set the selected tab to the position
+    private fun setSelectedTab(position: Int) {
+
+        if(tabLayout.selectedTabPosition != position)
+            tabLayout.selectTab(tabLayout.getTabAt(position))
     }
 
     private fun initScreen() {

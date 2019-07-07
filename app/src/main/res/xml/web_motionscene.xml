@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:motion="http://schemas.android.com/tools">
+
+    <Transition
+            app:constraintSetStart="@id/motionSceneWebStart"
+            app:constraintSetEnd="@id/motionSceneWebMax"
+            app:motionInterpolator="linear">
+
+        <OnSwipe
+                app:touchAnchorId="@id/webParentView"
+                app:touchRegionId="@id/webParentView"
+                app:dragDirection="dragDown"
+                app:moveWhenScrollAtTop="false"/>
+
+        <KeyFrameSet>
+
+            <KeyPosition
+                    app:motionTarget="@id/webParentView"
+                    app:transitionEasing="decelerate"/>
+
+        </KeyFrameSet>
+
+    </Transition>
+
+    <Transition
+            app:constraintSetStart="@id/motionSceneWebStart"
+            app:constraintSetEnd="@id/motionSceneWebMin">
+
+        <OnSwipe
+            app:touchAnchorId="@id/webParentView"
+            app:dragDirection="dragUp"
+            app:moveWhenScrollAtTop="true"/>
+
+    </Transition>
+
+    <ConstraintSet android:id="@+id/motionSceneWebStart">
+
+        <Constraint android:id="@id/webGuide">
+            <Layout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.4"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webParentView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/webGuide"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webSettingsLayout">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/tab_height"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/webParentView"/>
+            <PropertySet
+                    android:visibility="gone"/>
+
+        </Constraint>
+
+        <Constraint android:id="@+id/webChildrenView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toBottomOf="@id/webGuide"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+    </ConstraintSet>
+
+
+    <ConstraintSet android:id="@+id/motionSceneWebMin">
+
+        <Constraint android:id="@id/webGuide">
+            <Layout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.2"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webParentView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/webGuide"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webSettingsLayout">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/tab_height"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/webParentView"/>
+            <PropertySet
+                    android:visibility="gone"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webChildrenView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toBottomOf="@id/webGuide"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+    </ConstraintSet>
+
+
+    <ConstraintSet android:id="@+id/motionSceneWebMax">
+
+        <Constraint android:id="@id/webGuide">
+            <Layout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.4"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webParentView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webSettingsLayout">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/tab_height"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/webParentView"/>
+            <PropertySet
+                    android:visibility="visible"/>
+
+        </Constraint>
+
+        <Constraint android:id="@id/webChildrenView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toBottomOf="@id/webGuide"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </Constraint>
+
+    </ConstraintSet>
+
+</MotionScene>

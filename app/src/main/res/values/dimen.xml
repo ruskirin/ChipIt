@@ -3,7 +3,8 @@
     <dimen name="elevation_def">4dp</dimen>
     <dimen name="elevation_small">2dp</dimen>
 
-    <dimen name="standard_button_margin">8dp</dimen>
+    <dimen name="standard_margin_reg">8dp</dimen>
+    <dimen name="standard_margin_small">4dp</dimen>
     <dimen name="standard_touch_smallsize">48dp</dimen>
     <dimen name="standard_touch_regularsize">64dp</dimen>
     <dimen name="standard_prompt_textsize">20sp</dimen>

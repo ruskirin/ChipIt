@@ -7,6 +7,8 @@ import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.objects.ChipAction
 
 class GlobalViewModel : ViewModel() {
+    //Used by Main to work in tandem with Web's transitions
+    private val webTransition: MutableLiveData<Float> = MutableLiveData()
 
     private val chipAction: MutableLiveData<ChipAction> = MutableLiveData()
 
@@ -14,6 +16,12 @@ class GlobalViewModel : ViewModel() {
 
     var observedChipId: Long? = null
 
+
+    fun getWebTransition() = webTransition
+
+    fun setWebTransition(progress: Float) {
+        webTransition.postValue(progress)
+    }
 
     fun getWebParents() = webParents
 

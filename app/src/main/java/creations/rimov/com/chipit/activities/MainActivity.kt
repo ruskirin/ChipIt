@@ -18,6 +18,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.extensions.gone
+import creations.rimov.com.chipit.extensions.visible
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.EditorViewModel
@@ -94,6 +96,20 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         editor.setClickListener(this)
         fabAction.setOnClickListener(this)
         fabCancel.setOnClickListener(this)
+
+        globalViewModel.getWebTransition().observe(this, Observer { progress ->
+
+            TODO("Sorta works, just needs to be tied in with the animation + image reset to fit view properly and be of" +
+                    "proper resolution (perhaps some solid color as a transition)")
+            if(progress > 0.9f) {
+                toolbar.gone()
+                tabLayout.gone()
+
+            } else {
+                toolbar.visible()
+                tabLayout.visible()
+            }
+        })
 
         globalViewModel.getChipAction().observe(this, Observer { chipAction ->
 

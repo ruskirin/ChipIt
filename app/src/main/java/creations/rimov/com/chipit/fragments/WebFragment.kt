@@ -1,8 +1,10 @@
 package creations.rimov.com.chipit.fragments
 
 import android.os.Bundle
+import android.transition.Transition
 import android.util.Log
 import android.view.*
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,7 +23,8 @@ import creations.rimov.com.chipit.view_models.WebViewModel
 import creations.rimov.com.chipit.viewgroups.WebDetailLayout
 import kotlinx.android.synthetic.main.web_layout.view.*
 
-class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
+class WebFragment : Fragment(),
+    WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener, MotionLayout.TransitionListener {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
@@ -41,6 +44,8 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val navBarHeight = resources.getIdentifier("navigation_bar_heigth", "dimen", "android")
+
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 
@@ -53,6 +58,8 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.web_layout, container, false)
+
+        (view as MotionLayout).setTransitionListener(this)
 
         detailLayout = view.webParentView
 
@@ -79,7 +86,7 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
             childrenAdapter.setChips(it)
         })
 
-        detailLayout.setTouchListener(this)
+//        detailLayout.setTouchListener(this)
 
         return view
     }
@@ -92,13 +99,13 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
 
             R.id.webDetailBtnSettings -> {
 
-                if(event.action == MotionEvent.ACTION_UP)
-                    detailLayout.toggleEditor()
+//                if(event.action == MotionEvent.ACTION_UP)
+//                    detailLayout.toggleEditor()
             }
 
             R.id.webDetailBtnDesc -> {
 
-                if(detailLayout.isEditing()) return false
+//                if(detailLayout.isEditing()) return false
 
                 if(event.action == MotionEvent.ACTION_UP)
                     detailLayout.toggleDesc()
@@ -140,6 +147,18 @@ class WebFragment : Fragment(), WebRecyclerAdapter.WebAdapterHandler, View.OnTou
         globalViewModel.setChipAction(
             ChipAction.instance(chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
+
+    override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {
+
+        motionLayout?.let {
+            if(startId == R.id.motionSceneWebStart && endId == R.id.motionSceneWebMax) {
+                globalViewModel.setWebTransition(progress)
+            }
+        }
+    }
+    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {} //NOT USED
+    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {} //NOT USED
+    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {} //NOT USED
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
 

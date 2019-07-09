@@ -15,3 +15,10 @@ fun View?.visible() {
         if(it.visibility == View.GONE || it.visibility == View.INVISIBLE) it.visibility = View.VISIBLE
     }
 }
+
+fun View?.invisible() {
+
+    this?.let {
+        if(it.visibility == View.VISIBLE) it.visibility = View.INVISIBLE
+    }
+}

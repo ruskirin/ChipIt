@@ -26,22 +26,14 @@
             android:nestedScrollingEnabled="false"
             android:clipToPadding="false"/>
 
-    <creations.rimov.com.chipit.viewgroups.WebDetailLayout
-            android:id="@+id/webParentView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/webGuide"/>
+    <include layout="@layout/web_detail_layout"/>
 
-    <include
+    <creations.rimov.com.chipit.viewgroups.BottomNavLayout
             android:id="@+id/webSettingsLayout"
-            layout="@layout/web_detail_bottom_nav_layout"
             android:layout_width="0dp"
             android:layout_height="@dimen/tab_height"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/webParentView"/>
+            app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

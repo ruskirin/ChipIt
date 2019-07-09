@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import creations.rimov.com.chipit.R
@@ -99,16 +100,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         globalViewModel.getWebTransition().observe(this, Observer { progress ->
 
-            TODO("Sorta works, just needs to be tied in with the animation + image reset to fit view properly and be of" +
-                    "proper resolution (perhaps some solid color as a transition)")
-            if(progress > 0.9f) {
-                toolbar.gone()
-                tabLayout.gone()
-
-            } else {
-                toolbar.visible()
-                tabLayout.visible()
-            }
+            if(progress > 0.9f) fabAction.hide()
+            else fabAction.show()
         })
 
         globalViewModel.getChipAction().observe(this, Observer { chipAction ->
@@ -273,6 +266,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private fun setFabEdit(editing: Boolean) {
 
         if(editing) {
+            fabAction.show()
             fabCancel.show()
             fabAction.setImageResource(R.drawable.ic_check)
 

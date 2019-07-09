@@ -27,8 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorPrimary"
-                android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"/>
+                android:fitsSystemWindows="true"/>
 
         <com.google.android.material.tabs.TabLayout
                 android:id="@+id/appTabLayout"

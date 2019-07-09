@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.flexbox.FlexboxLayoutManager
 import creations.rimov.com.chipit.R
@@ -21,6 +23,7 @@ class CardLayout(context: Context, attrs: AttributeSet) : RelativeLayout(context
     private val name: TextView by lazy {cardName}
     private val counter: TextView by lazy{cardCounter}
 
+
     init {
         View.inflate(context, R.layout.card_layout, this)
     }
@@ -29,6 +32,10 @@ class CardLayout(context: Context, attrs: AttributeSet) : RelativeLayout(context
 
         name.text = chip.name
         counter.text = chip.counter.toString()
-        Glide.with(image.context).load(chip.imgLocation).into(image)
+        Glide.with(image.context)
+            .load(chip.imgLocation)
+            .apply(RequestOptions()
+                .override(image.width, image.height))
+            .into(image)
     }
 }

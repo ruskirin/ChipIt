@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-             android:id="@+id/webDetailImg"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:adjustViewBounds="true"
-             android:background="@android:color/black"/>
+    <FrameLayout
+            android:id="@+id/webDetailImgLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/webChildrenView">
 
-    <TextView
-            android:id="@+id/webDetailDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="@android:drawable/screen_background_dark_transparent"
-            android:visibility="gone"/>
+        <ImageView
+                android:id="@+id/webDetailImg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@android:color/black"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+            android:id="@+id/webDetailDescLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toEndOf="@id/webDetailImgLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout">
+
+        <TextView
+                android:id="@+id/webDetailDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@android:drawable/screen_background_dark_transparent"/>
+
+    </FrameLayout>
 
 </merge>

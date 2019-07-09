@@ -28,7 +28,9 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
 
     fun getChipIdentity(id: Long) = dao.getChipIdentity(id)
 
-    fun getChipIdentityLive(id: Long) = dao.getChipIdentityLive(id)
+    fun getChipIdentityLive(id: Long?) =
+        if(id == null) null
+        else dao.getChipIdentityLive(id)
 
     fun getChipCards(id: Long) {
         AsyncGetChipCards(dao, accessRepoHandler).execute(id)

@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import creations.rimov.com.chipit.R
@@ -166,7 +167,11 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
     fun showImage(imgLocation: String = "") {
 
         if(imgLocation.isNotBlank()) {
-            Glide.with(image.context).load(imgLocation).into(image)
+            Glide.with(image.context)
+                .load(imgLocation)
+                .apply(RequestOptions()
+                    .override(image.width, image.height))
+                .into(image)
 
             imageText.gone()
             editorBtnImageLayout.gone()

@@ -69,6 +69,10 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        TODO("Have this converted to a Service (look at the latest saved bookmarks for info); figure that the Chipper" +
+                "will be a transparent SurfaceView spawned over any selected image... What this means is that this will not go" +
+                "into the NavHost and instead have its own standalone functionality (which is good)")
+
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
 

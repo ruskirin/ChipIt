@@ -8,8 +8,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
-class ChipperView(cont: Context, attribs: AttributeSet)
-    : SurfaceView(cont, attribs), SurfaceHolder.Callback {
+class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attribs), SurfaceHolder.Callback {
 
     init {
         holder.addCallback(this)

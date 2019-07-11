@@ -1,29 +1,26 @@
 package creations.rimov.com.chipit.fragments
 
 import android.graphics.*
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.adapters.ChipperRecyclerAdapter
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
 import creations.rimov.com.chipit.view_models.ChipperViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipperView
+import kotlinx.android.synthetic.main.chipper_layout.*
 import kotlinx.android.synthetic.main.chipper_layout.view.*
 
-class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdapter.WebAdapterHandler, View.OnTouchListener {
+class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListener {
 
     private object Constant {
         //Buffer around surfaceview edge to trigger gesture swipe events
@@ -39,14 +36,10 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
     private lateinit var globalViewModel: GlobalViewModel
 
     //Passed Bundle from DirectoryFragment
-    private val passedArgs by navArgs<WebFragmentArgs>()
+    private val passedArgs by navArgs<ChipperFragmentArgs>()
 
     private lateinit var chipperView: ChipperView
     private lateinit var chipHolder: SurfaceHolder
-
-    private lateinit var recyclerVisBtn: ImageButton
-    private lateinit var recyclerLayout: FrameLayout
-    private lateinit var recyclerAdapter: ChipperRecyclerAdapter
 
     private val localViewModel: ChipperViewModel by lazy {
         ViewModelProviders.of(this).get(ChipperViewModel::class.java)
@@ -55,10 +48,8 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
         ViewModelProviders.of(this).get(ChipperTouchViewModel::class.java)
     }
 
-    //Writes/draws onto an assigned bitmap
-    private lateinit var parentCanvas: Canvas
     //Aspect ratio Rect frame for subject image
-    private val parentImageFrame: Rect by lazy { Rect() }
+    private val parentImageFrame: Rect = Rect()
 
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0
@@ -69,18 +60,12 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        TODO("Have this converted to a Service (look at the latest saved bookmarks for info); figure that the Chipper" +
-                "will be a transparent SurfaceView spawned over any selected image... What this means is that this will not go" +
-                "into the NavHost and instead have its own standalone functionality (which is good)")
-
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
-
-            recyclerAdapter = ChipperRecyclerAdapter(it, this@ChipperFragment)
         }
 
-        if(localViewModel.getParentId() != passedArgs.parentId)
-            localViewModel.setParentId(passedArgs.parentId)
+        if(localViewModel.getParentId() != passedArgs.chipId)
+            localViewModel.setParentId(passedArgs.chipId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -93,84 +78,36 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
 
         chipHolder = chipperView.holder
 
-        recyclerLayout = view.chipperChildrenLayout
-
-        recyclerVisBtn = view.chipperBtnRecyclerVis.apply {
-            setOnTouchListener(this@ChipperFragment)
-        }
-
-        view.chipperRecycler.apply {
-            adapter = recyclerAdapter
-            layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
-            setHasFixedSize(true)
-        }
-
         localViewModel.getParent()?.observe(this, Observer { parent ->
             Log.i("Life Event", "ChipperFragment#parentObserver: triggered!")
-
-//            localViewModel.checkUpNavigation()
 
             localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
         })
 
         localViewModel.getChildren()?.observe(this, Observer { children ->
-            recyclerAdapter.setTopics(children)
-
             chipperView.invalidate()
         })
 
         localTouchViewModel.pathCreated.observe(this, Observer { created ->
-            TODO()
+
         })
 
         return view
     }
 
-    //Toggle the visibility of recyclerView displaying children and the image of the button responsible for toggling
-    fun toggleRecyclerVis() {
-
-        if(recyclerAdapter.itemCount == 0) return
-
-        recyclerLayout.visibility =
-            if(recyclerLayout.isVisible) {
-                recyclerVisBtn.setImageResource(R.drawable.ic_arrow_web_recycler_show)
-                View.GONE
-
-            } else {
-                recyclerVisBtn.setImageResource(R.drawable.ic_arrow_web_recycler_hide)
-                View.VISIBLE
-            }
-    }
-
-
     //TODO (FUTURE): have this run on a separate thread, display loading bar
     private fun drawBackground() {
 
-        if(localViewModel.getBitmap() == null)
-            return
+        if(localViewModel.bitmap == null) return
 
         localTouchViewModel.initPaint()
 
-        parentCanvas = Canvas(localViewModel.getBitmap()!!.copy(Bitmap.Config.ARGB_8888, true))
+        var canvas: Canvas? = null
 
-        //Draw static images (eg. background, chip pathways)
-        try {
-            parentCanvas = chipHolder.lockCanvas(null)
+        DrawBackground(chipHolder, parentImageFrame, canvas).execute(localViewModel.bitmap)
 
-            synchronized(chipHolder) {
-                //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
-                parentCanvas.drawBitmap(localViewModel.getBitmap()!!, null, parentImageFrame, null)
-            }
-            //TODO: handle error
-        } catch (e: Throwable) {
-            e.printStackTrace()
-
-        } finally {
-            chipHolder.unlockCanvasAndPost(parentCanvas)
-            //Reset flag
-            localViewModel.backgroundChanged = false
-        }
+        if(canvas != null) localViewModel.backgroundChanged = false
     }
 
     override fun drawScreen(canvas: Canvas) {
@@ -211,15 +148,11 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
 
     override fun setBitmapRect() {
 
-        val width = localViewModel.getBitmapWidth()
-        val height = localViewModel.getBitmapHeight()
-
-        if(width == 0 || height == 0)
-            return
+        val width = localViewModel.bitmap?.width ?: return
+        val height = localViewModel.bitmap?.height ?: return
 
         parentImageFrame.set(
-            RenderUtil.getAspectRatioRect(
-                localViewModel.getBitmapWidth(), localViewModel.getBitmapHeight(), viewWidth, viewHeight))
+            RenderUtil.getAspectRatioRect(width, height, viewWidth, viewHeight))
     }
 
     //Initial point of contact
@@ -270,7 +203,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
             }
 
             Constant.SWIPE_EDGE -> {
-                TODO()
+
             }
         }
     }
@@ -294,22 +227,41 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, ChipperRecyclerAdap
         }
     }
 
-    override fun chipTouch(id: Long) {
-
-    }
-
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         if(event == null || event.action == MotionEvent.ACTION_DOWN)
             return false
 
         when(view?.id) {
-            R.id.chipperBtnRecyclerVis -> {
 
-                toggleRecyclerVis()
-            }
         }
 
         return false
+    }
+
+
+    class DrawBackground(private val chipHolder: SurfaceHolder,
+                         private val rect: Rect,
+                         private var canvas: Canvas?) : AsyncTask<Bitmap, Void, Void>() {
+
+        override fun doInBackground(vararg params: Bitmap): Void? {
+            //Draw static images (eg. background, chip pathways)
+            try {
+                canvas = chipHolder.lockCanvas(null)
+
+                synchronized(chipHolder) {
+                    //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
+                    canvas?.drawBitmap(params[0], null, rect, null)
+                }
+                //TODO: handle error
+            } catch (e: Throwable) {
+                e.printStackTrace()
+
+            } finally {
+                chipHolder.unlockCanvasAndPost(canvas ?: return null)
+            }
+
+            return null
+        }
     }
 }

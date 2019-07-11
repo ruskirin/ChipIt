@@ -2,25 +2,27 @@ package creations.rimov.com.chipit.view_models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.objects.ChipAction
 
 class GlobalViewModel : ViewModel() {
-    //Used by Main to work in tandem with Web's transitions
-    private val webTransition: MutableLiveData<Float> = MutableLiveData()
 
-    private val chipAction: MutableLiveData<ChipAction> = MutableLiveData()
+    //Chip + requested action (edit, delete, update)
+    private val chipEdit: MutableLiveData<ChipAction> = MutableLiveData()
 
+    //Currently displayed Chip and its parents, used by toolbar
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
+
+    //Chip selected in the parent spinner
+    private val webSelectedId: MutableLiveData<Long?> = MutableLiveData()
 
     var observedChipId: Long? = null
 
 
-    fun getWebTransition() = webTransition
+    fun getChipEdit() = chipEdit
 
-    fun setWebTransition(progress: Float) {
-        webTransition.postValue(progress)
+    fun setChipEdit(chip: ChipAction) {
+        chipEdit.postValue(chip)
     }
 
     fun getWebParents() = webParents
@@ -29,9 +31,9 @@ class GlobalViewModel : ViewModel() {
         webParents.postValue(parents)
     }
 
-    fun getChipAction() = chipAction
+    fun getWebSelectedId() = webSelectedId
 
-    fun setChipAction(chip: ChipAction) {
-        chipAction.postValue(chip)
+    fun setWebSelectedId(id: Long?) {
+        if(id != webSelectedId.value) webSelectedId.postValue(id)
     }
 }

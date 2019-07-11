@@ -80,11 +80,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun topicEdit(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
+        globalViewModel.setChipEdit(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
     }
 
     override fun topicDelete(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.DELETE))
+        globalViewModel.setChipEdit(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.DELETE))
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {

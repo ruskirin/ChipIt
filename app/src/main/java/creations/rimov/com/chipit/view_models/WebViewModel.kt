@@ -30,6 +30,8 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun setFocusId(id: Long?) {
 
+        Log.i("Touch Event", "WebVM#setFocusId(): setting id $id")
+
         if(id == -1L) {
             focusId.postValue(null)
             return

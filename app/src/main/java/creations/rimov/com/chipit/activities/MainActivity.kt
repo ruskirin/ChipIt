@@ -3,22 +3,26 @@ package creations.rimov.com.chipit.activities
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabLayout
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
@@ -29,9 +33,11 @@ import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
 import kotlinx.android.synthetic.main.app_fab_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
+import kotlinx.android.synthetic.main.toolbar_collapsing_layout.*
+import kotlinx.android.synthetic.main.web_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-    View.OnClickListener, AppEditorLayout.EditorHandler {
+    View.OnClickListener, AppEditorLayout.EditorHandler, AppToolbarLayout.ToolbarHandler {
 
     object EditorAction {
         const val EDIT = 301
@@ -53,8 +59,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
     private val navController: NavController by lazy {navHostFragment.navController}
 
+    private val toolbarLayout: CollapsingToolbarLayout by lazy {appToolbarCollapseLayout}
     private val toolbar: AppToolbarLayout by lazy {appToolbar}
-    private val tabLayout: TabLayout by lazy {appTabLayout}
+    private val toolbarCollapse: View by lazy {appCollapsing}
+    private val toolbarCollapseImg: ImageView by lazy {collapseImage}
+    private val toolbarCollapseDesc: TextView by lazy {collapseDesc}
 
     private val editor: AppEditorLayout by lazy {appEditor}
 
@@ -72,39 +81,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         setSupportActionBar(toolbar)
 
-        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-                when(tab?.position) {
-                    0 -> {
-                        if(navController.currentDestination?.id == R.id.webFragment)
-                            navController.navigate(R.id.action_webFragment_to_directoryFragment)
-                    }
-
-                    1 -> {
-                        if(navController.currentDestination?.id == R.id.directoryFragment)
-                            navController.navigate(R.id.action_directoryFragment_to_webFragment)
-                    }
-                }
-            }
-        })
-
         navController.addOnDestinationChangedListener(this)
 
+        toolbar.setHandler(this)
         editor.setClickListener(this)
         fabAction.setOnClickListener(this)
         fabCancel.setOnClickListener(this)
 
-        globalViewModel.getWebTransition().observe(this, Observer { progress ->
-
-            if(progress > 0.9f) fabAction.hide()
-            else fabAction.show()
-        })
-
-        globalViewModel.getChipAction().observe(this, Observer { chipAction ->
+        globalViewModel.getChipEdit().observe(this, Observer { chipAction ->
 
             //TODO NULL-CHECK (proper)
             val chip = chipAction.getChip() ?: return@Observer
@@ -129,7 +113,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         })
 
         globalViewModel.getWebParents().observe(this, Observer {
+
             toolbar.setParents(it)
+
+            if(it.isNotEmpty()) setupCollapseToolbar(it[0])
         })
     }
 
@@ -198,11 +185,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.directoryFragment -> {
                 toolbar.hideSpinner()
+                toolbarCollapse.gone()
             }
 
             R.id.webFragment -> {
                 menuInflater.inflate(R.menu.web_toolbar, menu)
                 toolbar.showSpinner()
+                toolbarCollapse.visible()
 
                 return true
             }
@@ -222,11 +211,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
-                setSelectedTab(0)
+
             }
 
             R.id.webFragment -> {
-                setSelectedTab(1)
+
             }
 
             R.id.chipperFragment -> {
@@ -241,6 +230,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun updateDesc(text: String) {
         editViewModel.setDesc(text)
+    }
+
+    override fun setSelectedChip(chip: ChipReference) {
+        Log.i("Touch Event", "Main#setSelectedChip(): setting id ${chip.id}, name ${chip.name}")
+
+        globalViewModel.setWebSelectedId(chip.id)
     }
 
     private fun takePicture() {
@@ -276,11 +271,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    //Set the selected tab to the position
-    private fun setSelectedTab(position: Int) {
+    private fun setupCollapseToolbar(chip: ChipReference) {
 
-        if(tabLayout.selectedTabPosition != position)
-            tabLayout.selectTab(tabLayout.getTabAt(position))
+        Log.i("Touch Event", "Main#setupCollapseToolbar(): setting id ${chip.id}, name ${chip.name}")
+
+        toolbarLayout.title = chip.name
+
+        toolbarCollapseDesc.text = chip.desc
+        Glide.with(this)
+            .load(chip.imgLocation)
+            .apply(RequestOptions()
+                .override(toolbarCollapseImg.width, toolbarCollapseImg.height))
+            .into(toolbarCollapseImg)
     }
 
     private fun initScreen() {

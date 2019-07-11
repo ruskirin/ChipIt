@@ -28,14 +28,10 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         repository.getChipPathsLive(it)
     }
 
-    private lateinit var bitmap: Bitmap
-    //Saved image path for present bitmap
-    private var imgLocation: String = ""
+    var bitmap: Bitmap? = null
 
     //Flag to redraw background bitmap
     var backgroundChanged = false
-    //Is the parent of the current parent a name? Used to toggle branch up navigation
-//    var canNavigateUp = false
 
 
     fun setParentId(parentId: Long) {
@@ -53,10 +49,6 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChildren(): LiveData<List<ChipPath>>? = children
 
-//    fun checkUpNavigation() {
-//        repository.isChipTopic(parent.value?.parentId ?: -1L)
-//    }
-
     /**Check if point landed inside one of the children**/
     fun getTouchedChip(point: CoordPoint): ChipPath? {
 
@@ -69,11 +61,12 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         return null
     }
 
+    fun getMutableBitmap() = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+
     fun setBitmap(imgLocation: String) {
-        this.imgLocation = imgLocation
 
         try {
-            bitmap = TextureUtil.convertPathToBitmap(imgLocation)!!
+            bitmap = TextureUtil.convertPathToBitmap(imgLocation)
 
         } catch(e: Exception) {
             Log.e("ChipperViewModel", "#setBitmap(): could not dateCreate bitmap from passed image path!")
@@ -84,23 +77,11 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         }
     }
 
-    fun getBitmap() =
-        if(::bitmap.isInitialized) bitmap
-        else null
-
-    fun getBitmapWidth() =
-        if(::bitmap.isInitialized) bitmap.width
-        else 0
-
-    fun getBitmapHeight() =
-        if(::bitmap.isInitialized) bitmap.height
-        else 0
-
     override fun <T> setData(data: T?) {
-        TODO()
+
     }
 
     override fun <T> setDataList(data: List<T>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 }

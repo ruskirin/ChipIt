@@ -19,7 +19,8 @@ import creations.rimov.com.chipit.extensions.visible
 import kotlinx.android.synthetic.main.app_toolbar_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_parent_spinner_chip_layout.view.*
 
-class AppToolbarLayout(context: Context, attrs: AttributeSet) : Toolbar(context, attrs), AdapterView.OnItemSelectedListener {
+class AppToolbarLayout(context: Context, attrs: AttributeSet)
+    : Toolbar(context, attrs), AdapterView.OnItemSelectedListener {
 
     private lateinit var handler: ToolbarHandler
 

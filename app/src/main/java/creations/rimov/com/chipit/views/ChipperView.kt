@@ -18,20 +18,16 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
     private lateinit var chipHandler: ChipHandler
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.i("ChipperView", "#surfaceCreated()")
 
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        Log.i("ChipperView", "#surfaceChanged()")
 
         chipHandler.setScreenDimen()
         chipHandler.setBitmapRect()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        Log.i("ChipperView", "#surfaceDestroyed()")
-
         //TODO (FUTURE): wrap up work
     }
 
@@ -40,8 +36,6 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
      */
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
-
-        Log.i("ChipperView", "#dispatchDraw()")
 
         if(canvas != null)
             chipHandler.drawScreen(canvas)

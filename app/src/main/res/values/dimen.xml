@@ -7,6 +7,7 @@
     <dimen name="standard_margin_small">4dp</dimen>
     <dimen name="standard_touch_smallsize">48dp</dimen>
     <dimen name="standard_touch_regularsize">64dp</dimen>
+    <dimen name="standard_touch_regularsize_neg">-64dp</dimen>
     <dimen name="standard_prompt_textsize">20sp</dimen>
     <dimen name="standard_info_textsize">16sp</dimen>
 

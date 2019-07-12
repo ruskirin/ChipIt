@@ -1,10 +1,13 @@
 package creations.rimov.com.chipit.fragments
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
-import android.widget.LinearLayout
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -12,20 +15,26 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.extensions.gone
+import creations.rimov.com.chipit.extensions.invisible
+import creations.rimov.com.chipit.extensions.visible
 import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
-import kotlinx.android.synthetic.main.web_layout.*
+import kotlinx.android.synthetic.main.web_detail_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
-import kotlinx.android.synthetic.main.web_layout.view.webChildrenLayout
+import kotlinx.android.synthetic.main.web_layout.view.webSettingsLayout
 
 class WebFragment : Fragment(),
-    WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener /*MotionLayout.TransitionListener*/ {
+    WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener, MotionLayout.TransitionListener {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
@@ -34,6 +43,9 @@ class WebFragment : Fragment(),
     private val localViewModel: WebViewModel by lazy {
         ViewModelProviders.of(this).get(WebViewModel::class.java)
     }
+
+    private val detailImage: ImageView by lazy {webDetailImg}
+    private val detailDesc: TextView by lazy {webDetailDesc}
 
     private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
 
@@ -56,6 +68,10 @@ class WebFragment : Fragment(),
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.web_layout, container, false)
 
+        (view as MotionLayout).setTransitionListener(this)
+
+        view.webSettingsLayout.setTouchListener(this)
+
         view.webChildrenView.apply {
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
@@ -65,6 +81,8 @@ class WebFragment : Fragment(),
         localViewModel.getChip().observe(this, Observer {
 
             globalViewModel.observedChipId = it?.id //Set focused chip id for editor chip creation
+
+            setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
         localViewModel.getParents().observe(this, Observer {
@@ -82,23 +100,17 @@ class WebFragment : Fragment(),
         return view
     }
 
-//    override fun onDetach() {
-//        super.onDetach()
-//        //Reset the layoutparams
-//        if(params.behavior == null) params.behavior = layoutBehavior
-//    }
-
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         if(event == null) return false
 
         when(view?.id) {
 
-//            R.id.webDetailBtnDesc -> {
-//
-//                if(event.action == MotionEvent.ACTION_UP)
-//                    toggleDesc()
-//            }
+            R.id.webDetailBtnDesc -> {
+
+                if(event.action == MotionEvent.ACTION_UP)
+                    toggleDesc()
+            }
 
             R.id.webDetailBtnChip -> {
 
@@ -114,7 +126,7 @@ class WebFragment : Fragment(),
                 if(event.action == MotionEvent.ACTION_UP) {
 
                     localViewModel.getAsChip()?.let {
-                        globalViewModel.setChipEdit(
+                        globalViewModel.setChipAction(
                             ChipAction.instance(it, MainActivity.EditorAction.EDIT))
                     }
                 }
@@ -125,7 +137,7 @@ class WebFragment : Fragment(),
                 if(event.action == MotionEvent.ACTION_UP)
 
                     localViewModel.getAsChip()?.let {
-                        globalViewModel.setChipEdit(
+                        globalViewModel.setChipAction(
                             ChipAction.instance(it, MainActivity.EditorAction.DELETE))
                     }
             }
@@ -134,21 +146,91 @@ class WebFragment : Fragment(),
         return true
     }
 
+    private fun setDetail(chip: ChipIdentity?) {
+
+        if(chip == null || chip.isTopic) {
+
+            detailImage.gone()
+            detailDesc.gone()
+            return
+        }
+
+        detailImage.visible()
+        detailDesc.visible()
+
+        detailDesc.text = chip.desc
+        Glide.with(this)
+            .load(chip.imgLocation)
+            .apply(
+                RequestOptions()
+                    .override(detailImage.width, detailImage.height)
+                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+            .into(detailImage)
+    }
+
+    private fun toggleDesc() {
+
+        if(detailDesc.isVisible) detailDesc.invisible()
+        else detailDesc.visible()
+    }
+
+    private fun redrawDetailImage() {
+
+        detailImage.invalidate()
+        detailImage.requestLayout()
+
+        Glide.with(this)
+            .load(localViewModel.getChipImg())
+            .apply(RequestOptions()
+                .override(detailImage.width, detailImage.height))
+            .into(detailImage)
+    }
+
     //RecyclerAdapter Handler ---------------------------------------------------------
     override fun chipTouch(event: MotionEvent) {
         gestureDetector.onTouchEvent(event)
     }
 
     override fun chipEdit(chip: ChipIdentity) {
-        globalViewModel.setChipEdit(
+        globalViewModel.setChipAction(
             ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
     }
 
     override fun chipDelete(chip: ChipCard) {
-        globalViewModel.setChipEdit(
+        globalViewModel.setChipAction(
             ChipAction.instance(chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
     //---------------------------------------------------------------------------------
+
+    //MotionLayout.TransitionListener -------------------------------------------------
+    override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {
+
+        motionLayout?.let {
+            if(startId == R.id.motionSceneWebStart && endId == R.id.motionSceneWebMax) {
+
+                if(progress > 0.5f) globalViewModel.setWebTransition(true)
+                else globalViewModel.setWebTransition(false)
+            }
+        }
+    }
+    override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
+
+        motionLayout?.let {
+
+            when(id) {
+                R.id.motionSceneWebMax -> {
+                    redrawDetailImage()
+                }
+
+                R.id.motionSceneWebStart -> {
+                    detailDesc.visible()
+                }
+            }
+        }
+    }
+    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
+    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {}
+    //--------------------------------------------------------------------------------
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
 

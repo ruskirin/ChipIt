@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.extensions
 
 import android.view.View
+import android.widget.ImageView
 
 fun View?.gone() {
 

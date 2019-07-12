@@ -81,6 +81,8 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         localViewModel.getParent()?.observe(this, Observer { parent ->
             Log.i("Life Event", "ChipperFragment#parentObserver: triggered!")
 
+            Glide.with(this).load(parent.imgLocation).into(view.chipperImage)
+
             localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
         })
@@ -97,23 +99,23 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     }
 
     //TODO (FUTURE): have this run on a separate thread, display loading bar
-    private fun drawBackground() {
-
-        if(localViewModel.bitmap == null) return
-
-        localTouchViewModel.initPaint()
-
-        var canvas: Canvas? = null
-
-        DrawBackground(chipHolder, parentImageFrame, canvas).execute(localViewModel.bitmap)
-
-        if(canvas != null) localViewModel.backgroundChanged = false
-    }
+//    private fun drawBackground() {
+//
+//        if(localViewModel.bitmap == null) return
+//
+//        localTouchViewModel.initPaint()
+//
+//        var canvas: Canvas? = null
+//
+//        DrawBackground(chipHolder, parentImageFrame, canvas).execute(localViewModel.bitmap)
+//
+//        if(canvas != null) localViewModel.backgroundChanged = false
+//    }
 
     override fun drawScreen(canvas: Canvas) {
 
-        if(localViewModel.backgroundChanged)
-            drawBackground()
+//        if(localViewModel.backgroundChanged)
+//            drawBackground()
 
         canvas.drawPath(localTouchViewModel.getDrawPath(), localTouchViewModel.getDrawPaint())
 
@@ -240,28 +242,28 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     }
 
 
-    class DrawBackground(private val chipHolder: SurfaceHolder,
-                         private val rect: Rect,
-                         private var canvas: Canvas?) : AsyncTask<Bitmap, Void, Void>() {
-
-        override fun doInBackground(vararg params: Bitmap): Void? {
-            //Draw static images (eg. background, chip pathways)
-            try {
-                canvas = chipHolder.lockCanvas(null)
-
-                synchronized(chipHolder) {
-                    //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
-                    canvas?.drawBitmap(params[0], null, rect, null)
-                }
-                //TODO: handle error
-            } catch (e: Throwable) {
-                e.printStackTrace()
-
-            } finally {
-                chipHolder.unlockCanvasAndPost(canvas ?: return null)
-            }
-
-            return null
-        }
-    }
+//    class DrawBackground(private val chipHolder: SurfaceHolder,
+//                         private val rect: Rect,
+//                         private var canvas: Canvas?) : AsyncTask<Bitmap, Void, Void>() {
+//
+//        override fun doInBackground(vararg params: Bitmap): Void? {
+//            //Draw static images (eg. background, chip pathways)
+//            try {
+//                canvas = chipHolder.lockCanvas(null)
+//
+//                synchronized(chipHolder) {
+//                    //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
+//                    canvas?.drawBitmap(params[0], null, rect, null)
+//                }
+//                //TODO: handle error
+//            } catch (e: Throwable) {
+//                e.printStackTrace()
+//
+//            } finally {
+//                chipHolder.unlockCanvasAndPost(canvas ?: return null)
+//            }
+//
+//            return null
+//        }
+//    }
 }

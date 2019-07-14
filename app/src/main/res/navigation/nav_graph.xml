@@ -15,7 +15,8 @@
     <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.fragments.WebFragment"
               android:label="WebFragment">
         <action android:id="@+id/action_webFragment_to_chipperFragment" app:destination="@id/chipperFragment"
-                app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
+                app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
+                app:popUpTo="@id/webFragment" app:popUpToInclusive="true"/>
         <action android:id="@+id/action_webFragment_to_directoryFragment" app:destination="@id/directoryFragment"
                 app:popUpToInclusive="true" app:popUpTo="@id/directoryFragment"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>

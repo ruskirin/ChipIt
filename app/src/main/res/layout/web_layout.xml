@@ -26,7 +26,9 @@
             android:nestedScrollingEnabled="false"
             android:clipToPadding="false"/>
 
-    <include layout="@layout/web_detail_layout"/>
+    <include
+            android:id="@+id/webDetailLayout"
+            layout="@layout/web_detail_layout"/>
 
     <creations.rimov.com.chipit.viewgroups.BottomNavLayout
             android:id="@+id/webSettingsLayout"

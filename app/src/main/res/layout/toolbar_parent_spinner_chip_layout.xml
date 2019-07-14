@@ -6,4 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="@dimen/standard_info_textsize"/>
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:textSize="@dimen/standard_prompt_textsize"/>

@@ -21,7 +21,7 @@ class ChipperTouchViewModel : ViewModel() {
     private val path: Path = Path()
     private val paint: Paint = Paint()
     //Flag to toggle path creation panel
-    var pathCreated = MutableLiveData(false)
+    val pathCreated: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private lateinit var pathVertices: MutableList<CoordPoint>
 
@@ -30,7 +30,9 @@ class ChipperTouchViewModel : ViewModel() {
 
     fun getDrawPaint() = paint
 
-    fun getPathVertices() = pathVertices
+    fun getPathVertices() =
+        if(::pathVertices.isInitialized) pathVertices
+        else null
 
     fun startPath(coordPoint: CoordPoint) {
 

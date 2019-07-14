@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -14,10 +15,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipReference
+import creations.rimov.com.chipit.fragments.ChipperFragmentDirections
+import creations.rimov.com.chipit.fragments.DirectoryFragmentDirections
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
+import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.EditorViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -30,6 +35,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     View.OnClickListener, AppEditorLayout.EditorHandler, AppToolbarLayout.ToolbarHandler {
 
     object EditorAction {
+        const val CREATE = 300
         const val EDIT = 301
         const val UPDATE = 302
         const val DELETE = 303
@@ -56,8 +62,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val fabAction: FloatingActionButton by lazy {appFabAction}
     private val fabCancel: FloatingActionButton by lazy {appFabCancel}
 
-    private var animatorRunning = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +71,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         editor.setHandler(this)
         toolbar.setHandler(this)
-
-        setSupportActionBar(toolbar)
 
         navController.addOnDestinationChangedListener(this)
 
@@ -95,6 +97,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             when(chipAction.getAction()) {
 
+                EditorAction.CREATE -> {
+                    startChipCreate(chip.isTopic, chip.parentId, chip.vertices)
+                }
+
                 EditorAction.EDIT -> {
                     setFabEdit(true)
                     editViewModel.startEdit(chip)
@@ -107,6 +113,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
 
                 EditorAction.DELETE -> {
+                    if(chip.id == globalViewModel.getFocusId().value)
+                        globalViewModel.setFocusId(toolbar.getParentOfCurrent()?.id)
+
+                    animToolbarVanish(true)
+
                     editViewModel.deleteChip(chip)
                 }
             }
@@ -131,17 +142,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     return
                 }
 
-                //Creating new Chip
-                setFabEdit(true)
-                editor.startEdit()
-
                 if(navController.currentDestination?.id == R.id.directoryFragment) {
-                    editViewModel.startCreate(true, null)
+                    startChipCreate(true,null, null)
                     return
                 }
 
-                editViewModel.startCreate(false, globalViewModel.observedChipId)
-                return
+                startChipCreate(false, globalViewModel.getFocusId().value, null)
             }
 
             R.id.appFabCancel -> {
@@ -149,16 +155,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 editor.finishEdit(false)
                 editViewModel.isEditing = false
                 setFabEdit(false)
-            }
-
-            R.id.editorName -> {
-
-
-            }
-
-            R.id.editorDesc -> {
-
-
             }
 
             R.id.editorBtnImageCamera -> {
@@ -181,10 +177,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(navController.currentDestination?.id) {
 
             R.id.directoryFragment -> {
+                supportActionBar?.setDisplayHomeAsUpEnabled(false)
                 toolbar.hideSpinner()
+
+                return true
             }
 
             R.id.webFragment -> {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
                 menuInflater.inflate(R.menu.web_toolbar, menu)
                 toolbar.showSpinner()
 
@@ -192,11 +193,33 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
 
             R.id.chipperFragment -> {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
                 toolbar.hideSpinner()
+
+                return true
             }
         }
 
         return false
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        when(item?.itemId) {
+
+            android.R.id.home -> {
+                if(navController.currentDestination?.id == R.id.chipperFragment) {
+                    val directions =
+                        ChipperFragmentDirections.actionChipperFragmentToWebFragment(globalViewModel.getFocusId().value ?: -1L)
+                    navController.navigate(directions)
+
+                    return true
+                }
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
@@ -206,11 +229,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
-
+                animToolbarVanish(true)
             }
 
             R.id.webFragment -> {
-
+                animToolbarVanish(true)
             }
 
             R.id.chipperFragment -> {
@@ -222,7 +245,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun setSelectedChip(chip: ChipReference) {
         Log.i("Touch Event", "Main#setSelectedChip(): setting id ${chip.id}, name ${chip.name}")
 
-        globalViewModel.setWebSelectedId(chip.id)
+        globalViewModel.setFocusId(chip.id)
     }
 
     override fun updateName(text: String) {
@@ -231,6 +254,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun updateDesc(text: String) {
         editViewModel.setDesc(text)
+    }
+
+    private fun startChipCreate(isTopic: Boolean, parentId: Long?, vertices: MutableList<CoordPoint>?) {
+
+        setFabEdit(true)
+        editor.startEdit()
+
+        editViewModel.startCreate(isTopic, parentId, vertices)
     }
 
     private fun takePicture() {
@@ -268,6 +299,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private fun initScreen() {
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         if(editViewModel.isEditing) {
             editor.startEdit(editViewModel.editingChip)
             setFabEdit(true)
@@ -281,20 +315,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         fabCancel.hide()
     }
 
+    private var isToolbarVanish = false //Keep track of the status of the toolbar
     private fun animToolbarVanish(reverse: Boolean) {
 
-        if(reverse) {
-            val animator = AnimatorInflater.loadAnimator(this, R.animator.toolbar_vanish_reverse)
+        if(isToolbarVanish == !reverse) return //Toolbar already in the desired state
 
-            animator.setTarget(toolbar)
-            animator.start()
-
-            return
-        }
-
-        val animator = AnimatorInflater.loadAnimator(this, R.animator.toolbar_vanish)
+        val animator = AnimatorInflater.loadAnimator(
+            this, if(reverse) R.animator.toolbar_vanish_reverse else R.animator.toolbar_vanish)
 
         animator.setTarget(toolbar)
         animator.start()
+
+        isToolbarVanish = !reverse //Set the flag
     }
 }

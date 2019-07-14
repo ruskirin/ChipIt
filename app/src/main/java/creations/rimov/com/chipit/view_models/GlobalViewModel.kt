@@ -2,22 +2,25 @@ package creations.rimov.com.chipit.view_models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.objects.ChipAction
 
 class GlobalViewModel : ViewModel() {
 
-    private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
+    private val chipFocusId: MutableLiveData<Long?> = MutableLiveData()
 
     private val chipAction: MutableLiveData<ChipAction> = MutableLiveData()
 
+    private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
+
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
 
-    private val webSelectedId: MutableLiveData<Long?> = MutableLiveData()
 
-    var observedChipId: Long? = null
+    fun getFocusId() = chipFocusId
 
+    fun setFocusId(id: Long?) {
+        if(id != chipFocusId.value) chipFocusId.postValue(id)
+    }
 
     fun getWebTransition() = webTransition
 
@@ -35,11 +38,5 @@ class GlobalViewModel : ViewModel() {
 
     fun setChipAction(chip: ChipAction) {
         chipAction.postValue(chip)
-    }
-
-    fun getWebSelectedId() = webSelectedId
-
-    fun setWebSelectedId(id: Long?) {
-        if(id != webSelectedId.value) webSelectedId.postValue(id)
     }
 }

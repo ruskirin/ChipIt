@@ -43,7 +43,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         return dao.getChipCardsLive(parentId)
     }
 
-    fun getChipPathsLive(parentId: Long) = dao.getChipPathsLive(parentId)
+    fun getChipPathsLive(parentId: Long?) = dao.getChipPathsLive(parentId)
 
 
     class AsyncGetChipCards(

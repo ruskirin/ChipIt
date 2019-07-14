@@ -10,9 +10,10 @@ object ChipUpdateBasic {
     var name: String = ""
     var desc: String = ""
     var imgLocation: String = ""
+    var vertices: MutableList<CoordPoint>? = null
 
     fun instance(id: Long, parentId: Long?, isTopic: Boolean = false,
-                 name: String = "", desc: String = "", imgLocation: String = ""): ChipUpdateBasic {
+                 name: String = "", desc: String = "", imgLocation: String = "", vertices: MutableList<CoordPoint>? = null): ChipUpdateBasic {
 
         ChipUpdateBasic.id = id
         ChipUpdateBasic.parentId = parentId
@@ -20,6 +21,7 @@ object ChipUpdateBasic {
         ChipUpdateBasic.name = name
         ChipUpdateBasic.desc = desc
         ChipUpdateBasic.imgLocation = imgLocation
+        ChipUpdateBasic.vertices = vertices
 
         return this
     }
@@ -31,6 +33,7 @@ object ChipUpdateBasic {
             isTopic = isTopic,
             name = name,
             desc = desc,
-            imgLocation = imgLocation
+            imgLocation = imgLocation,
+            vertices = vertices
         )
 }

@@ -21,22 +21,15 @@
 
     </FrameLayout>
 
-    <FrameLayout
-            android:id="@+id/webDetailDescLayout"
+    <TextView
+            android:id="@+id/webDetailDesc"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/webDetailImgLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout">
-
-        <TextView
-                android:id="@+id/webDetailDesc"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:background="@android:drawable/screen_background_dark_transparent"/>
-
-    </FrameLayout>
+            app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"
+            android:background="@color/colorPrimary"/>
 
 </merge>

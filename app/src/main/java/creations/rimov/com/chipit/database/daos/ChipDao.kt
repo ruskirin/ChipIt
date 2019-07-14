@@ -48,7 +48,7 @@ interface ChipDao {
 
     @Transaction
     @Query("SELECT id, image_location, vertices FROM chips WHERE parent_id = :parentId")
-    fun getChipPathsLive(parentId: Long): LiveData<List<ChipPath>>
+    fun getChipPathsLive(parentId: Long?): LiveData<List<ChipPath>>
 
     @Query("SELECT is_topic FROM chips WHERE id = :id")
     fun isChipTopic(id: Long): Boolean

@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.util.Log
 import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
@@ -10,15 +11,17 @@ import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
+import org.w3c.dom.Text
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
-    private val parentId: MutableLiveData<Long> = MutableLiveData()
+    private val parentId: MutableLiveData<Long?> = MutableLiveData()
     //The chip currently viewed in the background and being worked on
     private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
         repository.getChipIdentityLive(it)
@@ -43,8 +46,6 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getParentId() = parentId.value
 
-    fun getParentIdOfParent() = parent.value?.parentId ?: -1L
-
     fun getParent(): LiveData<ChipIdentity>? = parent
 
     fun getChildren(): LiveData<List<ChipPath>>? = children
@@ -61,12 +62,26 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         return null
     }
 
-    fun getMutableBitmap() = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+    /** @params bitmapWidth, bitmapHeight: actual size of bitmap
+     *  @params reqWidth, reqHeight: size of the display window
+     *
+     * First find an appropriate sampleSize to scale the bitmap down to, then get the bitmap
+     */
+    fun setBitmap(bitmapWidth: Int, bitmapHeight: Int, reqWidth: Int, reqHeight: Int) {
 
-    fun setBitmap(imgLocation: String) {
+        var sampleSize: Int = 1
+
+        if(bitmapWidth > reqWidth || bitmapHeight > reqHeight) {
+            val wRatio = bitmapWidth.toFloat() / reqWidth
+            val hRatio = bitmapHeight.toFloat() / reqHeight
+
+            sampleSize = if(wRatio < hRatio) wRatio.roundToInt() else hRatio.roundToInt()
+        }
 
         try {
-            bitmap = TextureUtil.convertPathToBitmap(imgLocation)
+            parent.value?.let {
+                bitmap = TextureUtil.convertPathToBitmap(it.imgLocation, sampleSize)
+            }
 
         } catch(e: Exception) {
             Log.e("ChipperViewModel", "#setBitmap(): could not dateCreate bitmap from passed image path!")
@@ -77,11 +92,11 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         }
     }
 
-    override fun <T> setData(data: T?) {
-
+    fun getBitmapDimen() = parent.value?.let {
+        TextureUtil.getImageFileDimen(it.imgLocation)
     }
 
-    override fun <T> setDataList(data: List<T>) {
+    override fun <T> setData(data: T?) {}
 
-    }
+    override fun <T> setDataList(data: List<T>) {}
 }

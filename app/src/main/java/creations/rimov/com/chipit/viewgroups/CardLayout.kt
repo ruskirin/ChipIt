@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -17,7 +18,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import kotlinx.android.synthetic.main.card_layout.view.*
 
-class CardLayout(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs) {
+class CardLayout(context: Context, attrs: AttributeSet) : CardView(context, attrs) {
 
     private val image: ImageView by lazy {cardImage}
     private val name: TextView by lazy {cardName}

@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.fragments
 
 import android.graphics.*
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,15 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.activities.MainActivity
+import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
 import creations.rimov.com.chipit.view_models.ChipperViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipperView
-import kotlinx.android.synthetic.main.chipper_layout.*
 import kotlinx.android.synthetic.main.chipper_layout.view.*
 
 class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListener {
@@ -49,7 +49,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     }
 
     //Aspect ratio Rect frame for subject image
-    private val parentImageFrame: Rect = Rect()
+    private val backgroundRect: Rect = Rect()
 
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0
@@ -64,8 +64,12 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
 
-        if(localViewModel.getParentId() != passedArgs.chipId)
-            localViewModel.setParentId(passedArgs.chipId)
+        val id = passedArgs.chipId
+
+        if(localViewModel.getParentId() != id) {
+            localViewModel.setParentId(id)
+            globalViewModel.setFocusId(id)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -79,11 +83,6 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         chipHolder = chipperView.holder
 
         localViewModel.getParent()?.observe(this, Observer { parent ->
-            Log.i("Life Event", "ChipperFragment#parentObserver: triggered!")
-
-            Glide.with(this).load(parent.imgLocation).into(view.chipperImage)
-
-            localViewModel.setBitmap(parent.imgLocation)
             setBitmapRect()
         })
 
@@ -93,38 +92,50 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
         localTouchViewModel.pathCreated.observe(this, Observer { created ->
 
+            if(created) {
+                globalViewModel.setChipAction(
+                    ChipAction.instance(
+                        Chip(0L, localViewModel.getParentId(), vertices = localTouchViewModel.getPathVertices()),
+                        MainActivity.EditorAction.CREATE))
+            }
         })
 
         return view
     }
 
     //TODO (FUTURE): have this run on a separate thread, display loading bar
-//    private fun drawBackground() {
-//
-//        if(localViewModel.bitmap == null) return
-//
-//        localTouchViewModel.initPaint()
-//
-//        var canvas: Canvas? = null
-//
-//        DrawBackground(chipHolder, parentImageFrame, canvas).execute(localViewModel.bitmap)
-//
-//        if(canvas != null) localViewModel.backgroundChanged = false
-//    }
+    private fun drawBackground() {
 
-    override fun drawScreen(canvas: Canvas) {
+        if(localViewModel.bitmap == null) return
 
-//        if(localViewModel.backgroundChanged)
-//            drawBackground()
+        localViewModel.bitmap!!.prepareToDraw()
 
-        canvas.drawPath(localTouchViewModel.getDrawPath(), localTouchViewModel.getDrawPaint())
+        localTouchViewModel.initPaint()
 
-        drawChildren(canvas)
+        var canvas: Canvas? = null
+
+        //Draw static images (eg. background, chip pathways)
+        try {
+            canvas = chipHolder.lockCanvas(null)
+
+            synchronized(chipHolder) {
+                //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
+                canvas?.drawBitmap(localViewModel.bitmap, null, backgroundRect, null)
+            }
+            //TODO: handle error
+        } catch (e: Throwable) {
+            e.printStackTrace()
+
+        } finally {
+            chipHolder.unlockCanvasAndPost(canvas ?: return)
+
+            localViewModel.backgroundChanged = false
+        }
     }
 
     private fun drawChildren(canvas: Canvas) {
 
-        if(viewWidth == 0 || viewHeight == 0 || parentImageFrame.width() == 0 || parentImageFrame.height() == 0)
+        if(viewWidth == 0 || viewHeight == 0 || backgroundRect.width() == 0 || backgroundRect.height() == 0)
             return
 
         //TODO (FUTURE): should be off UI thread
@@ -135,26 +146,19 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
             canvas.drawLines(
                 chip.getVerticesFloatArray(
-                    true, viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height())!!,
+                    true, viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height())!!,
                 localTouchViewModel.getDrawPaint())
         }
     }
 
-    override fun setScreenDimen() {
+    override fun drawScreen(canvas: Canvas) {
 
-        viewWidth = chipperView.measuredWidth
-        viewHeight = chipperView.measuredHeight
+        if(localViewModel.backgroundChanged)
+            drawBackground()
 
-        localViewModel.backgroundChanged = true
-    }
+        canvas.drawPath(localTouchViewModel.getDrawPath(), localTouchViewModel.getDrawPaint())
 
-    override fun setBitmapRect() {
-
-        val width = localViewModel.bitmap?.width ?: return
-        val height = localViewModel.bitmap?.height ?: return
-
-        parentImageFrame.set(
-            RenderUtil.getAspectRatioRect(width, height, viewWidth, viewHeight))
+        drawChildren(canvas)
     }
 
     //Initial point of contact
@@ -172,7 +176,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         }
 
         val touchedChip = localViewModel.getTouchedChip(
-            point0.normalize(viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height()))
+            point0.normalize(viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height()))
 
         if(touchedChip != null) {
             surfaceAction = Constant.NAV_CHIP
@@ -216,15 +220,17 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
             Constant.DRAW_PATH -> {
                 localTouchViewModel.endPath(
-                    CoordPoint(x, y), viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height())
+                    CoordPoint(x, y), viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height())
             }
 
             Constant.NAV_CHIP -> {
                 val touchedChip = localViewModel.getTouchedChip(
-                    CoordPoint(x, y).normalize(viewWidth, viewHeight, parentImageFrame.width(), parentImageFrame.height()))
+                    CoordPoint(x, y).normalize(viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height()))
 
-                if(touchedChip != null)
+                if(touchedChip != null) {
+                    globalViewModel.setFocusId(touchedChip.id)
                     localViewModel.setParentId(touchedChip.id)
+                }
             }
         }
     }
@@ -241,29 +247,24 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         return false
     }
 
+    override fun setScreenDimen() {
 
-//    class DrawBackground(private val chipHolder: SurfaceHolder,
-//                         private val rect: Rect,
-//                         private var canvas: Canvas?) : AsyncTask<Bitmap, Void, Void>() {
-//
-//        override fun doInBackground(vararg params: Bitmap): Void? {
-//            //Draw static images (eg. background, chip pathways)
-//            try {
-//                canvas = chipHolder.lockCanvas(null)
-//
-//                synchronized(chipHolder) {
-//                    //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
-//                    canvas?.drawBitmap(params[0], null, rect, null)
-//                }
-//                //TODO: handle error
-//            } catch (e: Throwable) {
-//                e.printStackTrace()
-//
-//            } finally {
-//                chipHolder.unlockCanvasAndPost(canvas ?: return null)
-//            }
-//
-//            return null
-//        }
-//    }
+        viewWidth = chipperView.measuredWidth
+        viewHeight = chipperView.measuredHeight
+
+        localViewModel.backgroundChanged = true
+    }
+
+    override fun setBitmapRect() {
+
+        //Pos 0 = width, pos 1 = height
+        val dimen = localViewModel.getBitmapDimen()
+
+        dimen?.let {
+            backgroundRect.set(
+                RenderUtil.getAspectRatioRect(it[0], it[1], viewWidth, viewHeight))
+
+            localViewModel.setBitmap(it[0], it[1], backgroundRect.width(), backgroundRect.height())
+        }
+    }
 }

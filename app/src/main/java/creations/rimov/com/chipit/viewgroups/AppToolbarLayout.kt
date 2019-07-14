@@ -26,8 +26,10 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
 
     private val webSpinner: Spinner by lazy {toolbarSpinner}
     private val adapter: ParentSpinnerAdapter by lazy {
-        ParentSpinnerAdapter(ResourcesCompat.getColor(resources, R.color.colorAccent, null))
+        ParentSpinnerAdapter(ResourcesCompat.getColor(resources, R.color.accent_material_dark, null))
     }
+    //Keep track of previously selected Chip
+    private var prevSelected: Long = -1L
 
     init {
         View.inflate(context, R.layout.app_toolbar_layout, this)
@@ -38,7 +40,11 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
 
     fun setParents(parents: List<ChipReference>) {
         adapter.setParents(parents)
+
+        webSpinner.setSelection(0) //Reset selection
     }
+
+    fun getParentOfCurrent() = adapter.getItem(1)
 
     fun setHandler(handler: ToolbarHandler) {
         this.handler = handler
@@ -57,9 +63,12 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
 
         view?.let {
             if(position != 0) {
-                Log.i("Touch Event", "AppToolbar#onItemSelected(): selected id $id, position $position")
+                Log.i("Touch Event", "AppToolbar#onItemSelected(): " +
+                        "prev selected id $prevSelected, selected id $id, position $position")
 
                 handler.setSelectedChip(adapter.getItem(position) ?: return)
+
+                prevSelected = id
             }
         }
     }
@@ -83,9 +92,9 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
             if(view == null) view = LayoutInflater.from(parent?.context)
                 .inflate(R.layout.toolbar_parent_spinner_chip_layout, parent, false)
 
-//            view!!.toolbarSpinnerText?.text = parents[position].name
+            view!!.toolbarSpinnerText?.text = parents[0].name
 
-            return view!!
+            return view
         }
 
         override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {

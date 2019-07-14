@@ -13,6 +13,44 @@
 
     </Transition>
 
+    <Transition
+            app:constraintSetStart="@id/motionSceneWebStart"
+            app:constraintSetEnd="@id/motionSceneWebGone"
+            app:motionInterpolator="linear"/>
+
+
+    <ConstraintSet android:id="@+id/motionSceneWebGone">
+
+        <Constraint android:id="@id/webGuide"/>
+
+        <Constraint android:id="@id/webChildrenView">
+            <Layout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="?attr/actionBarSize"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+        </Constraint>
+
+        <Constraint android:id="@id/webDetailImgLayout">
+            <PropertySet
+                    android:visibility="gone"/>
+        </Constraint>
+
+        <Constraint android:id="@id/webDetailDesc">
+            <PropertySet
+                    android:visibility="gone"/>
+        </Constraint>
+
+        <Constraint android:id="@id/webSettingsLayout">
+            <PropertySet
+                    android:visibility="gone"/>
+        </Constraint>
+
+    </ConstraintSet>
+
 
     <ConstraintSet android:id="@+id/motionSceneWebStart">
 
@@ -46,7 +84,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/webGuide"/>
         </Constraint>
 
-        <Constraint android:id="@id/webDetailDescLayout">
+        <Constraint android:id="@id/webDetailDesc">
             <Layout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -54,6 +92,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/webDetailImgLayout"
                     app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
+            <PropertySet
+                    android:visibility="visible"/>
         </Constraint>
 
         <Constraint android:id="@id/webSettingsLayout">
@@ -101,7 +141,7 @@
                     app:layout_constraintEnd_toEndOf="parent"/>
         </Constraint>
 
-        <Constraint android:id="@id/webDetailDescLayout">
+        <Constraint android:id="@id/webDetailDesc">
             <Layout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -109,6 +149,8 @@
                     app:layout_constraintEnd_toEndOf="@id/webDetailImgLayout"
                     app:layout_constraintTop_toTopOf="@id/webDetailImgLayout"
                     app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
+            <PropertySet
+                    android:visibility="gone"/>
         </Constraint>
 
         <Constraint android:id="@id/webSettingsLayout">

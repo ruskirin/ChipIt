@@ -90,7 +90,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
             return
         }
 
-        //Prepare UI
+        //Creating new Chip, Prepare UI
         this.visible()
         showName(false)
         showDesc(false)

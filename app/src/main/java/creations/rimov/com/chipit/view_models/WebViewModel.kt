@@ -50,8 +50,8 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChildren(): LiveData<List<ChipCard>> = children
 
-    override fun <T> setData(data: T?) {
-
+    override fun <T> setData(data: T) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun <T> setDataList(data: List<T>) {

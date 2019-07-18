@@ -17,13 +17,11 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
     //Interface instance implemented in ChipActivity
     private lateinit var chipHandler: ChipHandler
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-
-    }
+    override fun surfaceCreated(holder: SurfaceHolder?) {}
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
 
-        chipHandler.setScreenDimen()
+        chipHandler.setScreenDimen(width, height)
         chipHandler.setBitmapRect()
     }
 
@@ -37,8 +35,7 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
 
-        if(canvas != null)
-            chipHandler.drawScreen(canvas)
+        canvas?.let {chipHandler.drawScreen(it)}
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -82,7 +79,7 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
 
         fun drawScreen(canvas: Canvas)
 
-        fun setScreenDimen()
+        fun setScreenDimen(width: Int, height: Int)
 
         fun setBitmapRect()
     }

@@ -2,6 +2,8 @@ package creations.rimov.com.chipit.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.AsyncTask
+import android.util.Log
 
 object TextureUtil {
 
@@ -21,14 +23,22 @@ object TextureUtil {
         }
     }
 
-    fun convertPathToBitmap(path: String, sampleSize: Int): Bitmap? {
+    class AsyncPathToBitmap(private val handler: AsyncHandler,
+                            private val sampleSize: Int) : AsyncTask<String, Void, Bitmap?>() {
 
-        TODO("Still takes up frames, so do this in an AsyncTask")
+        override fun doInBackground(vararg params: String?): Bitmap? {
 
-        BitmapFactory.Options().apply {
-            inSampleSize = sampleSize
+            BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
 
-            return BitmapFactory.decodeFile(path, this)
+                return params[0]?.let { path ->
+                    BitmapFactory.decodeFile(path, this)
+                }
+            }
+        }
+
+        override fun onPostExecute(result: Bitmap?) {
+            result?.let {handler.setData(it)}
         }
     }
 }

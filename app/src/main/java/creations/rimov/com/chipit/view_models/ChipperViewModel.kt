@@ -2,6 +2,7 @@ package creations.rimov.com.chipit.view_models
 
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
@@ -10,6 +11,7 @@ import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
 import creations.rimov.com.chipit.objects.CoordPoint
+import creations.rimov.com.chipit.util.AsyncHandler
 import creations.rimov.com.chipit.util.TextureUtil
 import org.w3c.dom.Text
 import java.lang.Exception
@@ -32,9 +34,6 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
     }
 
     var bitmap: Bitmap? = null
-
-    //Flag to redraw background bitmap
-    var backgroundChanged = false
 
 
     fun setParentId(parentId: Long) {
@@ -78,17 +77,8 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
             sampleSize = if(wRatio < hRatio) wRatio.roundToInt() else hRatio.roundToInt()
         }
 
-        try {
-            parent.value?.let {
-                bitmap = TextureUtil.convertPathToBitmap(it.imgLocation, sampleSize)
-            }
-
-        } catch(e: Exception) {
-            Log.e("ChipperViewModel", "#setBitmap(): could not dateCreate bitmap from passed image path!")
-            e.printStackTrace()
-
-        } finally {
-            backgroundChanged = true
+        parent.value?.let {
+            TextureUtil.AsyncPathToBitmap(this, sampleSize).execute(it.imgLocation)
         }
     }
 
@@ -96,7 +86,16 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         TextureUtil.getImageFileDimen(it.imgLocation)
     }
 
-    override fun <T> setData(data: T?) {}
+    override fun <T> setData(data: T) {
+
+        when(data) {
+            is Bitmap? -> {
+                bitmap = data
+                //Cache the view in preparation of canvas draw
+                bitmap?.prepareToDraw()
+            }
+        }
+    }
 
     override fun <T> setDataList(data: List<T>) {}
 }

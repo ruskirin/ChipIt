@@ -103,12 +103,9 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         return view
     }
 
-    //TODO (FUTURE): have this run on a separate thread, display loading bar
     private fun drawBackground() {
 
         if(localViewModel.bitmap == null) return
-
-        localViewModel.bitmap!!.prepareToDraw()
 
         localTouchViewModel.initPaint()
 
@@ -127,9 +124,12 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
             e.printStackTrace()
 
         } finally {
+            Log.i("Life Event", "ChipperFrag#drawBackground(): Ready to post. Canvas null? ${canvas == null}")
+
             chipHolder.unlockCanvasAndPost(canvas ?: return)
 
-            localViewModel.backgroundChanged = false
+            localViewModel.bitmap?.recycle()
+            localViewModel.bitmap = null //Reset the variable
         }
     }
 
@@ -153,12 +153,24 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
     override fun drawScreen(canvas: Canvas) {
 
-        if(localViewModel.backgroundChanged)
-            drawBackground()
+        drawBackground()
 
         canvas.drawPath(localTouchViewModel.getDrawPath(), localTouchViewModel.getDrawPaint())
 
         drawChildren(canvas)
+    }
+
+    override fun setBitmapRect() {
+
+        //Pos 0 = width, pos 1 = height
+        val dimen = localViewModel.getBitmapDimen()
+
+        dimen?.let {
+            backgroundRect.set(
+                RenderUtil.getAspectRatioRect(it[0], it[1], viewWidth, viewHeight))
+
+            localViewModel.setBitmap(it[0], it[1], viewWidth, viewHeight)
+        }
     }
 
     //Initial point of contact
@@ -247,24 +259,9 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         return false
     }
 
-    override fun setScreenDimen() {
+    override fun setScreenDimen(width: Int, height: Int) {
 
-        viewWidth = chipperView.measuredWidth
-        viewHeight = chipperView.measuredHeight
-
-        localViewModel.backgroundChanged = true
-    }
-
-    override fun setBitmapRect() {
-
-        //Pos 0 = width, pos 1 = height
-        val dimen = localViewModel.getBitmapDimen()
-
-        dimen?.let {
-            backgroundRect.set(
-                RenderUtil.getAspectRatioRect(it[0], it[1], viewWidth, viewHeight))
-
-            localViewModel.setBitmap(it[0], it[1], backgroundRect.width(), backgroundRect.height())
-        }
+        viewWidth = width
+        viewHeight = height
     }
 }

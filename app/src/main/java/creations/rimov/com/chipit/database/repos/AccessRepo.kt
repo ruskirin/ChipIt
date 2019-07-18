@@ -8,6 +8,7 @@ import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipReference
+import creations.rimov.com.chipit.util.AsyncHandler
 import kotlin.reflect.KClass
 
 class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandler) {
@@ -72,9 +73,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         }
     }
 
-    interface RepoHandler {
-
-        fun <T> setData(data: T?)
+    interface RepoHandler : AsyncHandler {
 
         fun <T> setDataList(data: List<T>)
     }

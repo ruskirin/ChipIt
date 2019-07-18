@@ -25,8 +25,8 @@ class DirectoryViewModel : ViewModel(), AccessRepo.RepoHandler {
         repository.getChipCards(id)
     }
 
-    override fun <T> setData(data: T?) {
-        TODO("Not implemented")
+    override fun <T> setData(data: T) {
+
     }
 
     override fun <T> setDataList(data: List<T>) {

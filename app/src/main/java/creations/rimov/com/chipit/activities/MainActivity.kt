@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.activities
 
 import android.animation.AnimatorInflater
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -15,12 +16,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.fragments.ChipperFragmentDirections
-import creations.rimov.com.chipit.fragments.DirectoryFragmentDirections
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
@@ -162,7 +161,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
 
             R.id.editorBtnImageStorage -> {
-
+                selectPicture()
             }
 
             R.id.editorBtnImageUrl -> {
@@ -222,6 +221,24 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         return super.onOptionsItemSelected(item)
     }
 
+    //After startActivityForResult()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode != Activity.RESULT_OK) return
+
+        when(requestCode) {
+
+            CameraUtil.CODE_GET_IMAGE -> {
+                editor.showImage(data?.data)
+            }
+
+            CameraUtil.CODE_TAKE_PICTURE -> {
+                editor.showImage(data?.extras?.get("data"))
+            }
+        }
+    }
+
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
 
         invalidateOptionsMenu()
@@ -268,20 +285,27 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         //Verifies that an application that can handle this intent exists
-        addChipCameraIntent.resolveActivity(this.packageManager)
+        if(addChipCameraIntent.resolveActivity(packageManager) == null) {
+            Log.e("Touch Event", "Main#takePicture(): no app to handle ACTION_IMAGE_CAPTURE!")
+            return
+        }
 
-        val imageFile = CameraUtil.getImageFile() ?: return
-        val imageUri = CameraUtil.getImageUri(applicationContext, imageFile.file)
+        val imageFile = CameraUtil.getImageFileOld() ?: return
 
-        addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        addChipCameraIntent.putExtra(
+              MediaStore.EXTRA_OUTPUT, CameraUtil.getImageUri(applicationContext, imageFile.file))
         startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-        if(imageFile.storagePath.isNotEmpty()) {
-
+        if(imageFile.storagePath.isNotEmpty())
             editViewModel.editingChip?.imgLocation = imageFile.storagePath //Save
+    }
 
-            editor.showImage(imageFile.storagePath)
-        }
+    private fun selectPicture() {
+
+        val getChipPhotoIntent = Intent(Intent.ACTION_GET_CONTENT)
+            .apply {type = "image/*"}
+        getChipPhotoIntent.resolveActivity(packageManager)
+            ?.let {startActivityForResult(getChipPhotoIntent, CameraUtil.CODE_GET_IMAGE)}
     }
 
     private fun setFabEdit(editing: Boolean) {

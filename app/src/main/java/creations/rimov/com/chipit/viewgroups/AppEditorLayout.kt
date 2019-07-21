@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
+import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -94,7 +95,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
         this.visible()
         showName(false)
         showDesc(false)
-        showImage() //No image to show
+        showImage(null) //No image to show
     }
 
     //Editing completed; return the new Chip information or null if canceled
@@ -164,24 +165,26 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-    fun showImage(imgLocation: String = "") {
+    fun <T> showImage(imgLocation: T?) {
 
-        if(imgLocation.isNotBlank()) {
+        imgLocation?.let {
+
             Glide.with(image.context)
-                .load(imgLocation)
+                .load(it)
                 .apply(RequestOptions()
-                    .override(image.width, image.height))
+                           .override(image.width, image.height))
                 .into(image)
 
             imageText.gone()
             editorBtnImageLayout.gone()
             image.visible()
 
-        } else {
-            imageText.visible()
-            editorBtnImageLayout.visible()
-            image.gone()
+            return
         }
+
+        imageText.visible()
+        editorBtnImageLayout.visible()
+        image.gone()
     }
 
     private fun showName(show: Boolean, name: String = "") {

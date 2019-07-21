@@ -117,7 +117,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
             synchronized(chipHolder) {
                 //TODO (FUTURE): load in a default bitmap if this one cannot be loaded
-                canvas?.drawBitmap(localViewModel.bitmap, null, backgroundRect, null)
+                canvas?.drawBitmap(localViewModel.bitmap!!, null, backgroundRect, null)
             }
             //TODO: handle error
         } catch (e: Throwable) {

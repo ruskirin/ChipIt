@@ -23,7 +23,6 @@ import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.web_detail_layout.*
-import kotlinx.android.synthetic.main.web_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
 import kotlinx.android.synthetic.main.web_layout.view.webSettingsLayout
 
@@ -40,7 +39,6 @@ class WebFragment : Fragment(),
 
     private lateinit var motionLayout: MotionLayout
 
-    private val detailLayout: View by lazy {webDetailLayout}
     private val detailImage: ImageView by lazy {webDetailImg}
 
     private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
@@ -129,12 +127,13 @@ class WebFragment : Fragment(),
 
             R.id.webDetailBtnDelete -> {
 
-                if(event.action == MotionEvent.ACTION_UP)
+                if(event.action == MotionEvent.ACTION_UP) {
 
                     localViewModel.getAsChip()?.let {
                         globalViewModel.setChipAction(
-                            ChipAction.instance(it, MainActivity.EditorAction.DELETE))
+                              ChipAction.instance(it, MainActivity.EditorAction.DELETE))
                     }
+                }
             }
         }
 
@@ -144,7 +143,7 @@ class WebFragment : Fragment(),
     private fun setDetail(chip: ChipIdentity?) {
 
         if(chip == null || chip.isTopic) {
-            motionLayout.transitionToState(R.id.motionSceneWebGone)
+            motionLayout.transitionToState(R.id.motionSceneNoDetail)
             return
         }
 
@@ -177,14 +176,10 @@ class WebFragment : Fragment(),
         gestureDetector.onTouchEvent(event)
     }
 
-    override fun chipEdit(chip: ChipIdentity) {
-        globalViewModel.setChipAction(
-            ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
-    }
-
     override fun chipDelete(chip: ChipCard) {
         globalViewModel.setChipAction(
-            ChipAction.instance(chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
+              ChipAction.instance(
+                    chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
     //---------------------------------------------------------------------------------
 
@@ -216,20 +211,18 @@ class WebFragment : Fragment(),
     }
     override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
     override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {}
-    //--------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
 
     inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
 
         //Must return true to ensure gestures are not ignored
         override fun onDown(event: MotionEvent?): Boolean {
-
             return true
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
 
             globalViewModel.setFocusId(childrenAdapter.getSelectedId())
-
             return true
         }
 

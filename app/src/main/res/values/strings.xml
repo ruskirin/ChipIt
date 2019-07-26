@@ -12,6 +12,10 @@
     <string name="editor_detail_btn_edit">Edit</string>
     <string name="editor_detail_btn_delete">Delete</string>
 
+    <string name="prompt_text_delete">Delete chip: %1$s ?</string>
+    <string name="prompt_btn_text_yes">Yes</string>
+    <string name="prompt_btn_text_no">No</string>
+
     <string name="dir_fragment_name">Topics</string>
 
     <string name="toolbar_search">Search</string>

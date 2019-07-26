@@ -1,25 +1,18 @@
 package creations.rimov.com.chipit.view_models
 
+import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.Rect
-import android.os.AsyncTask
-import android.util.Log
+import android.net.Uri
 import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
 import creations.rimov.com.chipit.objects.CoordPoint
-import creations.rimov.com.chipit.util.AsyncHandler
 import creations.rimov.com.chipit.util.TextureUtil
-import org.w3c.dom.Text
-import java.lang.Exception
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.math.roundToInt
 
-class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
+class ChipperViewModel(application: Application) : AndroidViewModel(application), AccessRepo.RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
@@ -61,6 +54,19 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         return null
     }
 
+    fun getBitmapDimen(): Array<Int>? {
+
+        //TODO URGENT: problem with loading background in chipper comes from here, as this is called before the livedata is
+        //              updated, returning a null and giving no rectangle for the bitmap to populate. Possible solution is to
+        //              have the rectangle be set in response to setting the parent
+
+        parent.value?.let {
+            return TextureUtil.getBitmapDimen(getApplication(), it.imgLocation)
+        }
+
+        return null
+    }
+
     /** @params bitmapWidth, bitmapHeight: actual size of bitmap
      *  @params reqWidth, reqHeight: size of the display window
      *
@@ -78,12 +84,10 @@ class ChipperViewModel : ViewModel(), AccessRepo.RepoHandler {
         }
 
         parent.value?.let {
-            TextureUtil.AsyncPathToBitmap(this, sampleSize).execute(it.imgLocation)
-        }
-    }
+            val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.imgLocation))
 
-    fun getBitmapDimen() = parent.value?.let {
-        TextureUtil.getImageFileDimen(it.imgLocation)
+            TextureUtil.AsyncPathToBitmap(this, sampleSize).execute(stream)
+        }
     }
 
     override fun <T> setData(data: T) {

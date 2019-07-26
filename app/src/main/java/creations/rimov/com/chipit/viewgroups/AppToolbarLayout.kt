@@ -1,15 +1,15 @@
 package creations.rimov.com.chipit.viewgroups
 
+import android.animation.AnimatorInflater
+import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.BaseAdapter
-import android.widget.Spinner
-import android.widget.SpinnerAdapter
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import creations.rimov.com.chipit.R
@@ -124,6 +124,31 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
         override fun getCount() =
             if(::parents.isInitialized) parents.size
             else 0
+    }
+
+    private var isToolbarVanish = false //Keep track of the status of the toolbar
+    fun vanishToolbar(vanish: Boolean) {
+
+        if(isToolbarVanish == vanish) return //Toolbar already in the desired state
+
+        //TODO FUTURE: issue with transition to transparent
+        if(vanish) {
+            ObjectAnimator.ofArgb(this, "backgroundColor", Color.TRANSPARENT)
+                .apply {
+                    duration = 400
+                    start()
+            }
+
+        } else {
+            ObjectAnimator.ofArgb(this, "backgroundColor",
+                                  ResourcesCompat.getColor(resources, R.color.colorPrimaryDark, null))
+                .apply {
+                    duration = 400
+                    start()
+            }
+        }
+
+        isToolbarVanish = vanish
     }
 
     interface ToolbarHandler {

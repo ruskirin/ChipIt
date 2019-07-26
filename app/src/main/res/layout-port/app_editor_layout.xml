@@ -17,6 +17,7 @@
             app:layout_constraintTop_toTopOf="@id/editorGuideTop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/standard_prompt_textsize"
             android:text="@string/editor_btn_topic"
             android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -30,6 +31,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:counterEnabled="true"
             app:counterMaxLength="@integer/editor_name_maxlength"
+            android:textColor="@color/colorAccent"
             android:background="@android:drawable/screen_background_light_transparent"
             android:visibility="gone">
 
@@ -47,27 +49,18 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-            android:id="@+id/editorTextImageAdd"
+    <Button
+            android:id="@+id/editorBtnImage"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/standard_touch_smallsize"
             android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/standard_prompt_textsize"
-            android:text="@string/editor_btn_image"/>
-
-    <include
-            android:id="@+id/editorBtnImageLayout"
-            layout="@layout/app_editor_prompt_add_image"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/editorTextImageAdd"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:text="@string/editor_btn_image"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
 
     <ImageView
             android:id="@+id/editorImage"
@@ -75,7 +68,7 @@
             android:layout_height="wrap_content"
             app:layout_constrainedHeight="true"
             app:layout_constraintHeight_max="@dimen/app_editor_image_maxheight"
-            app:layout_constraintTop_toBottomOf="@id/editorBtnImageLayout"
+            app:layout_constraintTop_toBottomOf="@id/editorBtnImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:adjustViewBounds="true"
@@ -91,6 +84,7 @@
             app:layout_constraintTop_toBottomOf="@id/editorImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/standard_prompt_textsize"
             android:text="@string/editor_btn_desc"
             android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -105,6 +99,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:counterEnabled="true"
             app:counterMaxLength="@integer/editor_desc_maxlength"
+            android:textColor="@color/colorAccent"
             android:background="@android:drawable/screen_background_light_transparent"
             android:visibility="gone">
 

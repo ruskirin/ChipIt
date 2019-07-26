@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.fragments
 
 import android.graphics.*
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -14,6 +15,7 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
+import creations.rimov.com.chipit.util.TextureUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
 import creations.rimov.com.chipit.view_models.ChipperViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -162,14 +164,15 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
     override fun setBitmapRect() {
 
-        //Pos 0 = width, pos 1 = height
-        val dimen = localViewModel.getBitmapDimen()
+        localViewModel.getParent()?.let {
 
-        dimen?.let {
+            //Pos 0 = width, pos 1 = height
+            val dimen = localViewModel.getBitmapDimen() ?: return
+
             backgroundRect.set(
-                RenderUtil.getAspectRatioRect(it[0], it[1], viewWidth, viewHeight))
+                  RenderUtil.getAspectRatioRect(dimen[0], dimen[1], viewWidth, viewHeight))
 
-            localViewModel.setBitmap(it[0], it[1], viewWidth, viewHeight)
+            localViewModel.setBitmap(dimen[0], dimen[1], viewWidth, viewHeight)
         }
     }
 

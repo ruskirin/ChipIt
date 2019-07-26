@@ -1,8 +1,11 @@
 package creations.rimov.com.chipit.activities
 
-import android.animation.AnimatorInflater
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -10,7 +13,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -18,6 +24,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.fragments.ChipperFragmentDirections
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
@@ -27,17 +34,22 @@ import creations.rimov.com.chipit.view_models.EditorViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
+import creations.rimov.com.chipit.viewgroups.AppPromptLayout
 import kotlinx.android.synthetic.main.app_fab_layout.*
 import kotlinx.android.synthetic.main.app_layout.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-    View.OnClickListener, AppEditorLayout.EditorHandler, AppToolbarLayout.ToolbarHandler {
+    View.OnClickListener, AppEditorLayout.EditorHandler, AppPromptLayout.PromptHandler, AppToolbarLayout.ToolbarHandler {
 
     object EditorAction {
         const val CREATE = 300
         const val EDIT = 301
         const val UPDATE = 302
         const val DELETE = 303
+    }
+
+    object Constant {
+        const val REQUEST_WRITE_EXTERNAL_STORAGE = 1000
     }
 
     //TODO FUTURE: maybe move screen dimen to globalViewModel?
@@ -55,8 +67,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val navController: NavController by lazy {navHostFragment.navController}
 
     private val toolbar: AppToolbarLayout by lazy {appToolbar}
-
     private val editor: AppEditorLayout by lazy {appEditor}
+    private val prompt: AppPromptLayout by lazy {appPrompt}
 
     private val fabAction: FloatingActionButton by lazy {appFabAction}
     private val fabCancel: FloatingActionButton by lazy {appFabCancel}
@@ -70,6 +82,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         editor.setHandler(this)
         toolbar.setHandler(this)
+        prompt.setHandler(this)
 
         navController.addOnDestinationChangedListener(this)
 
@@ -80,11 +93,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         globalViewModel.getWebTransition().observe(this, Observer { forward ->
 
             if(forward) {
-                animToolbarVanish(false)
+                toolbar.vanishToolbar(true)
                 fabAction.hide()
 
             } else {
-                animToolbarVanish(true)
+                toolbar.vanishToolbar(false)
                 fabAction.show()
             }
         })
@@ -112,12 +125,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
 
                 EditorAction.DELETE -> {
-                    if(chip.id == globalViewModel.getFocusId().value)
-                        globalViewModel.setFocusId(toolbar.getParentOfCurrent()?.id)
-
-                    animToolbarVanish(true)
-
-                    editViewModel.deleteChip(chip)
+                    prompt.confirm(EditorAction.DELETE, chip)
                 }
             }
         })
@@ -131,7 +139,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         when(view?.id) {
 
-            R.id.appFabAction -> {
+            R.id.appFabAction     -> {
                 //Saving startEdit
                 if(editViewModel.isEditing && editor.finishEdit(true)) {
                     editViewModel.saveEdit()
@@ -140,7 +148,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     setFabEdit(false)
                     return
                 }
-
+                //Creating a Topic Chip
                 if(navController.currentDestination?.id == R.id.directoryFragment) {
                     startChipCreate(true,null, null)
                     return
@@ -149,23 +157,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 startChipCreate(false, globalViewModel.getFocusId().value, null)
             }
 
-            R.id.appFabCancel -> {
+            R.id.appFabCancel     -> {
 
                 editor.finishEdit(false)
+                prompt.clear()
                 editViewModel.isEditing = false
                 setFabEdit(false)
             }
 
-            R.id.editorBtnImageCamera -> {
-                takePicture()
-            }
+            R.id.editorImage      -> {
 
-            R.id.editorBtnImageStorage -> {
-                selectPicture()
-            }
-
-            R.id.editorBtnImageUrl -> {
-
+                //TODO FUTURE: need to be able to repick your image...
             }
         }
     }
@@ -177,7 +179,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.directoryFragment -> {
                 supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
                 toolbar.hideSpinner()
+                toolbar.vanishToolbar(false)
 
                 return true
             }
@@ -187,6 +191,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                 menuInflater.inflate(R.menu.web_toolbar, menu)
                 toolbar.showSpinner()
+                toolbar.vanishToolbar(false)
 
                 return true
             }
@@ -230,11 +235,30 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(requestCode) {
 
             CameraUtil.CODE_GET_IMAGE -> {
-                editor.showImage(data?.data)
+                data?.let {
+                    editor.showImage(it.data)
+
+                    editViewModel.editingChip?.imgLocation = it.data?.toString() ?: "" //Save
+                }
             }
 
             CameraUtil.CODE_TAKE_PICTURE -> {
-                editor.showImage(data?.extras?.get("data"))
+                data?.let {
+                    editor.showImage(it.extras?.get("data"))
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+
+        when(requestCode) {
+
+            Constant.REQUEST_WRITE_EXTERNAL_STORAGE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    takePicture()
+
+                //TODO FUTURE: storage write permission has not been granted, inform the user
             }
         }
     }
@@ -246,11 +270,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
-                animToolbarVanish(true)
+
             }
 
             R.id.webFragment -> {
-                animToolbarVanish(true)
+
             }
 
             R.id.chipperFragment -> {
@@ -273,6 +297,55 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         editViewModel.setDesc(text)
     }
 
+    override fun promptImage() {
+        prompt.showAddImage()
+    }
+
+    //AppPromptLayout Handler-------------------------------------------------------------
+    override fun actionConfirmed(action: Int, chip: Chip?) {
+
+        if(chip == null) return
+
+        when(action) {
+
+            EditorAction.DELETE -> {
+                //Focused chip is about to be deleted, move up the branch to its parent
+                if(chip.id == globalViewModel.getFocusId().value) {
+                    globalViewModel.setFocusId(toolbar.getParentOfCurrent()?.id)
+
+                    toolbar.vanishToolbar(false)
+                }
+
+                editViewModel.deleteChip(chip)
+            }
+        }
+    }
+
+    override fun actionDenied(action: Int, chip: Chip?) {
+
+
+    }
+
+    override fun getImageFrom(choice: Int) {
+
+        when(choice) {
+            AppPromptLayout.Prompt.CAMERA -> {
+                //Check if storage write permission has already been granted; else request it
+                if(getStorageWritePermission())
+                    takePicture()
+            }
+
+            AppPromptLayout.Prompt.STORAGE -> {
+                selectPicture()
+            }
+
+            AppPromptLayout.Prompt.URL -> {
+
+            }
+        }
+    }
+    //---------------------------------------------------------------------------------
+
     private fun startChipCreate(isTopic: Boolean, parentId: Long?, vertices: MutableList<CoordPoint>?) {
 
         setFabEdit(true)
@@ -290,14 +363,21 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             return
         }
 
-        val imageFile = CameraUtil.getImageFileOld() ?: return
+        var uri: Uri? = null
 
-        addChipCameraIntent.putExtra(
-              MediaStore.EXTRA_OUTPUT, CameraUtil.getImageUri(applicationContext, imageFile.file))
+        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            val imageFile = CameraUtil.getImageFile() ?: return
+
+            uri = CameraUtil.getImageUri(applicationContext, imageFile)
+
+        } else {
+            uri = CameraUtil.getImageUriNew(applicationContext)
+        }
+
+        addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
         startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-        if(imageFile.storagePath.isNotEmpty())
-            editViewModel.editingChip?.imgLocation = imageFile.storagePath //Save
+        editViewModel.editingChip?.imgLocation = uri.toString() //Save
     }
 
     private fun selectPicture() {
@@ -339,17 +419,26 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         fabCancel.hide()
     }
 
-    private var isToolbarVanish = false //Keep track of the status of the toolbar
-    private fun animToolbarVanish(reverse: Boolean) {
+    //Since SDK 23(24?), permission must be requested at runtime if it has not already been granted
+    private fun getStorageWritePermission(): Boolean {
 
-        if(isToolbarVanish == !reverse) return //Toolbar already in the desired state
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+              == PackageManager.PERMISSION_GRANTED) {
+            return true //Permission has already been granted
+        }
 
-        val animator = AnimatorInflater.loadAnimator(
-            this, if(reverse) R.animator.toolbar_vanish_reverse else R.animator.toolbar_vanish)
+        //Explain why you need the permission
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            //TODO FUTURE: display rationale for this request
+            Toast.makeText(this, "Need permission please!", Toast.LENGTH_SHORT).show()
+        }
 
-        animator.setTarget(toolbar)
-        animator.start()
+        //Permission has not yet been granted, check onRequestPermissionResult()
+        ActivityCompat.requestPermissions(
+              this,
+              arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+              Constant.REQUEST_WRITE_EXTERNAL_STORAGE)
 
-        isToolbarVanish = !reverse //Set the flag
+        return false
     }
 }

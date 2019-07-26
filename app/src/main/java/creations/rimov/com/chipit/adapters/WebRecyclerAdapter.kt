@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.viewgroups.CardLayout
 import creations.rimov.com.chipit.viewgroups.CardEditorLayout
 import kotlinx.android.synthetic.main.web_recycler_chip_layout.view.*
@@ -121,8 +120,6 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
     interface WebAdapterHandler {
 
         fun chipTouch(event: MotionEvent)
-
-        fun chipEdit(chip: ChipIdentity)
 
         fun chipDelete(chip: ChipCard)
     }

@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
-import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -18,7 +17,6 @@ import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
 import kotlinx.android.synthetic.main.app_editor_layout.view.*
-import kotlinx.android.synthetic.main.app_editor_prompt_add_image.view.*
 
 class AppEditorLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs), View.OnClickListener, TextWatcher, View.OnFocusChangeListener {
@@ -39,8 +37,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
     private val desc: TextInputEditText by lazy {editorDesc}
 
     private val image: ImageView by lazy {editorImage}
-    private val imageText: TextView by lazy {editorTextImageAdd}
-    private val editorBtnImageLayout by lazy {findViewById<View>(R.id.editorBtnImageLayout)}
+    private val imageText: TextView by lazy {editorBtnImage}
 
     private var editText: Int = 0
 
@@ -49,6 +46,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
 
         btnName.setOnClickListener(this)
         btnDesc.setOnClickListener(this)
+        editorBtnImage.setOnClickListener(this)
 
         name.onFocusChangeListener = this
         desc.onFocusChangeListener = this
@@ -66,6 +64,10 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
                 showName(true)
             }
 
+            R.id.editorBtnImage -> {
+                handler.promptImage()
+            }
+
             R.id.editorBtnDesc -> {
                 showDesc(true)
             }
@@ -78,10 +80,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
 
     /**Click listener for actions that need to be handled in the viewmodel**/
     fun setClickListener(listener: OnClickListener) {
-
-        editorBtnImageCamera.setOnClickListener(listener)
-        editorBtnImageStorage.setOnClickListener(listener)
-        editorBtnImageUrl.setOnClickListener(listener)
+        image.setOnClickListener(listener)
     }
 
     fun startEdit(chip: ChipUpdateBasic? = null) {
@@ -176,14 +175,12 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
                 .into(image)
 
             imageText.gone()
-            editorBtnImageLayout.gone()
             image.visible()
 
             return
         }
 
         imageText.visible()
-        editorBtnImageLayout.visible()
         image.gone()
     }
 
@@ -227,5 +224,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
         fun updateName(text: String)
 
         fun updateDesc(text: String)
+
+        fun promptImage()
     }
 }

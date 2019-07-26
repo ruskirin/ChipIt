@@ -10,16 +10,15 @@
                 app:touchAnchorId="@id/webDetailImgLayout"
                 app:dragDirection="dragDown"
                 app:moveWhenScrollAtTop="true"/>
-
     </Transition>
 
     <Transition
             app:constraintSetStart="@id/motionSceneWebStart"
-            app:constraintSetEnd="@id/motionSceneWebGone"
-            app:motionInterpolator="linear"/>
+            app:constraintSetEnd="@id/motionSceneNoDetail"
+            app:motionInterpolator="linear"
+            app:duration="50"/>
 
-
-    <ConstraintSet android:id="@+id/motionSceneWebGone">
+    <ConstraintSet android:id="@+id/motionSceneNoDetail">
 
         <Constraint android:id="@id/webGuide"/>
 
@@ -48,6 +47,8 @@
             <PropertySet
                     android:visibility="gone"/>
         </Constraint>
+
+        <Constraint android:id="@id/appPrompt"/>
 
     </ConstraintSet>
 
@@ -107,6 +108,8 @@
                     android:visibility="gone"/>
         </Constraint>
 
+        <Constraint android:id="@id/appPrompt"/>
+
     </ConstraintSet>
 
 
@@ -163,6 +166,8 @@
             <PropertySet
                     android:visibility="visible"/>
         </Constraint>
+
+        <Constraint android:id="@id/appPrompt"/>
 
     </ConstraintSet>
 

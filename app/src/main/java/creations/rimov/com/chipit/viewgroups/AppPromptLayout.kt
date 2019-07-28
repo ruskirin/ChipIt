@@ -29,6 +29,7 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
     }
 
     private val addImageLayout: View by lazy {promptAddImageLayout}
+
     private val confirmPromptText: TextView by lazy {promptConfirmText}
     private val btnYes: Button by lazy {promptConfirmYes}
     private val btnNo: Button by lazy {promptConfirmNo}
@@ -41,6 +42,7 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
     init {
         View.inflate(context, R.layout.app_prompt_layout, this)
 
+        this.setOnClickListener(this)
         btnYes.setOnClickListener(this)
         btnNo.setOnClickListener(this)
         promptBtnCamera.setOnClickListener(this)
@@ -49,6 +51,8 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
     }
 
     override fun onClick(view: View?) {
+
+        if(view == this) toggleVis(false)
 
         when(view?.id) {
 

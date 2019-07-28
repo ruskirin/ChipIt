@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         navController.addOnDestinationChangedListener(this)
 
-        editor.setClickListener(this)
         fabAction.setOnClickListener(this)
         fabCancel.setOnClickListener(this)
 
@@ -321,10 +320,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    override fun actionDenied(action: Int, chip: Chip?) {
-
-
-    }
+    override fun actionDenied(action: Int, chip: Chip?) {}
 
     override fun getImageFrom(choice: Int) {
 

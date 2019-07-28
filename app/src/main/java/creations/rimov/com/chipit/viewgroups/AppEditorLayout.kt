@@ -48,6 +48,8 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
         btnDesc.setOnClickListener(this)
         editorBtnImage.setOnClickListener(this)
 
+        image.setOnClickListener(this)
+
         name.onFocusChangeListener = this
         desc.onFocusChangeListener = this
 
@@ -71,16 +73,15 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
             R.id.editorBtnDesc -> {
                 showDesc(true)
             }
+
+            R.id.editorImage -> {
+                handler.promptImage()
+            }
         }
     }
 
     fun setHandler(handler: EditorHandler) {
         this.handler = handler
-    }
-
-    /**Click listener for actions that need to be handled in the viewmodel**/
-    fun setClickListener(listener: OnClickListener) {
-        image.setOnClickListener(listener)
     }
 
     fun startEdit(chip: ChipUpdateBasic? = null) {

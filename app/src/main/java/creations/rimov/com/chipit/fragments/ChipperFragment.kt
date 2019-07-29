@@ -27,7 +27,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     private object Constant {
         //Buffer around surfaceview edge to trigger gesture swipe events
         const val EDGE_TOUCH_BUFFER = 30f
-        //Swipe distance to trigger event
+        //Swipe distance to trigge r event
         const val SWIPE_BUFFER = 150f
 
         const val DRAW_PATH = 300
@@ -65,6 +65,10 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         activity?.let {
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
+
+        TODO("Chipper has problems opening images that were saved from storage, run and see the error, which" +
+             "probably stems from ACTION_READ_CONTENT, which should be ACTION_READ_FILE (or something like that). Check" +
+             "bookmarked stack answers")
 
         val id = passedArgs.chipId
 

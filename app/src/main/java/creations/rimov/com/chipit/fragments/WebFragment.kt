@@ -159,16 +159,23 @@ class WebFragment : Fragment(),
             .into(detailImage)
     }
 
-    private fun redrawDetailImage() {
+//    private fun redrawDetailImage() {
+//
+//        detailImage.invalidate()
+//        detailImage.requestLayout()
+//
+//        Glide.with(this)
+//            .load(localViewModel.getChipImg())
+//            .apply(RequestOptions()
+//                .override(detailImage.width, detailImage.height))
+//            .into(detailImage)
+//    }
 
-        detailImage.invalidate()
-        detailImage.requestLayout()
+    private fun loadChipper() {
 
-        Glide.with(this)
-            .load(localViewModel.getChipImg())
-            .apply(RequestOptions()
-                .override(detailImage.width, detailImage.height))
-            .into(detailImage)
+        val directions =
+            WebFragmentDirections.actionWebFragmentToChipperFragment(localViewModel.getChipId() ?: return)
+        findNavController().navigate(directions)
     }
 
     //RecyclerAdapter Handler ---------------------------------------------------------
@@ -189,6 +196,8 @@ class WebFragment : Fragment(),
         motionLayout?.let {
             if(startId == R.id.motionSceneWebStart && endId == R.id.motionSceneWebMax) {
 
+                //TODO FUTURE: preload the bitmap here based on progress of transition
+
                 if(progress > 0.5f) globalViewModel.setWebTransition(true)
                 else globalViewModel.setWebTransition(false)
             }
@@ -200,7 +209,8 @@ class WebFragment : Fragment(),
 
             when(id) {
                 R.id.motionSceneWebMax -> {
-                    redrawDetailImage()
+//                    redrawDetailImage()
+                    loadChipper()
                 }
 
                 R.id.motionSceneWebStart -> {

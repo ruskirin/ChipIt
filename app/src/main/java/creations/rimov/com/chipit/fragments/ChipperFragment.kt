@@ -66,10 +66,6 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
             globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
         }
 
-        TODO("Chipper has problems opening images that were saved from storage, run and see the error, which" +
-             "probably stems from ACTION_READ_CONTENT, which should be ACTION_READ_FILE (or something like that). Check" +
-             "bookmarked stack answers")
-
         val id = passedArgs.chipId
 
         if(localViewModel.getParentId() != id) {

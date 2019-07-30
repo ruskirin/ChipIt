@@ -43,11 +43,6 @@
                     android:visibility="gone"/>
         </Constraint>
 
-        <Constraint android:id="@id/webSettingsLayout">
-            <PropertySet
-                    android:visibility="gone"/>
-        </Constraint>
-
         <Constraint android:id="@id/appPrompt"/>
 
     </ConstraintSet>
@@ -97,17 +92,6 @@
                     android:visibility="visible"/>
         </Constraint>
 
-        <Constraint android:id="@id/webSettingsLayout">
-            <Layout
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/tab_height"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
-            <PropertySet
-                    android:visibility="gone"/>
-        </Constraint>
-
         <Constraint android:id="@id/appPrompt"/>
 
     </ConstraintSet>
@@ -154,17 +138,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
             <PropertySet
                     android:visibility="gone"/>
-        </Constraint>
-
-        <Constraint android:id="@id/webSettingsLayout">
-            <Layout
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/tab_height"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"/>
-            <PropertySet
-                    android:visibility="visible"/>
         </Constraint>
 
         <Constraint android:id="@id/appPrompt"/>

@@ -24,7 +24,6 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.web_detail_layout.*
 import kotlinx.android.synthetic.main.web_layout.view.*
-import kotlinx.android.synthetic.main.web_layout.view.webSettingsLayout
 
 class WebFragment : Fragment(),
     WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener, MotionLayout.TransitionListener {
@@ -68,8 +67,6 @@ class WebFragment : Fragment(),
         motionLayout = (view as MotionLayout)
         motionLayout.setTransitionListener(this)
 
-        view.webSettingsLayout.setTouchListener(this)
-
         view.webChildrenView.apply {
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
@@ -101,40 +98,27 @@ class WebFragment : Fragment(),
 
         when(view?.id) {
 
-            R.id.webDetailBtnDesc -> {
-
-            }
-
-            R.id.webDetailBtnChip -> {
-
-                if(event.action == MotionEvent.ACTION_UP) {
-                    val directions =
-                        WebFragmentDirections.actionWebFragmentToChipperFragment(localViewModel.getChipId() ?: return false)
-                    findNavController().navigate(directions)
-                }
-            }
-
-            R.id.webDetailBtnSettings -> {
-
-                if(event.action == MotionEvent.ACTION_UP) {
-
-                    localViewModel.getAsChip()?.let {
-                        globalViewModel.setChipAction(
-                            ChipAction.instance(it, MainActivity.EditorAction.EDIT))
-                    }
-                }
-            }
-
-            R.id.webDetailBtnDelete -> {
-
-                if(event.action == MotionEvent.ACTION_UP) {
-
-                    localViewModel.getAsChip()?.let {
-                        globalViewModel.setChipAction(
-                              ChipAction.instance(it, MainActivity.EditorAction.DELETE))
-                    }
-                }
-            }
+//            R.id.webDetailBtnSettings -> {
+//
+//                if(event.action == MotionEvent.ACTION_UP) {
+//
+//                    localViewModel.getAsChip()?.let {
+//                        globalViewModel.setChipAction(
+//                            ChipAction.instance(it, MainActivity.EditorAction.EDIT))
+//                    }
+//                }
+//            }
+//
+//            R.id.webDetailBtnDelete -> {
+//
+//                if(event.action == MotionEvent.ACTION_UP) {
+//
+//                    localViewModel.getAsChip()?.let {
+//                        globalViewModel.setChipAction(
+//                              ChipAction.instance(it, MainActivity.EditorAction.DELETE))
+//                    }
+//                }
+//            }
         }
 
         return true
@@ -158,18 +142,6 @@ class WebFragment : Fragment(),
                     .diskCacheStrategy(DiskCacheStrategy.DATA))
             .into(detailImage)
     }
-
-//    private fun redrawDetailImage() {
-//
-//        detailImage.invalidate()
-//        detailImage.requestLayout()
-//
-//        Glide.with(this)
-//            .load(localViewModel.getChipImg())
-//            .apply(RequestOptions()
-//                .override(detailImage.width, detailImage.height))
-//            .into(detailImage)
-//    }
 
     private fun loadChipper() {
 
@@ -209,7 +181,6 @@ class WebFragment : Fragment(),
 
             when(id) {
                 R.id.motionSceneWebMax -> {
-//                    redrawDetailImage()
                     loadChipper()
                 }
 

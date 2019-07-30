@@ -27,6 +27,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.fragments.ChipperFragmentDirections
+import creations.rimov.com.chipit.fragments.WebFragmentDirections
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
@@ -180,7 +181,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
                 toolbar.hideSpinner()
-                toolbar.vanishToolbar(false)
 
                 return true
             }
@@ -190,7 +190,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                 menuInflater.inflate(R.menu.web_toolbar, menu)
                 toolbar.showSpinner()
-                toolbar.vanishToolbar(false)
 
                 return true
             }
@@ -212,12 +211,22 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(item?.itemId) {
 
             android.R.id.home -> {
-                if(navController.currentDestination?.id == R.id.chipperFragment) {
-                    val directions =
-                        ChipperFragmentDirections.actionChipperFragmentToWebFragment(globalViewModel.getFocusId().value ?: -1L)
-                    navController.navigate(directions)
+                when(navController.currentDestination?.id) {
+                    R.id.webFragment -> {
+                        val directions =
+                            WebFragmentDirections.actionWebFragmentToDirectoryFragment()
+                        navController.navigate(directions)
 
-                    return true
+                        return true
+                    }
+
+                    R.id.chipperFragment -> {
+                        val directions =
+                            ChipperFragmentDirections.actionChipperFragmentToWebFragment(globalViewModel.getFocusId().value ?: -1L)
+                        navController.navigate(directions)
+
+                        return true
+                    }
                 }
             }
         }
@@ -269,15 +278,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
-
+                toolbar.vanishToolbar(false)
             }
 
             R.id.webFragment -> {
-
+                toolbar.vanishToolbar(false)
             }
 
             R.id.chipperFragment -> {
-
+                toolbar.vanishToolbar(true)
             }
         }
     }
@@ -378,7 +387,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private fun selectPicture() {
 
-        val getChipPhotoIntent = Intent(Intent.ACTION_GET_CONTENT)
+        val getChipPhotoIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             .apply {type = "image/*"}
         getChipPhotoIntent.resolveActivity(packageManager)
             ?.let {startActivityForResult(getChipPhotoIntent, CameraUtil.CODE_GET_IMAGE)}

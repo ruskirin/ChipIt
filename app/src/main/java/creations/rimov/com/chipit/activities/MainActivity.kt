@@ -28,6 +28,7 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.fragments.ChipperFragmentDirections
 import creations.rimov.com.chipit.fragments.WebFragmentDirections
+import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.CameraUtil
@@ -91,15 +92,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         fabCancel.setOnClickListener(this)
 
         globalViewModel.getWebTransition().observe(this, Observer { forward ->
-
-            if(forward) {
-                toolbar.vanishToolbar(true)
-                fabAction.hide()
-
-            } else {
-                toolbar.vanishToolbar(false)
-                fabAction.show()
-            }
+            //TODO FUTURE: see if this is necessary
         })
 
         globalViewModel.getChipAction().observe(this, Observer { chipAction ->
@@ -154,7 +147,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     return
                 }
 
-                startChipCreate(false, globalViewModel.getFocusId().value, null)
+                //Creating a regular Chip
+                startChipCreate(false, globalViewModel.getPrimaryChip().value?.id, null)
             }
 
             R.id.appFabCancel     -> {
@@ -166,7 +160,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
 
             R.id.editorImage      -> {
-
                 //TODO FUTURE: need to be able to repick your image...
             }
         }
@@ -196,8 +189,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.chipperFragment -> {
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+                
                 toolbar.hideSpinner()
+                menuInflater.inflate(R.menu.chipper_toolbar, menu)
 
                 return true
             }
@@ -206,9 +200,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         return false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        when(item?.itemId) {
+        when(item.itemId) {
 
             android.R.id.home -> {
                 when(navController.currentDestination?.id) {
@@ -221,17 +215,27 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     }
 
                     R.id.chipperFragment -> {
-                        val directions =
-                            ChipperFragmentDirections.actionChipperFragmentToWebFragment(globalViewModel.getFocusId().value ?: -1L)
+                        val directions = ChipperFragmentDirections
+                            .actionChipperFragmentToWebFragment(globalViewModel.getPrimaryId() ?: -1L)
                         navController.navigate(directions)
 
                         return true
                     }
                 }
             }
+
+            R.id.toolbarChipperEdit -> {
+                globalViewModel.setChipAction(
+                      ChipAction.instance(globalViewModel.getPrimaryChip().value ?: return false, EditorAction.EDIT))
+            }
+
+            R.id.toolbarChipperDelete -> {
+                globalViewModel.setChipAction(
+                      ChipAction.instance(globalViewModel.getPrimaryChip().value ?: return false, EditorAction.DELETE))
+            }
         }
 
-        return super.onOptionsItemSelected(item)
+        return false
     }
 
     //After startActivityForResult()
@@ -278,23 +282,26 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(destination.id) {
 
             R.id.directoryFragment -> {
+                fabAction.show()
                 toolbar.vanishToolbar(false)
             }
 
             R.id.webFragment -> {
+                fabAction.show()
                 toolbar.vanishToolbar(false)
             }
 
             R.id.chipperFragment -> {
+                fabAction.hide()
                 toolbar.vanishToolbar(true)
             }
         }
     }
 
     override fun setSelectedChip(chip: ChipReference) {
-        Log.i("Touch Event", "Main#setSelectedChip(): setting id ${chip.id}, name ${chip.name}")
+        Log.i("Touch Event", "Main#setSelectedChip(): new primary chip ${chip.id}")
 
-        globalViewModel.setFocusId(chip.id)
+        globalViewModel.setPrimaryChip(chip.asChip())
     }
 
     override fun updateName(text: String) {
@@ -317,9 +324,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(action) {
 
             EditorAction.DELETE -> {
+                val primaryId = globalViewModel.getPrimaryChip().value?.id ?: return
                 //Focused chip is about to be deleted, move up the branch to its parent
-                if(chip.id == globalViewModel.getFocusId().value) {
-                    globalViewModel.setFocusId(toolbar.getParentOfCurrent()?.id)
+                if(chip.id == primaryId) {
+                    globalViewModel.setPrimaryChip(toolbar.getParentOfCurrent()?.asChip())
 
                     toolbar.vanishToolbar(false)
                 }

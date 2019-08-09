@@ -38,14 +38,12 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
 
     fun setChildren(children: List<ChipCard>) {
 
-        if(::selectedTopic.isInitialized)
-            selectedTopic.setChildren(children)
+        if(::selectedTopic.isInitialized) selectedTopic.setChildren(children)
         else return
     }
 
     fun getSelectedId() =
-        if(::selectedTopic.isInitialized)
-            selectedTopic.itemId
+        if(::selectedTopic.isInitialized) selectedTopic.itemId
         else -1L
 
 

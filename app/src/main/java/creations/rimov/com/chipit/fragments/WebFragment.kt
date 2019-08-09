@@ -1,6 +1,7 @@
 package creations.rimov.com.chipit.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -57,8 +58,8 @@ class WebFragment : Fragment(),
 
         val id = passedArgs.parentId
 
-        if(id == -1L) globalViewModel.setFocusId(null)
-        else globalViewModel.setFocusId(id)
+        if(id == -1L) localViewModel.setFocusId(null)
+        else localViewModel.setFocusId(id)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,11 +74,10 @@ class WebFragment : Fragment(),
             setHasFixedSize(true)
         }
 
-        globalViewModel.getFocusId().observe(this, Observer {
-            localViewModel.setFocusId(it)
-        })
-
         localViewModel.getChip().observe(this, Observer {
+            Log.i("Touch Event", "WebFrag#Observer: currently displaying chip ${it?.id}")
+
+            globalViewModel.setPrimaryChip(it?.asChip())
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
@@ -97,28 +97,7 @@ class WebFragment : Fragment(),
         if(event == null) return false
 
         when(view?.id) {
-
-//            R.id.webDetailBtnSettings -> {
-//
-//                if(event.action == MotionEvent.ACTION_UP) {
-//
-//                    localViewModel.getAsChip()?.let {
-//                        globalViewModel.setChipAction(
-//                            ChipAction.instance(it, MainActivity.EditorAction.EDIT))
-//                    }
-//                }
-//            }
-//
-//            R.id.webDetailBtnDelete -> {
-//
-//                if(event.action == MotionEvent.ACTION_UP) {
-//
-//                    localViewModel.getAsChip()?.let {
-//                        globalViewModel.setChipAction(
-//                              ChipAction.instance(it, MainActivity.EditorAction.DELETE))
-//                    }
-//                }
-//            }
+            //TODO FUTURE: see if anything needs to be done here
         }
 
         return true
@@ -158,7 +137,7 @@ class WebFragment : Fragment(),
     override fun chipDelete(chip: ChipCard) {
         globalViewModel.setChipAction(
               ChipAction.instance(
-                    chip.getChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
+                    chip.asChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
     //---------------------------------------------------------------------------------
 
@@ -203,7 +182,7 @@ class WebFragment : Fragment(),
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
 
-            globalViewModel.setFocusId(childrenAdapter.getSelectedId())
+            localViewModel.setFocusId(childrenAdapter.getSelectedId())
             return true
         }
 

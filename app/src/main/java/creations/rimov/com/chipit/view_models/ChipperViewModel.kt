@@ -3,8 +3,10 @@ package creations.rimov.com.chipit.view_models
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
@@ -12,33 +14,29 @@ import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import kotlin.math.roundToInt
 
-class ChipperViewModel(application: Application) : AndroidViewModel(application), AccessRepo.RepoHandler {
+class ChipperViewModel(application: Application,
+                       private val handler: AccessRepo.RepoHandler) : AndroidViewModel(application) {
 
-    private val repository = AccessRepo(DatabaseApplication.database!!, this)
+    private val repository = AccessRepo(DatabaseApplication.database!!, handler)
 
-    private val parentId: MutableLiveData<Long?> = MutableLiveData()
+    private val chipId: MutableLiveData<Long?> = MutableLiveData()
     //The chip currently viewed in the background and being worked on
-    private val parent: LiveData<ChipIdentity> = Transformations.switchMap(parentId) {
+    private val chip: LiveData<ChipIdentity?> = Transformations.switchMap(chipId) {
         repository.getChipIdentityLive(it)
     }
     //Children of the main chip
-    private val children: LiveData<List<ChipPath>> = Transformations.switchMap(parentId) {
+    private val children: LiveData<List<ChipPath>> = Transformations.switchMap(chipId) {
         repository.getChipPathsLive(it)
     }
 
-    var bitmap: Bitmap? = null
+    var backgroundBitmap: Bitmap? = null
 
 
-    fun setParentId(parentId: Long) {
-
-        if(parentId != this.parentId.value) {
-            this.parentId.postValue(parentId)
-        }
+    fun setChipId(id: Long?) {
+        this.chipId.postValue(id)
     }
 
-    fun getParentId() = parentId.value
-
-    fun getParent(): LiveData<ChipIdentity>? = parent
+    fun getChip(): LiveData<ChipIdentity?> = chip
 
     fun getChildren(): LiveData<List<ChipPath>>? = children
 
@@ -46,9 +44,7 @@ class ChipperViewModel(application: Application) : AndroidViewModel(application)
     fun getTouchedChip(point: CoordPoint): ChipPath? {
 
         children.value?.forEach { chip ->
-            if(chip.isInside(point)) {
-                return chip
-            }
+            if(chip.isInside(point)) return chip
         }
 
         return null
@@ -56,11 +52,7 @@ class ChipperViewModel(application: Application) : AndroidViewModel(application)
 
     fun getBitmapDimen(): Array<Int>? {
 
-        //TODO URGENT: problem with loading background in chipper comes from here, as this is called before the livedata is
-        //              updated, returning a null and giving no rectangle for the bitmap to populate. Possible solution is to
-        //              have the rectangle be set in response to setting the parent
-
-        parent.value?.let {
+        chip.value?.let {
             return TextureUtil.getBitmapDimen(getApplication(), it.imgLocation)
         }
 
@@ -83,23 +75,10 @@ class ChipperViewModel(application: Application) : AndroidViewModel(application)
             sampleSize = if(wRatio < hRatio) wRatio.roundToInt() else hRatio.roundToInt()
         }
 
-        parent.value?.let {
+        chip.value?.let {
             val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.imgLocation))
 
-            TextureUtil.AsyncPathToBitmap(this, sampleSize).execute(stream)
+            TextureUtil.AsyncPathToBitmap(handler, sampleSize).execute(stream)
         }
     }
-
-    override fun <T> setData(data: T) {
-
-        when(data) {
-            is Bitmap? -> {
-                bitmap = data
-                //Cache the view in preparation of canvas draw
-                bitmap?.prepareToDraw()
-            }
-        }
-    }
-
-    override fun <T> setDataList(data: List<T>) {}
 }

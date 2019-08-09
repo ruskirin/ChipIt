@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.Log
-import android.view.MotionEvent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.objects.CoordPoint
@@ -34,42 +33,41 @@ class ChipperTouchViewModel : ViewModel() {
         if(::pathVertices.isInitialized) pathVertices
         else null
 
-    fun startPath(coordPoint: CoordPoint) {
+    fun startPath(point: CoordPoint) {
 
-        Log.i("Path Creation", "#startPath(): coordPoint x = ${coordPoint.x}, y = ${coordPoint.y}")
+        Log.i("Path Creation", "#startPath(): point x = ${point.x}, y = ${point.y}")
 
-        path.moveTo(coordPoint.x, coordPoint.y)
+        path.moveTo(point.x, point.y)
 
         pathVertices = mutableListOf()
-        //Save the starting coordPoint
-        pathVertices.add(coordPoint)
+        //Save the starting point
+        pathVertices.add(point)
     }
 
-    fun dragPath(coordPoint: CoordPoint) {
+    fun dragPath(point: CoordPoint) {
 
-        val distance = coordPoint.distanceTo(pathVertices.last())
+        val distance = point.distanceTo(pathVertices.last())
 
-        if(distance < Constant.LINE_INTERVAL)
-            return
+        if(distance < Constant.LINE_INTERVAL) return
 
-        path.lineTo(coordPoint.x, coordPoint.y)
+        path.lineTo(point.x, point.y)
 
-        pathVertices.add(coordPoint)
+        pathVertices.add(point)
     }
 
-    fun endPath(coordPoint: CoordPoint, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int) {
+    fun endPath(point: CoordPoint, viewWidth: Int, viewHeight: Int, imageWidth: Int, imageHeight: Int) {
 
-        val displacement = coordPoint.distanceTo(pathVertices.first())
+        val displacement = point.distanceTo(pathVertices.first())
 
-        //Does the path return to its starting coordPoint?
+        //Does the path return to its starting point?
         if(pathVertices.size <= 3 || displacement > Constant.TOLERANCE) {
             //Either path has been saved or was incomplete, regardless it is no longer necessary
             clearPaths(path)
             return
         }
 
-        path.lineTo(coordPoint.x, coordPoint.y)
-        //Path will complete at the first coordPoint
+        path.lineTo(point.x, point.y)
+        //Path will complete at the first point
         pathVertices.add(pathVertices.first())
         //Convert the pixel points to normalized
         pathVertices = CoordPoint.normalizeList(pathVertices, viewWidth, viewHeight, imageWidth, imageHeight)

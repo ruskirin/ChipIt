@@ -14,21 +14,7 @@ object TextureUtil {
      * Instead of returning the bitmap, #inJustDecodeBounds returns the properties of the passed image
      * Tutorial for reference: https://stuff.mit.edu/afs/sipb/project/android/docs/training/displaying-bitmaps/load-bitmap.html
      */
-//    fun getBitmapDimen(stream: InputStream): Array<Int> {
-//
-//        //TODO FUTURE: also returns MIME type, see if useful
-//        BitmapFactory.Options().apply {
-//            inJustDecodeBounds = true
-//
-//            BitmapFactory.decodeStream(stream, null, this)
-//
-//            return arrayOf(this.outWidth, this.outHeight)
-//        }
-//    }
-
     fun getBitmapDimen(context: Context?, uri: String?): Array<Int>? {
-
-        Log.i("Life Event", "TextureUtil#getBitmapDimen(): received uri: $uri")
 
         val stream = context?.contentResolver?.openInputStream(
               Uri.parse(uri)) ?: return null
@@ -62,6 +48,9 @@ object TextureUtil {
         }
 
         override fun onPostExecute(result: Bitmap?) {
+
+            result?.prepareToDraw()
+
             result?.let {handler.setData(it)}
         }
     }

@@ -68,7 +68,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
     //Handle recyclerview's touched events
     override fun topicTouch(event: MotionEvent) {
-
         gestureDetector.onTouchEvent(event)
     }
 
@@ -80,11 +79,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     }
 
     override fun topicEdit(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.EDIT))
+        globalViewModel.setChipAction(ChipAction.instance(chip.asChip(), MainActivity.EditorAction.EDIT))
     }
 
     override fun topicDelete(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.getChip(), MainActivity.EditorAction.DELETE))
+        globalViewModel.setChipAction(ChipAction.instance(chip.asChip(), MainActivity.EditorAction.DELETE))
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {

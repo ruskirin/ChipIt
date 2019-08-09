@@ -12,6 +12,6 @@ data class ChipIdentity(
     @ColumnInfo(name = "num_children") var counter: Int,
     @ColumnInfo(name = "image_location") var imgLocation: String) {
 
-    fun getChip() = Chip(id, parentId, isTopic,
-            name, desc, dateCreate, counter = counter, imgLocation = imgLocation)
+    fun asChip() = Chip(id, parentId, isTopic,
+                        name, desc, dateCreate, counter = counter, imgLocation = imgLocation)
 }

@@ -9,6 +9,6 @@ data class ChipTopic(val id: Long,
                      @ColumnInfo(name = "date_create") val dateCreate: String,
                      @ColumnInfo(name = "date_update") val dateUpdate: String = "") {
 
-    fun getChip() = Chip(id, isTopic = true,
-                    name = name, desc = desc, created =  dateCreate, counter = counter)
+    fun asChip() = Chip(id, isTopic = true,
+                        name = name, desc = desc, created =  dateCreate, counter = counter)
 }

@@ -5,4 +5,7 @@ import androidx.room.ColumnInfo
 data class ChipReference(val id: Long,
                          @ColumnInfo(name = "parent_id") val parentId: Long?,
                          val name: String,
-                         @ColumnInfo(name = "image_location") val imgLocation: String)
+                         @ColumnInfo(name = "image_location") val imgLocation: String) {
+
+    fun asChip() = Chip(id, parentId, name = name, imgLocation = imgLocation)
+}

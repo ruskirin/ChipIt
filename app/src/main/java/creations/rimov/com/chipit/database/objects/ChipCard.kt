@@ -7,5 +7,5 @@ data class ChipCard(val id: Long,
                     @ColumnInfo(name = "num_children") val counter: Int,
                     @ColumnInfo(name = "image_location") val imgLocation: String) {
 
-    fun getChip(parentId: Long?) = Chip(id, parentId, name = name, counter = counter, imgLocation = imgLocation)
+    fun asChip(parentId: Long?) = Chip(id, parentId, name = name, counter = counter, imgLocation = imgLocation)
 }

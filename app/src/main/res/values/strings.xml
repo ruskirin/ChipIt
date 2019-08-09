@@ -20,16 +20,7 @@
 
     <string name="toolbar_search">Search</string>
     <string name="toolbar_sort">Sort</string>
-
-    <string name="tab_name_topics">Topics</string>
-    <string name="tab_name_web">Web</string>
-    <string name="tab_name_chips">Chips</string>
-    <string name="tab_name_storage">Storage</string>
-
-    <string name="drawer_btn_topics">Topics</string>
-    <string name="drawer_btn_chips">Chips</string>
-    <string name="drawer_btn_chipper">Chipper</string>
-    <string name="drawer_open_desc">Drawer opened on the left</string>
-    <string name="drawer_close_desc">Drawer closed</string>
+    <string name="toolbar_edit">Edit</string>
+    <string name="toolbar_delete">Delete</string>
 
 </resources>

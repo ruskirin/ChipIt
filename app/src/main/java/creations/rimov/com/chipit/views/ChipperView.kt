@@ -23,6 +23,8 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
 
         chipHandler.setScreenDimen(width, height)
         chipHandler.setBitmapRect()
+
+        chipHandler.drawBackground(holder)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
@@ -76,6 +78,8 @@ class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attr
         fun touchDrag(x: Float, y: Float)
 
         fun touchUp(x: Float, y: Float)
+
+        fun drawBackground(holder: SurfaceHolder?)
 
         fun drawScreen(canvas: Canvas)
 

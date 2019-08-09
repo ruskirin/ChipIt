@@ -9,6 +9,8 @@ data class ChipPath(
     @ColumnInfo(name = "image_location") val imgLocation: String,
     val vertices: List<CoordPoint>?) {
 
+    fun asChip(parentId: Long?) = Chip(id, parentId, imgLocation = imgLocation, vertices = vertices?.toMutableList())
+
     /**
      * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes
      *                  eg. vertices (a,b,c,d) will connect (a,b), (b,c), (c,d), (d,a)

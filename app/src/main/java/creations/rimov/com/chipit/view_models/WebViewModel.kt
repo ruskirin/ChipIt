@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.view_models
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -40,7 +39,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChip() = chip
 
-    fun getAsChip() = chip.value?.getChip()
+    fun getAsChip() = chip.value?.asChip()
 
     fun getChipId() = chip.value?.id
 

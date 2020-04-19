@@ -36,7 +36,8 @@ object CameraUtil {
 
         return try {
             //Starting SDK 29, getExternalStoragePublicDirectory is deprecated and other methods need to be used
-            val directory = storageDir ?: Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val directory = storageDir
+                            ?: Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
 
             createImageFile(directory)
 

@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
@@ -23,8 +23,8 @@ import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
-import kotlinx.android.synthetic.main.web_detail_layout.*
-import kotlinx.android.synthetic.main.web_layout.view.*
+import kotlinx.android.synthetic.main.web.view.*
+import kotlinx.android.synthetic.main.web_detail.*
 
 class WebFragment : Fragment(),
     WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener, MotionLayout.TransitionListener {
@@ -34,14 +34,16 @@ class WebFragment : Fragment(),
 
     private lateinit var globalViewModel: GlobalViewModel
     private val localViewModel: WebViewModel by lazy {
-        ViewModelProviders.of(this).get(WebViewModel::class.java)
+        ViewModelProvider(this).get(WebViewModel::class.java)
     }
 
     private lateinit var motionLayout: MotionLayout
 
     private val detailImage: ImageView by lazy {webDetailImg}
 
-    private val childrenAdapter: WebRecyclerAdapter by lazy {WebRecyclerAdapter(this@WebFragment)}
+    private val childrenAdapter: WebRecyclerAdapter by lazy {
+        WebRecyclerAdapter(this@WebFragment)
+    }
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -50,7 +52,7 @@ class WebFragment : Fragment(),
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
+            globalViewModel = ViewModelProvider(it).get(GlobalViewModel::class.java)
 
             gestureDetector = GestureDetector(it, ChipGestureDetector())
             gestureDetector.setIsLongpressEnabled(true)
@@ -62,8 +64,10 @@ class WebFragment : Fragment(),
         else localViewModel.setFocusId(id)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.web_layout, container, false)
+    override fun onCreateView(
+      inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(
+          R.layout.web, container, false)
 
         motionLayout = (view as MotionLayout)
         motionLayout.setTransitionListener(this)
@@ -74,18 +78,19 @@ class WebFragment : Fragment(),
             setHasFixedSize(true)
         }
 
-        localViewModel.getChip().observe(this, Observer {
-            Log.i("Touch Event", "WebFrag#Observer: currently displaying chip ${it?.id}")
+        localViewModel.getChip().observe(viewLifecycleOwner, Observer {
+            Log.i("Touch Event",
+                  "WebFrag#Observer: currently displaying chip ${it?.id}")
 
             globalViewModel.setPrimaryChip(it?.asChip())
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
-        localViewModel.getParents().observe(this, Observer {
+        localViewModel.getParents().observe(viewLifecycleOwner, Observer {
             globalViewModel.setWebParents(it)
         })
 
-        localViewModel.getChildren().observe(this, Observer {
+        localViewModel.getChildren().observe(viewLifecycleOwner, Observer {
             childrenAdapter.setChips(it)
         })
 
@@ -105,7 +110,7 @@ class WebFragment : Fragment(),
 
     private fun setDetail(chip: ChipIdentity?) {
 
-        if(chip == null || chip.isTopic) {
+        if(chip?.parentId == null) {
             motionLayout.transitionToState(R.id.motionSceneNoDetail)
             return
         }
@@ -114,7 +119,7 @@ class WebFragment : Fragment(),
 
         webDetailDesc.text = chip.desc
         Glide.with(this)
-            .load(chip.imgLocation)
+            .load(chip.repPath)
             .apply(
                 RequestOptions()
                     .override(detailImage.width, detailImage.height)

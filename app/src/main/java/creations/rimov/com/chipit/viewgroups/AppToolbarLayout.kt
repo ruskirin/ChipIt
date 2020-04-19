@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.viewgroups
 
-import android.animation.AnimatorInflater
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
@@ -16,8 +15,8 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import kotlinx.android.synthetic.main.app_toolbar_layout.view.*
-import kotlinx.android.synthetic.main.toolbar_parent_spinner_chip_layout.view.*
+import kotlinx.android.synthetic.main.main_toolbar.view.*
+import kotlinx.android.synthetic.main.toolbar_spinner_chipparent.view.*
 
 class AppToolbarLayout(context: Context, attrs: AttributeSet)
     : Toolbar(context, attrs), AdapterView.OnItemSelectedListener {
@@ -32,7 +31,7 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
     private var prevSelected: Long = -1L
 
     init {
-        View.inflate(context, R.layout.app_toolbar_layout, this)
+        View.inflate(context, R.layout.main_toolbar, this)
 
         webSpinner.adapter = adapter
         webSpinner.onItemSelectedListener = this
@@ -90,7 +89,7 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
             var view = convertView
 
             if(view == null) view = LayoutInflater.from(parent?.context)
-                .inflate(R.layout.toolbar_parent_spinner_chip_layout, parent, false)
+                .inflate(R.layout.toolbar_spinner_chipparent, parent, false)
 
             view!!.toolbarSpinnerText?.text = parents[0].name
 
@@ -101,7 +100,7 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
             var view = convertView
 
             if(view == null) view = LayoutInflater.from(parent?.context)
-                .inflate(R.layout.toolbar_parent_spinner_chip_layout, parent, false)
+                .inflate(R.layout.toolbar_spinner_chipparent, parent, false)
 
             if(position == 0)
                 view?.setBackgroundColor(selectColor)

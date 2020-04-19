@@ -7,7 +7,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import creations.rimov.com.chipit.R
@@ -15,9 +14,9 @@ import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import kotlinx.android.synthetic.main.prompt_confirm_layout.view.*
-import kotlinx.android.synthetic.main.app_prompt_layout.view.*
-import kotlinx.android.synthetic.main.prompt_imageadd_layout.view.*
+import kotlinx.android.synthetic.main.prompt_confirm.view.*
+import kotlinx.android.synthetic.main.main_prompt.view.*
+import kotlinx.android.synthetic.main.prompt_addmaterial_livestorage.view.*
 
 class AppPromptLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs), View.OnClickListener {
@@ -25,10 +24,9 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
     object Prompt {
         const val CAMERA: Int = 5000
         const val STORAGE: Int = 5001
-        const val URL: Int = 5002
     }
 
-    private val addImageLayout: View by lazy {promptAddImageLayout}
+    private val addImageLayout: View by lazy {promptAddLiveStorage}
 
     private val confirmPromptText: TextView by lazy {promptConfirmText}
     private val btnYes: Button by lazy {promptConfirmYes}
@@ -40,14 +38,13 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
     var action: Int = 0
 
     init {
-        View.inflate(context, R.layout.app_prompt_layout, this)
+        View.inflate(context, R.layout.main_prompt, this)
 
         this.setOnClickListener(this)
         btnYes.setOnClickListener(this)
         btnNo.setOnClickListener(this)
-        promptBtnCamera.setOnClickListener(this)
+        promptBtnLive.setOnClickListener(this)
         promptBtnStorage.setOnClickListener(this)
-        promptBtnUrl.setOnClickListener(this)
     }
 
     override fun onClick(view: View?) {
@@ -63,24 +60,19 @@ class AppPromptLayout(context: Context, attrs: AttributeSet)
                 toggleVis(false)
             }
 
-            R.id.promptConfirmNo -> {
+            R.id.promptConfirmNo  -> {
 
                 handler.actionDenied(action, chip)
                 toggleVis(false)
             }
 
-            R.id.promptBtnCamera -> {
+            R.id.promptBtnLive    -> {
                 handler.getImageFrom(Prompt.CAMERA)
                 toggleVis(false)
             }
 
             R.id.promptBtnStorage -> {
                 handler.getImageFrom(Prompt.STORAGE)
-                toggleVis(false)
-            }
-
-            R.id.promptBtnUrl -> {
-                handler.getImageFrom(Prompt.URL)
                 toggleVis(false)
             }
         }

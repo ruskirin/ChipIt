@@ -46,7 +46,7 @@
           android:background="@android:drawable/screen_background_dark_transparent"
           android:visibility="gone"/>
 
-    <include layout="@layout/app_fab_layout"
+    <include layout="@layout/main_fab"
              app:layout_anchor="@id/appNavHostFragment"
              app:layout_anchorGravity="bottom|end|right"/>
 

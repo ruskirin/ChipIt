@@ -3,10 +3,8 @@ package creations.rimov.com.chipit.view_models
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import creations.rimov.com.chipit.database.DatabaseApplication
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
@@ -53,7 +51,7 @@ class ChipperViewModel(application: Application,
     fun getBitmapDimen(): Array<Int>? {
 
         chip.value?.let {
-            return TextureUtil.getBitmapDimen(getApplication(), it.imgLocation)
+            return TextureUtil.getBitmapDimen(getApplication(), it.repPath)
         }
 
         return null
@@ -76,7 +74,7 @@ class ChipperViewModel(application: Application,
         }
 
         chip.value?.let {
-            val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.imgLocation))
+            val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.repPath))
 
             TextureUtil.AsyncPathToBitmap(handler, sampleSize).execute(stream)
         }

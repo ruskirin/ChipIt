@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -37,8 +37,8 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.AppEditorLayout
 import creations.rimov.com.chipit.viewgroups.AppToolbarLayout
 import creations.rimov.com.chipit.viewgroups.AppPromptLayout
-import kotlinx.android.synthetic.main.app_fab_layout.*
-import kotlinx.android.synthetic.main.app_layout.*
+import kotlinx.android.synthetic.main.main_fab.*
+import kotlinx.android.synthetic.main.main.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
     View.OnClickListener, AppEditorLayout.EditorHandler, AppPromptLayout.PromptHandler, AppToolbarLayout.ToolbarHandler {
@@ -59,10 +59,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private var screenWidth: Float = 0f
 
     private val globalViewModel: GlobalViewModel by lazy {
-        ViewModelProviders.of(this).get(GlobalViewModel::class.java)
+        ViewModelProvider(this).get(GlobalViewModel::class.java)
     }
     private val editViewModel: EditorViewModel by lazy {
-        ViewModelProviders.of(this).get(EditorViewModel::class.java)
+        ViewModelProvider(this).get(EditorViewModel::class.java)
     }
 
     private val navHostFragment: NavHostFragment by lazy {appNavHostFragment as NavHostFragment}
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.app_layout)
+        setContentView(R.layout.main)
 
         initScreen()
 
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             when(chipAction.getAction()) {
 
                 EditorAction.CREATE -> {
-                    startChipCreate(chip.isTopic, chip.parentId, chip.vertices)
+                    startChipCreate(chip.parentId, chip.vertices)
                 }
 
                 EditorAction.EDIT -> {
@@ -114,7 +114,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                 EditorAction.UPDATE -> {
                     editViewModel.updateChipBasic(
-                        ChipUpdateBasic.instance(chip.id, chip.parentId, chip.isTopic, chip.name, chip.desc, chip.imgLocation))
+                        ChipUpdateBasic.instance(
+                          chip.id, chip.parentId,  chip.name, chip.desc, chip.repPath))
                 }
 
                 EditorAction.DELETE -> {
@@ -143,12 +144,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
                 //Creating a Topic Chip
                 if(navController.currentDestination?.id == R.id.directoryFragment) {
-                    startChipCreate(true,null, null)
+                    startChipCreate(null, null)
                     return
                 }
 
                 //Creating a regular Chip
-                startChipCreate(false, globalViewModel.getPrimaryChip().value?.id, null)
+                startChipCreate(globalViewModel.getPrimaryChip().value?.id, null)
             }
 
             R.id.appFabCancel     -> {
@@ -203,7 +204,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId) {
-
             android.R.id.home -> {
                 when(navController.currentDestination?.id) {
                     R.id.webFragment -> {
@@ -216,7 +216,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                     R.id.chipperFragment -> {
                         val directions = ChipperFragmentDirections
-                            .actionChipperFragmentToWebFragment(globalViewModel.getPrimaryId() ?: -1L)
+                            .actionChipperFragmentToWebFragment(
+                                  globalViewModel.getPrimaryId() ?: -1L)
                         navController.navigate(directions)
 
                         return true
@@ -226,12 +227,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             R.id.toolbarChipperEdit -> {
                 globalViewModel.setChipAction(
-                      ChipAction.instance(globalViewModel.getPrimaryChip().value ?: return false, EditorAction.EDIT))
+                      ChipAction.instance(
+                            globalViewModel.getPrimaryChip().value
+                            ?: return false, EditorAction.EDIT))
             }
 
             R.id.toolbarChipperDelete -> {
                 globalViewModel.setChipAction(
-                      ChipAction.instance(globalViewModel.getPrimaryChip().value ?: return false, EditorAction.DELETE))
+                      ChipAction.instance(
+                            globalViewModel.getPrimaryChip().value
+                            ?: return false, EditorAction.DELETE))
             }
         }
 
@@ -250,7 +255,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 data?.let {
                     editor.showImage(it.data)
 
-                    editViewModel.editingChip?.imgLocation = it.data?.toString() ?: "" //Save
+                    editViewModel.editingChip?.repPath = it.data?.toString() ?: "" //Save
                 }
             }
 
@@ -262,20 +267,24 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+          requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
         when(requestCode) {
 
             Constant.REQUEST_WRITE_EXTERNAL_STORAGE -> {
-                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    takePicture()
+                if(grantResults.isNotEmpty()
+                   && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 
+                    takePicture()
                 //TODO FUTURE: storage write permission has not been granted, inform the user
             }
         }
     }
 
-    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+    override fun onDestinationChanged(
+          controller: NavController, destination: NavDestination,
+          arguments: Bundle?) {
 
         invalidateOptionsMenu()
 
@@ -299,7 +308,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     override fun setSelectedChip(chip: ChipReference) {
-        Log.i("Touch Event", "Main#setSelectedChip(): new primary chip ${chip.id}")
+        Log.i("Touch Event", "Main#setSelectedChip(): new primary " +
+                             "chip ${chip.id}")
 
         globalViewModel.setPrimaryChip(chip.asChip())
     }
@@ -324,10 +334,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(action) {
 
             EditorAction.DELETE -> {
-                val primaryId = globalViewModel.getPrimaryChip().value?.id ?: return
-                //Focused chip is about to be deleted, move up the branch to its parent
+                val primaryId = globalViewModel.getPrimaryChip().value?.id
+                                ?: return
+                //Focused chip is about to be deleted, move up the branch to its
+                // parent
                 if(chip.id == primaryId) {
-                    globalViewModel.setPrimaryChip(toolbar.getParentOfCurrent()?.asChip())
+                    globalViewModel.setPrimaryChip(
+                          toolbar.getParentOfCurrent()?.asChip())
 
                     toolbar.vanishToolbar(false)
                 }
@@ -343,7 +356,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         when(choice) {
             AppPromptLayout.Prompt.CAMERA -> {
-                //Check if storage write permission has already been granted; else request it
+                //Check if storage write permission has already been granted;
+                // else request it
                 if(getStorageWritePermission())
                     takePicture()
             }
@@ -351,20 +365,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             AppPromptLayout.Prompt.STORAGE -> {
                 selectPicture()
             }
-
-            AppPromptLayout.Prompt.URL -> {
-
-            }
         }
     }
     //---------------------------------------------------------------------------------
 
-    private fun startChipCreate(isTopic: Boolean, parentId: Long?, vertices: MutableList<CoordPoint>?) {
+    private fun startChipCreate(
+      parentId: Long?, vertices: MutableList<CoordPoint>?) {
 
         setFabEdit(true)
         editor.startEdit()
 
-        editViewModel.startCreate(isTopic, parentId, vertices)
+        editViewModel.startCreate(parentId, vertices)
     }
 
     private fun takePicture() {
@@ -372,7 +383,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         //Verifies that an application that can handle this intent exists
         if(addChipCameraIntent.resolveActivity(packageManager) == null) {
-            Log.e("Touch Event", "Main#takePicture(): no app to handle ACTION_IMAGE_CAPTURE!")
+            Log.e("Touch Event", "Main#takePicture(): no app to handle " +
+                                 "ACTION_IMAGE_CAPTURE!")
             return
         }
 
@@ -390,15 +402,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
         startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
 
-        editViewModel.editingChip?.imgLocation = uri.toString() //Save
+        editViewModel.editingChip?.repPath = uri.toString() //Save
     }
 
     private fun selectPicture() {
 
         val getChipPhotoIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             .apply {type = "image/*"}
-        getChipPhotoIntent.resolveActivity(packageManager)
-            ?.let {startActivityForResult(getChipPhotoIntent, CameraUtil.CODE_GET_IMAGE)}
+        getChipPhotoIntent.resolveActivity(packageManager)?.let {
+            startActivityForResult(getChipPhotoIntent, CameraUtil.CODE_GET_IMAGE)
+        }
     }
 
     private fun setFabEdit(editing: Boolean) {
@@ -432,18 +445,22 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         fabCancel.hide()
     }
 
-    //Since SDK 23(24?), permission must be requested at runtime if it has not already been granted
+    //Since SDK 23(24?), permission must be requested at runtime if it has not
+    // already been granted
     private fun getStorageWritePermission(): Boolean {
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if(ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
               == PackageManager.PERMISSION_GRANTED) {
             return true //Permission has already been granted
         }
 
         //Explain why you need the permission
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             //TODO FUTURE: display rationale for this request
-            Toast.makeText(this, "Need permission please!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Need permission please!",
+                           Toast.LENGTH_SHORT).show()
         }
 
         //Permission has not yet been granted, check onRequestPermissionResult()

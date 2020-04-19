@@ -21,7 +21,7 @@ class GlobalViewModel : ViewModel() {
 
     fun getPrimaryId() = primaryChip.value?.id
 
-    fun getPrimaryImgPath() = primaryChip.value?.imgLocation
+    fun getPrimaryImgPath() = primaryChip.value?.repPath
 
     fun setPrimaryChip(chip: Chip?) {
         if(chip != primaryChip.value) primaryChip.postValue(chip)

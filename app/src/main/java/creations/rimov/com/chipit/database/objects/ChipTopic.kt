@@ -6,9 +6,9 @@ data class ChipTopic(val id: Long,
                      val name: String = "NAME",
                      @ColumnInfo(name = "num_children") val counter: Int = 0,
                      @ColumnInfo(name = "description") val desc: String = "",
-                     @ColumnInfo(name = "date_create") val dateCreate: String,
-                     @ColumnInfo(name = "date_update") val dateUpdate: String = "") {
+                     @ColumnInfo(name = "date") val date: String,
+                     @ColumnInfo(name = "rep_path") val repPath: String = "") {
 
-    fun asChip() = Chip(id, isTopic = true,
-                        name = name, desc = desc, created =  dateCreate, counter = counter)
+    fun asChip() = Chip(id, name = name, desc = desc,
+                        date = date, counter = counter, repPath = repPath)
 }

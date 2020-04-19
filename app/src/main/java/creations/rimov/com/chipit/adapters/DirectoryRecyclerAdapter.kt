@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.adapters
 
-import android.util.Log
 import android.view.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +8,7 @@ import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.viewgroups.CardEditorLayout
 import creations.rimov.com.chipit.viewgroups.TopicLayout
-import kotlinx.android.synthetic.main.directory_recycler_chip_layout.view.*
+import kotlinx.android.synthetic.main.directory_recycler_chip.view.*
 
 
 //TODO: add Glide Recyclerview integration if scrolling causes stuttering
@@ -135,7 +134,7 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
 
         val chipHolder =
-            LayoutInflater.from(parent.context).inflate(R.layout.directory_recycler_chip_layout, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.directory_recycler_chip, parent, false)
 
         return DirectoryViewHolder(chipHolder)
     }

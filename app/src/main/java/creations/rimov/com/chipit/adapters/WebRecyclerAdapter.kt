@@ -10,7 +10,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.viewgroups.CardLayout
 import creations.rimov.com.chipit.viewgroups.CardEditorLayout
-import kotlinx.android.synthetic.main.web_recycler_chip_layout.view.*
+import kotlinx.android.synthetic.main.web_recycler_chip.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
@@ -107,7 +107,7 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebViewHolder {
 
         val chipHolder = LayoutInflater.from(parent.context)
-            .inflate(R.layout.web_recycler_chip_layout, parent, false)
+            .inflate(R.layout.web_recycler_chip, parent, false)
 
         return WebViewHolder(chipHolder)
     }

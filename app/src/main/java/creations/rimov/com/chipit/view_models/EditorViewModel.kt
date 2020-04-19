@@ -23,15 +23,16 @@ class EditorViewModel : ViewModel() {
         isEditing = true
         isNew = false
 
-        editingChip = ChipUpdateBasic.instance(chip.id, chip.parentId, chip.isTopic, chip.name, chip.desc, chip.imgLocation)
+        editingChip = ChipUpdateBasic.instance(
+          chip.id, chip.parentId, chip.name, chip.desc, chip.repPath)
     }
     //Starting to create a new Chip, set all the flags and hold a copy of its info
-    fun startCreate(isTopic: Boolean, parentId: Long?, vertices: MutableList<CoordPoint>?) {
+    fun startCreate(parentId: Long?, vertices: MutableList<CoordPoint>?) {
 
         isEditing = true
         isNew = true
 
-        editingChip = ChipUpdateBasic.instance(0L, parentId, isTopic, vertices = vertices)
+        editingChip = ChipUpdateBasic.instance(0L, parentId, vertices = vertices)
     }
     //Finished editing; update flags and update the DB
     fun saveEdit() {

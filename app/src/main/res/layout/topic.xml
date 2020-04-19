@@ -39,19 +39,10 @@
                 android:visibility="gone"/>
 
         <TextView
-                android:id="@+id/topicLayoutDateCreate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/topicLayoutTitle"
-                android:layout_alignParentStart="true"
-                android:textSize="@dimen/topic_date_textsize"/>
-
-        <TextView
                 android:id="@+id/topicLayoutDateUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/topicLayoutTitle"
-                android:layout_toEndOf="@id/topicLayoutDateCreate"
                 android:layout_toStartOf="@id/topicLayoutChildCount"
                 android:textSize="@dimen/topic_date_textsize"/>
 
@@ -62,13 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/topic_desc_padding"
-            android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/topicLayoutChildren"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/topic_children_height"
-            android:paddingBottom="@dimen/topic_desc_padding"
             android:visibility="gone"/>
 
 </merge>

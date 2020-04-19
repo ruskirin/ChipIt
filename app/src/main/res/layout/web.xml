@@ -28,6 +28,6 @@
 
     <include
             android:id="@+id/webDetailLayout"
-            layout="@layout/web_detail_layout"/>
+            layout="@layout/web_detail"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

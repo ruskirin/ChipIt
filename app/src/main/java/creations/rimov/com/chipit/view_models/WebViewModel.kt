@@ -43,7 +43,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChipId() = chip.value?.id
 
-    fun getChipImg() = chip.value?.imgLocation
+    fun getChipImg() = chip.value?.repPath
 
     fun getParents(): LiveData<List<ChipReference>> = parents
 

@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
@@ -15,7 +15,7 @@ import creations.rimov.com.chipit.database.objects.ChipTopic
 import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import kotlinx.android.synthetic.main.directory_layout.view.*
+import kotlinx.android.synthetic.main.directory.view.*
 
 class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
@@ -23,7 +23,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
     //Fragment's own ViewModel
     private val localViewModel: DirectoryViewModel by lazy {
-        ViewModelProviders.of(this).get(DirectoryViewModel::class.java)
+        ViewModelProvider(this).get(DirectoryViewModel::class.java)
     }
 
     private lateinit var recyclerAdapter: DirectoryRecyclerAdapter
@@ -37,14 +37,19 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         Log.i("Life Event", "DirectoryFragment#onCreate()")
 
         activity?.let {
-            globalViewModel = ViewModelProviders.of(it).get(GlobalViewModel::class.java)
+            globalViewModel = ViewModelProvider(it)
+                .get(GlobalViewModel::class.java)
 
-            recyclerAdapter = DirectoryRecyclerAdapter(this@DirectoryFragment)
+            recyclerAdapter = DirectoryRecyclerAdapter(
+                  this@DirectoryFragment)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.directory_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(
+          R.layout.directory, container, false)
 
         view.dirRecycler.apply {
                 adapter = recyclerAdapter
@@ -55,11 +60,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         gestureDetector = GestureDetector(activity, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        localViewModel.getTopics().observe(this, Observer { topics ->
+        localViewModel.getTopics().observe(viewLifecycleOwner, Observer { topics ->
             recyclerAdapter.setTopics(topics)
         })
 
-        localViewModel.getChildren().observe(this, Observer { children ->
+        localViewModel.getChildren().observe(viewLifecycleOwner, Observer { children ->
             recyclerAdapter.setChildren(children)
         })
 

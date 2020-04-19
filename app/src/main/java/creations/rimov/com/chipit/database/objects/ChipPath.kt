@@ -5,11 +5,11 @@ import androidx.room.ColumnInfo
 import creations.rimov.com.chipit.objects.CoordPoint
 
 data class ChipPath(
-    val id: Long,
-    @ColumnInfo(name = "image_location") val imgLocation: String,
-    val vertices: List<CoordPoint>?) {
+      val id: Long,
+      @ColumnInfo(name = "rep_path") val repPath: String,
+      val vertices: List<CoordPoint>?) {
 
-    fun asChip(parentId: Long?) = Chip(id, parentId, imgLocation = imgLocation, vertices = vertices?.toMutableList())
+    fun asChip(parentId: Long?) = Chip(id, parentId, repPath = repPath, vertices = vertices?.toMutableList())
 
     /**
      * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes

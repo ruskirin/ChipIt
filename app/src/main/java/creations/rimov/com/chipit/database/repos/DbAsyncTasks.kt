@@ -13,7 +13,7 @@ object DbAsyncTasks {
 
         override fun doInBackground(vararg params: ChipUpdateBasic): Void? {
 
-            dao.updateChipBasic(params[0].id, params[0].name, params[0].desc, params[0].imgLocation)
+            dao.updateChipBasic(params[0].id, params[0].name, params[0].desc, params[0].repPath)
 
             return null
         }

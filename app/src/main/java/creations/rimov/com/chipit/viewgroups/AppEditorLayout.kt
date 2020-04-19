@@ -16,7 +16,7 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import kotlinx.android.synthetic.main.app_editor_layout.view.*
+import kotlinx.android.synthetic.main.main_editor.view.*
 
 class AppEditorLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs), View.OnClickListener, TextWatcher, View.OnFocusChangeListener {
@@ -42,7 +42,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
     private var editText: Int = 0
 
     init {
-        View.inflate(context, R.layout.app_editor_layout, this)
+        View.inflate(context, R.layout.main_editor, this)
 
         btnName.setOnClickListener(this)
         btnDesc.setOnClickListener(this)
@@ -128,7 +128,7 @@ class AppEditorLayout(context: Context, attrs: AttributeSet)
         if(chip.desc.isNotBlank()) showDesc(true, chip.desc)
         else showDesc(false)
 
-        showImage(chip.imgLocation)
+        showImage(chip.repPath)
     }
 
     //To indicate whether name or desc is being edited

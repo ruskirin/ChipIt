@@ -45,20 +45,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-          android:id="@+id/editorBtnImage"
-          android:layout_width="0dp"
-          android:layout_height="@dimen/standard_touch_smallsize"
-          android:gravity="center"
-          app:layout_constraintTop_toBottomOf="@id/editorNameLayout"
-          app:layout_constraintBottom_toTopOf="@id/editorImage"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          android:textColor="@color/colorAccent"
-          android:textSize="@dimen/standard_prompt_textsize"
-          android:text="@string/editor_btn_image"
-          android:background="?attr/selectableItemBackgroundBorderless"/>
-
     <ImageView
             android:id="@+id/editorImage"
             android:layout_width="0dp"

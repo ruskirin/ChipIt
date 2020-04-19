@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import creations.rimov.com.chipit.R
-import kotlinx.android.synthetic.main.editor_card_layout.view.*
+import kotlinx.android.synthetic.main.editor_card.view.*
 
 class CardEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
@@ -14,7 +14,7 @@ class CardEditorLayout(context: Context, attrs: AttributeSet) : LinearLayout(con
     private val btnDelete: ImageButton by lazy {cardEditorBtnDelete}
 
     init {
-        View.inflate(context, R.layout.editor_card_layout, this)
+        View.inflate(context, R.layout.editor_card, this)
     }
 
     fun setTouchListener(listener: OnTouchListener) {

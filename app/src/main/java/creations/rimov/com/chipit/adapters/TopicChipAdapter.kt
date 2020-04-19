@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.adapters
 
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -12,7 +11,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
-import kotlinx.android.synthetic.main.topic_chip_layout.view.*
+import kotlinx.android.synthetic.main.topic_chip.view.*
 
 class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>() {
 
@@ -51,7 +50,7 @@ class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
 
         val chipHolder = LayoutInflater.from(parent.context)
-            .inflate(R.layout.topic_chip_layout, parent, false)
+            .inflate(R.layout.topic_chip, parent, false)
 
         return ChipViewHolder(chipHolder)
     }
@@ -61,7 +60,7 @@ class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>()
         holder.name.text = children[position].name
         //TODO: load a default image if none can be found
         Glide.with(holder.image.context)
-            .load(children[position].imgLocation)
+            .load(children[position].repPath)
             .apply(glideOptions
                 .override(holder.image.width, holder.image.height))
             .into(holder.image)

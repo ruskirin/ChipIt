@@ -51,7 +51,7 @@ class ChipperViewModel(application: Application,
     fun getBitmapDimen(): Array<Int>? {
 
         chip.value?.let {
-            return TextureUtil.getBitmapDimen(getApplication(), it.repPath)
+            return TextureUtil.getBitmapDimen(getApplication(), it.matPath)
         }
 
         return null
@@ -74,7 +74,7 @@ class ChipperViewModel(application: Application,
         }
 
         chip.value?.let {
-            val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.repPath))
+            val stream = getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.matPath))
 
             TextureUtil.AsyncPathToBitmap(handler, sampleSize).execute(stream)
         }

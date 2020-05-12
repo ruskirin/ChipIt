@@ -17,15 +17,15 @@
 
     <dimen name="fab_margin">8dp</dimen>
 
-    <dimen name="appeditor_name_textsize">16sp</dimen>
+    <dimen name="editor_name_textsize">16sp</dimen>
 
-    <dimen name="app_editor_image_maxheight">192dp</dimen>
-    <dimen name="app_editor_button_margin_horiz">4dp</dimen>
-    <dimen name="app_editor_button_delete_margin_start">32dp</dimen>
-    <dimen name="app_editor_button_negmargin_bot">-24dp</dimen>
-    <dimen name="app_editor_margin_horiz">16dp</dimen>
-    <dimen name="app_editor_desc_padding_top">8dp</dimen>
-    <dimen name="app_editor_desc_padding_horiz">8dp</dimen>
+    <dimen name="editor_image_maxheight">192dp</dimen>
+    <dimen name="editor_button_margin_horiz">4dp</dimen>
+    <dimen name="editor_button_delete_margin_start">32dp</dimen>
+    <dimen name="editor_button_negmargin_bot">-24dp</dimen>
+    <dimen name="editor_margin_horiz">16dp</dimen>
+    <dimen name="editor_desc_padding_top">8dp</dimen>
+    <dimen name="editor_desc_padding_horiz">8dp</dimen>
 
     <dimen name="directory_recycler_margin">4dp</dimen>
 

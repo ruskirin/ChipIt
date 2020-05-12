@@ -4,27 +4,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
-import creations.rimov.com.chipit.objects.ChipAction
 
 class GlobalViewModel : ViewModel() {
 
-    private val primaryChip: MutableLiveData<Chip?> = MutableLiveData()
-
-    private val chipAction: MutableLiveData<ChipAction> = MutableLiveData()
+    private val focusChip: MutableLiveData<Chip?> = MutableLiveData()
+    private val action: MutableLiveData<Int> = MutableLiveData()
 
     private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
-
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
 
+    fun getFocusChip() = focusChip
 
-    fun getPrimaryChip() = primaryChip
+    fun getFocusId() = focusChip.value?.id
 
-    fun getPrimaryId() = primaryChip.value?.id
+    fun getFocusImgPath() = focusChip.value?.matPath
 
-    fun getPrimaryImgPath() = primaryChip.value?.repPath
+    fun setFocusChip(chip: Chip?) {
+        if(chip != focusChip.value) focusChip.postValue(chip)
+    }
 
-    fun setPrimaryChip(chip: Chip?) {
-        if(chip != primaryChip.value) primaryChip.postValue(chip)
+    fun getAction() = action
+
+    fun setAction(action: Int) {
+        this.action.postValue(action)
     }
 
     fun getWebTransition() = webTransition
@@ -37,11 +39,5 @@ class GlobalViewModel : ViewModel() {
 
     fun setWebParents(parents: List<ChipReference>) {
         webParents.postValue(parents)
-    }
-
-    fun getChipAction() = chipAction
-
-    fun setChipAction(chip: ChipAction) {
-        chipAction.postValue(chip)
     }
 }

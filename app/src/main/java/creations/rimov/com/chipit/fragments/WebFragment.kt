@@ -16,14 +16,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
-import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
-import kotlinx.android.synthetic.main.web.view.*
+import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
 
 class WebFragment : Fragment(),
@@ -32,7 +30,7 @@ class WebFragment : Fragment(),
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
-    private lateinit var globalViewModel: GlobalViewModel
+    private lateinit var globalVM: GlobalViewModel
     private val localViewModel: WebViewModel by lazy {
         ViewModelProvider(this).get(WebViewModel::class.java)
     }
@@ -52,7 +50,7 @@ class WebFragment : Fragment(),
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalViewModel = ViewModelProvider(it).get(GlobalViewModel::class.java)
+            globalVM = ViewModelProvider(it).get(GlobalViewModel::class.java)
 
             gestureDetector = GestureDetector(it, ChipGestureDetector())
             gestureDetector.setIsLongpressEnabled(true)
@@ -67,7 +65,7 @@ class WebFragment : Fragment(),
     override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(
-          R.layout.web, container, false)
+          R.layout.frag_web, container, false)
 
         motionLayout = (view as MotionLayout)
         motionLayout.setTransitionListener(this)
@@ -82,12 +80,12 @@ class WebFragment : Fragment(),
             Log.i("Touch Event",
                   "WebFrag#Observer: currently displaying chip ${it?.id}")
 
-            globalViewModel.setPrimaryChip(it?.asChip())
+            globalVM.setFocusChip(it?.asChip())
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
         localViewModel.getParents().observe(viewLifecycleOwner, Observer {
-            globalViewModel.setWebParents(it)
+            globalVM.setWebParents(it)
         })
 
         localViewModel.getChildren().observe(viewLifecycleOwner, Observer {
@@ -119,7 +117,7 @@ class WebFragment : Fragment(),
 
         webDetailDesc.text = chip.desc
         Glide.with(this)
-            .load(chip.repPath)
+            .load(chip.matPath)
             .apply(
                 RequestOptions()
                     .override(detailImage.width, detailImage.height)
@@ -140,9 +138,9 @@ class WebFragment : Fragment(),
     }
 
     override fun chipDelete(chip: ChipCard) {
-        globalViewModel.setChipAction(
-              ChipAction.instance(
-                    chip.asChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
+//        globalVM.setChipAction(
+//              ChipAction.instance(
+//                    chip.asChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
     }
     //---------------------------------------------------------------------------------
 
@@ -154,8 +152,8 @@ class WebFragment : Fragment(),
 
                 //TODO FUTURE: preload the bitmap here based on progress of transition
 
-                if(progress > 0.5f) globalViewModel.setWebTransition(true)
-                else globalViewModel.setWebTransition(false)
+                if(progress > 0.5f) globalVM.setWebTransition(true)
+                else globalVM.setWebTransition(false)
             }
         }
     }

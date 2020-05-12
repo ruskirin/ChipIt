@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">ChipIt</string>
 
-    <string name="editor_name_def">topic name</string>
-    <string name="editor_desc_def">topic description</string>
-    <string name="editor_btn_desc">Description?</string>
+    <string name="editor_title_def">Give it a name</string>
+    <string name="editor_desc_def">Give it a brief description</string>
+    <string name="editor_btn_title">+ Name</string>
+    <string name="editor_btn_mat">+ Representation</string>
+    <string name="editor_btn_desc">+ Description</string>
 
     <string name="editor_message_noname">Please give this Chip a name!</string>
 
@@ -14,11 +16,14 @@
     <string name="prompt_btn_text_yes">Yes</string>
     <string name="prompt_btn_text_no">No</string>
 
-    <string name="prompt_btn_topic">Name?</string>
     <string name="prompt_btn_image">Image</string>
     <string name="prompt_btn_video">Video</string>
     <string name="prompt_btn_audio">Audio</string>
     <string name="prompt_btn_text">Text</string>
+    <string name="prompt_btn_camera">Camera</string>
+    <string name="prompt_btn_record">Record</string>
+    <string name="prompt_btn_type">Type</string>
+    <string name="prompt_btn_storage">Storage</string>
 
     <string name="dir_fragment_name">Topics</string>
 
@@ -26,5 +31,7 @@
     <string name="toolbar_sort">Sort</string>
     <string name="toolbar_edit">Edit</string>
     <string name="toolbar_delete">Delete</string>
+
+    <string name="nostring_def">MESSAGE HERE</string>
 
 </resources>

@@ -12,49 +12,45 @@ interface ChipDao {
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")
     fun getChipsLive(parentId: Long): LiveData<List<Chip>>
 
-    @Query("WITH RECURSIVE get_parents(id, parent_id, name, rep_path) " +
-            "AS (SELECT id, parent_id, name, rep_path FROM chips WHERE id = :id " +
+    @Query("WITH RECURSIVE get_parents(id, parent_id, name, material_type, material_path) " +
+            "AS (SELECT id, parent_id, name, material_type, material_path FROM chips WHERE id = :id " +
             "UNION ALL " +
-            "SELECT get_parents.parent_id, chips.parent_id, chips.name, chips.rep_path " +
+            "SELECT get_parents.parent_id, chips.parent_id, chips.name, chips.material_type, chips.material_path " +
             "FROM chips, get_parents " +
             "WHERE chips.id = get_parents.parent_id) " +
             "SELECT * FROM get_parents;")
     fun getChipReferenceParentTreeLive(id: Long?): LiveData<List<ChipReference>>
 
     @Transaction
-    @Query("SELECT id, name, num_children, description, date, rep_path FROM chips WHERE parent_id IS NULL")
-    fun getChipTopics(): List<ChipTopic>
-
-    @Transaction
-    @Query("SELECT id, name, num_children, description, date, rep_path FROM chips WHERE parent_id IS NULL")
-    fun getChipTopicsLive(): LiveData<List<ChipTopic>>
-
-    @Transaction
-    @Query("SELECT id, name, num_children, rep_path FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
     fun getChipCards(parentId: Long): List<ChipCard>
 
     @Transaction
-    @Query("SELECT id, name, num_children, rep_path FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
     fun getChipCardsLive(parentId: Long): LiveData<List<ChipCard>>
 
     @Transaction
-    @Query("SELECT id, name, num_children, rep_path FROM chips WHERE parent_id IS NULL")
+    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id IS NULL")
     fun getChipCardsOfNullLive(): LiveData<List<ChipCard>>
 
-    @Query("SELECT id, parent_id, name, description, date, num_children, rep_path FROM chips WHERE id = :id")
+    @Query("SELECT id, parent_id, name, description, date, num_children, material_type, material_path FROM chips WHERE id = :id")
     fun getChipIdentity(id: Long): ChipIdentity
 
-    @Query("SELECT id, parent_id, name, description, date, num_children, rep_path FROM chips WHERE id = :id")
+    @Query("SELECT id, parent_id, name, description, date, num_children, material_type, material_path FROM chips WHERE id = :id")
     fun getChipIdentityLive(id: Long): LiveData<ChipIdentity>
 
     @Transaction
-    @Query("SELECT id, rep_path, vertices FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, parent_id, name, description, date, num_children, material_type, material_path FROM chips WHERE parent_id IS NULL")
+    fun getChipTopicsLive(): LiveData<List<ChipIdentity>>
+
+    @Transaction
+    @Query("SELECT id, material_type, material_path, vertices FROM chips WHERE parent_id = :parentId")
     fun getChipPathsLive(parentId: Long?): LiveData<List<ChipPath>>
 
     //@Query("SELECT is_topic FROM chips WHERE id = :id")
     //fun isChipTopic(id: Long): Boolean
 
-    @Query("SELECT rep_path FROM chips WHERE id = :id")
+    @Query("SELECT material_path FROM chips WHERE id = :id")
     fun getChipImage(id: Long): String
 
     @Query("WITH RECURSIVE " +
@@ -100,8 +96,8 @@ interface ChipDao {
     fun updateVertices(id: Long, vertices: List<CoordPoint>)
 
     /**Update the standard information**/
-    @Query("UPDATE chips SET name = :name, description = :desc, rep_path = :repPath WHERE id = :id")
-    fun updateChipBasic(id: Long, name: String, desc: String, repPath: String)
+    @Query("UPDATE chips SET name = :name, description = :desc, material_path = :matPath WHERE id = :id")
+    fun updateChipBasic(id: Long, name: String, desc: String, matPath: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChip(chip: Chip): Long

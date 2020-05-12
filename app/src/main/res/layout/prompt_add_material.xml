@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:parentTag="creations.rimov.com.chipit.viewgroups.PromptMatAddLayout"
+      tools:layout_width="match_parent"
+      tools:layout_height="match_parent">
+
+    <LinearLayout
+          android:id="@+id/layoutBtnAddMat"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingStart="@dimen/standard_touch_regularsize"
+          android:paddingEnd="@dimen/standard_touch_regularsize"
+          android:layout_gravity="center"
+          android:orientation="vertical">
+
+        <Button
+              android:id="@+id/btnPromptAddImage"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:gravity="center"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:drawableStart="@drawable/ic_addimage"
+              android:textColor="@color/colorAccent"
+              android:text="@string/prompt_btn_image"/>
+
+        <Button
+              android:id="@+id/btnPromptAddVideo"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:gravity="center"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:drawableStart="@drawable/ic_addvideo"
+              android:textColor="@color/colorAccent"
+              android:text="@string/prompt_btn_video"/>
+
+        <Button
+              android:id="@+id/btnPromptAddAudio"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:gravity="center"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:drawableStart="@drawable/ic_addaudio"
+              android:textColor="@color/colorAccent"
+              android:text="@string/prompt_btn_audio"/>
+
+        <Button
+              android:id="@+id/btnPromptAddText"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:gravity="center"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:drawableStart="@drawable/ic_addtext"
+              android:textColor="@color/colorAccent"
+              android:text="@string/prompt_btn_text"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+          android:id="@+id/layoutBtnAddFrom"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:gravity="center"
+          android:orientation="horizontal"
+          android:background="@color/background_opaque_80"
+          android:visibility="gone">
+
+        <Button
+              android:id="@+id/btnPromptAddNew"
+              android:layout_width="0dp"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_weight="1"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:textColor="@color/colorAccent"/>
+
+        <Button
+              android:id="@+id/btnPromptAddStorage"
+              android:layout_width="0dp"
+              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_weight="1"
+              android:adjustViewBounds="true"
+              android:backgroundTint="@android:color/darker_gray"
+              android:drawableStart="@drawable/ic_files"
+              android:text="@string/prompt_btn_storage"
+              android:textColor="@color/colorAccent"/>
+
+    </LinearLayout>
+
+</merge>

@@ -5,10 +5,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.viewgroups.CardEditorLayout
 import creations.rimov.com.chipit.viewgroups.TopicLayout
-import kotlinx.android.synthetic.main.directory_recycler_chip.view.*
+import kotlinx.android.synthetic.main.recycler_directory_chip.view.*
 
 
 //TODO: add Glide Recyclerview integration if scrolling causes stuttering
@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.directory_recycler_chip.view.*
 class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler)
     : RecyclerView.Adapter<DirectoryRecyclerAdapter.DirectoryViewHolder>() {
 
-    private lateinit var topics: List<ChipTopic>
+    private lateinit var topics: List<ChipIdentity>
     //Reference to selected ViewHolder
     lateinit var selectedTopic: DirectoryViewHolder
 
@@ -29,7 +29,7 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
         setHasStableIds(true)
     }
 
-    fun setTopics(topics: List<ChipTopic>) {
+    fun setTopics(topics: List<ChipIdentity>) {
         this.topics = topics
 
         notifyDataSetChanged()
@@ -134,7 +134,7 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
 
         val chipHolder =
-            LayoutInflater.from(parent.context).inflate(R.layout.directory_recycler_chip, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.recycler_directory_chip, parent, false)
 
         return DirectoryViewHolder(chipHolder)
     }
@@ -150,8 +150,8 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
 
         fun topicToWeb()
 
-        fun topicEdit(chip: ChipTopic)
+        fun topicEdit(chip: ChipIdentity)
 
-        fun topicDelete(chip: ChipTopic)
+        fun topicDelete(chip: ChipIdentity)
     }
 }

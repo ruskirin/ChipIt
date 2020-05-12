@@ -2,13 +2,12 @@ package creations.rimov.com.chipit.database.repos
 
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.objects.ChipUpdateBasic
 
 class EditRepo(chipDb: ChipDatabase) {
 
     private val dao = chipDb.chipDao()
 
-    fun updateChipBasic(chip: ChipUpdateBasic) {
+    fun updateChip(chip: Chip) {
         DbAsyncTasks.AsyncChipUpdate(dao).execute(chip)
     }
 

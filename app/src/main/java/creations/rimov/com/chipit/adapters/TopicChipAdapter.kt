@@ -60,7 +60,7 @@ class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>()
         holder.name.text = children[position].name
         //TODO: load a default image if none can be found
         Glide.with(holder.image.context)
-            .load(children[position].repPath)
+            .load(children[position].matPath)
             .apply(glideOptions
                 .override(holder.image.width, holder.image.height))
             .into(holder.image)

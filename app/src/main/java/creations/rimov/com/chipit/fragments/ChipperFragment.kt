@@ -10,17 +10,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.MainActivity
-import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.repos.AccessRepo
-import creations.rimov.com.chipit.objects.ChipAction
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
 import creations.rimov.com.chipit.view_models.ChipperViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipperView
-import kotlinx.android.synthetic.main.chipper.view.*
+import kotlinx.android.synthetic.main.frag_chipper.view.*
 
 class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListener, AccessRepo.RepoHandler {
 
@@ -64,7 +61,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
                 .get(ChipperViewModel::class.java)
         }
 
-        globalViewModel.getPrimaryChip().observe(this, Observer {
+        globalViewModel.getFocusChip().observe(this, Observer {
             localViewModel.setChipId(it?.id)
         })
     }
@@ -72,7 +69,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view: View = inflater.inflate(R.layout.chipper, container, false)
+        val view: View = inflater.inflate(R.layout.frag_chipper, container, false)
 
         chipperView = view.chipperSurfaceView.apply {
             setHandler(this@ChipperFragment)
@@ -93,12 +90,12 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
             if(!created) return@Observer
 
-            globalViewModel.setChipAction(
-                  ChipAction.instance(
-                        Chip(0L,
-                             globalViewModel.getPrimaryId(),
-                             vertices = localTouchViewModel.getPathVertices()),
-                        MainActivity.EditorAction.CREATE))
+//            globalViewModel.setChipAction(
+//                  ChipAction.instance(
+//                        Chip(0L,
+//                             globalViewModel.getFocusId(),
+//                             vertices = localTouchViewModel.getPathVertices()),
+//                        MainActivity.EditorAction.CREATE))
         })
 
         return view
@@ -242,8 +239,8 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
                     CoordPoint(x, y).normalize(viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height()))
 
                 if(touchedChip != null) {
-                    globalViewModel.setPrimaryChip(
-                          touchedChip.asChip(globalViewModel.getPrimaryChip().value?.id))
+                    globalViewModel.setFocusChip(
+                          touchedChip.asChip(globalViewModel.getFocusChip().value?.id))
                 }
             }
         }

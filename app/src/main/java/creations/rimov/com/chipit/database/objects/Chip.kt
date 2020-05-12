@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.getChipCreateDate
 import creations.rimov.com.chipit.objects.CoordPoint
 import java.util.*
@@ -15,19 +16,21 @@ import java.util.*
 
 //TODO IMPORTANT: SimpleDateFormat is supposedly expensive, move it out of
 // the fields and have it called on background thread
-data class Chip(@PrimaryKey(autoGenerate = true) val id: Long,
+data class Chip(
+  @PrimaryKey(autoGenerate = true) val id: Long,
 
-                @ColumnInfo(name = "parent_id") var parentId: Long? = null,
+  @ColumnInfo(name = "parent_id") val parentId: Long? = null,
 
-                var name: String = "",
+  val name: String = "",
 
-                @ColumnInfo(name = "description") var desc: String = "",
+  @ColumnInfo(name = "description") val desc: String = "",
 
-                @ColumnInfo(name = "date") var date: String =
-                    Date().getChipCreateDate(),
+  @ColumnInfo(name = "date") val date: String = Date().getChipCreateDate(),
 
-                @ColumnInfo(name = "num_children") var counter: Int = 0,
+  @ColumnInfo(name = "num_children") val numChildren: Int = 0,
 
-                @ColumnInfo(name = "rep_path") var repPath: String = "",
+  @ColumnInfo(name = "material_type") val matType: Int = 0,
 
-                var vertices: MutableList<CoordPoint>? = null)
+  @ColumnInfo(name = "material_path") val matPath: String = "",
+
+  val vertices: MutableList<CoordPoint>? = null)

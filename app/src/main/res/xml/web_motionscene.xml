@@ -43,8 +43,6 @@
                     android:visibility="gone"/>
         </Constraint>
 
-        <Constraint android:id="@id/appPrompt"/>
-
     </ConstraintSet>
 
 
@@ -92,8 +90,6 @@
                     android:visibility="visible"/>
         </Constraint>
 
-        <Constraint android:id="@id/appPrompt"/>
-
     </ConstraintSet>
 
 
@@ -139,8 +135,6 @@
             <PropertySet
                     android:visibility="gone"/>
         </Constraint>
-
-        <Constraint android:id="@id/appPrompt"/>
 
     </ConstraintSet>
 

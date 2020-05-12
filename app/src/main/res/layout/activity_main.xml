@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <fragment
+          android:id="@+id/mainNavHost"
+          android:name="androidx.navigation.fragment.NavHostFragment"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          app:navGraph="@navigation/main_navgraph"
+          app:defaultNavHost="true"/>
+
+    <creations.rimov.com.chipit.viewgroups.MainToolbarLayout
+          android:id="@+id/mainToolbar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          android:elevation="@dimen/elevation_def"
+          android:background="@color/colorPrimaryDark"
+          android:animateLayoutChanges="true"
+          android:fitsSystemWindows="true"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+          android:id="@+id/mainFab"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/standard_margin_reg"
+          app:layout_anchor="@id/mainNavHost"
+          app:layout_anchorGravity="bottom|end|right"
+          app:fabSize="normal"
+          app:backgroundTint="@color/colorAccent"
+          android:src="@drawable/ic_add_fab_image"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

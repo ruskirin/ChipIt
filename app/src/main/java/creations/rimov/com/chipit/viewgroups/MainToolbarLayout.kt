@@ -15,10 +15,10 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import kotlinx.android.synthetic.main.main_toolbar.view.*
+import kotlinx.android.synthetic.main.toolbar.view.*
 import kotlinx.android.synthetic.main.toolbar_spinner_chipparent.view.*
 
-class AppToolbarLayout(context: Context, attrs: AttributeSet)
+class MainToolbarLayout(context: Context, attrs: AttributeSet)
     : Toolbar(context, attrs), AdapterView.OnItemSelectedListener {
 
     private lateinit var handler: ToolbarHandler
@@ -31,7 +31,7 @@ class AppToolbarLayout(context: Context, attrs: AttributeSet)
     private var prevSelected: Long = -1L
 
     init {
-        View.inflate(context, R.layout.main_toolbar, this)
+        View.inflate(context, R.layout.toolbar, this)
 
         webSpinner.adapter = adapter
         webSpinner.onItemSelectedListener = this

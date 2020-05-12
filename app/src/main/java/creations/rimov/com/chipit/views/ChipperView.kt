@@ -3,12 +3,12 @@ package creations.rimov.com.chipit.views
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
-class ChipperView(cont: Context, attribs: AttributeSet) : SurfaceView(cont, attribs), SurfaceHolder.Callback {
+class ChipperView(cont: Context, atts: AttributeSet)
+    : SurfaceView(cont, atts), SurfaceHolder.Callback {
 
     init {
         holder.addCallback(this)

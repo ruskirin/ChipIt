@@ -6,5 +6,7 @@
 
     <color name="colorTextBackground"> #e8f0f1 </color>
 
-    <color name="colorTransparent">#00000000</color>
+    <color name="background_transparent">#00000000</color>
+    <color name="background_opaque_50">#7F000000</color>
+    <color name="background_opaque_80">#CC000000</color>
 </resources>

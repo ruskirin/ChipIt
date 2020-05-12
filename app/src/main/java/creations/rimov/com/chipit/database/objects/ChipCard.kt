@@ -2,11 +2,19 @@ package creations.rimov.com.chipit.database.objects
 
 import androidx.room.ColumnInfo
 
-data class ChipCard(val id: Long,
-                    val name: String,
-                    @ColumnInfo(name = "num_children") val counter: Int,
-                    @ColumnInfo(name = "rep_path") val repPath: String) {
+data class ChipCard(
+  val id: Long,
+  val name: String,
+  @ColumnInfo(name = "num_children") val numChildren: Int,
+  @ColumnInfo(name = "material_type") val matType: Int,
+  @ColumnInfo(name = "material_path") val matPath: String) : ChipConvert {
 
-    fun asChip(parentId: Long?) = Chip(
-          id, parentId, name = name, counter = counter, repPath = repPath)
+
+    override fun asChip(parentId: Long?) = Chip(
+      id,
+      parentId,
+      name = name,
+      numChildren = numChildren,
+      matType = matType,
+      matPath = matPath)
 }

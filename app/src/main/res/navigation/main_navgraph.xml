@@ -11,6 +11,14 @@
         <action android:id="@+id/action_directoryFragment_to_webFragment" app:destination="@id/webFragment"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
         />
+        <action
+              android:id="@+id/action_directoryFragment_to_editorFragment"
+              app:destination="@id/editorFragment"
+              app:enterAnim="@anim/fragment_fade_enter"
+              app:popExitAnim="@anim/fragment_fade_exit" />
+        <action
+              android:id="@+id/action_directoryFragment_to_promptFragment"
+              app:destination="@id/promptFragment" />
     </fragment>
     <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.fragments.WebFragment"
               android:label="WebFragment">
@@ -21,6 +29,14 @@
                 app:popUpToInclusive="true" app:popUpTo="@id/directoryFragment"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
+        <action
+              android:id="@+id/action_webFragment_to_editorFragment"
+              app:destination="@id/editorFragment"
+              app:enterAnim="@anim/fragment_fade_enter"
+              app:popExitAnim="@anim/fragment_fade_exit" />
+        <action
+              android:id="@+id/action_webFragment_to_promptFragment"
+              app:destination="@id/promptFragment" />
     </fragment>
     <fragment android:id="@+id/chipperFragment" android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
               android:label="ChipperFragment">
@@ -29,5 +45,35 @@
                 app:popUpTo="@id/webFragment" app:popUpToInclusive="true"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
+    <fragment
+          android:id="@+id/editorFragment"
+          android:name="creations.rimov.com.chipit.fragments.EditorFragment"
+          android:label="EditorFragment" >
+        <argument
+              android:name="action"
+              app:argType="integer"
+              android:defaultValue="8010" />
+        <argument
+              android:name="chip"
+              app:argType="creations.rimov.com.chipit.database.objects.ChipIdentity"
+              app:nullable="true"
+              android:defaultValue="@null" />
+        <action
+              android:id="@+id/action_editorFragment_to_promptFragment"
+              app:destination="@id/promptFragment" />
+    </fragment>
+    <dialog
+          android:id="@+id/promptFragment"
+          android:name="creations.rimov.com.chipit.fragments.PromptFragment"
+          android:label="PromptFragment" >
+        <argument
+              android:name="action"
+              app:argType="integer"
+              android:defaultValue="-1" />
+        <argument
+              android:name="text"
+              app:argType="string"
+              android:defaultValue='""' />
+    </dialog>
 
 </navigation>

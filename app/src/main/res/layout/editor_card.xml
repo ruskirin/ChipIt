@@ -5,7 +5,7 @@
             android:id="@+id/cardEditorBtnEdit"
             android:layout_width="@dimen/standard_touch_smallsize"
             android:layout_height="@dimen/standard_touch_smallsize"
-            android:layout_marginEnd="@dimen/app_editor_button_margin_horiz"
+            android:layout_marginEnd="@dimen/editor_button_margin_horiz"
             android:background="@drawable/button_round"
             android:src="@drawable/ic_edit"/>
 
@@ -13,7 +13,7 @@
             android:id="@+id/cardEditorBtnDelete"
             android:layout_width="@dimen/standard_touch_smallsize"
             android:layout_height="@dimen/standard_touch_smallsize"
-            android:layout_marginStart="@dimen/app_editor_button_margin_horiz"
+            android:layout_marginStart="@dimen/editor_button_margin_horiz"
             android:background="@drawable/button_round"
             android:src="@drawable/ic_delete"/>
 

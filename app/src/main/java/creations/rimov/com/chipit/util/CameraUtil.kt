@@ -30,14 +30,18 @@ object CameraUtil {
 
         //TODO FUTURE: handle this
         if(!isExternalStorageAvailable()) {
-            Log.e("Image Creation", "CameraUtil#getImageFile(): external storage not available!")
+            Log.e("Image Creation",
+                  "CameraUtil#getImageFile(): external storage not available!")
             return null
         }
 
         return try {
-            //Starting SDK 29, getExternalStoragePublicDirectory is deprecated and other methods need to be used
+            //Starting SDK 29, getExternalStoragePublicDirectory is deprecated
+            //  and other methods need to be used
             val directory = storageDir
-                            ?: Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                            ?: Environment
+                                .getExternalStoragePublicDirectory(
+                                  Environment.DIRECTORY_PICTURES)
 
             createImageFile(directory)
 

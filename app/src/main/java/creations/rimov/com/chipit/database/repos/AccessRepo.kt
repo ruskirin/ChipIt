@@ -1,7 +1,6 @@
 package creations.rimov.com.chipit.database.repos
 
 import android.os.AsyncTask
-import android.util.Log
 import androidx.lifecycle.LiveData
 import creations.rimov.com.chipit.database.ChipDatabase
 import creations.rimov.com.chipit.database.daos.ChipDao
@@ -9,7 +8,6 @@ import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.util.AsyncHandler
-import kotlin.reflect.KClass
 
 class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandler) {
 
@@ -27,7 +25,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         AsyncGetChipIdentity(dao, accessRepoHandler).execute(chipId)
     }
 
-    fun getChipIdentity(id: Long) = dao.getChipIdentity(id)
+    fun getChipTopics(id: Long) = dao.getChipIdentity(id)
 
     fun getChipIdentityLive(id: Long?) =
         if(id == null) null

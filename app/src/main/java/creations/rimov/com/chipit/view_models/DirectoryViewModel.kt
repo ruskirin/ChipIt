@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.repos.AccessRepo
 
 class DirectoryViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 
-    private val topics: LiveData<List<ChipTopic>> = repository.getChipTopics()
+    private val topics: LiveData<List<ChipIdentity>> = repository.getChipTopics()
 
     private val children: MutableLiveData<List<ChipCard>> = MutableLiveData()
 

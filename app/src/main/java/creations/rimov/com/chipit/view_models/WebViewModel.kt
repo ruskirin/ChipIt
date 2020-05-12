@@ -16,7 +16,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     private val focusId: MutableLiveData<Long?> = MutableLiveData()
 
-    private val chip: LiveData<ChipIdentity?> = Transformations.switchMap(focusId) {
+    private val chip: LiveData<ChipIdentity> = Transformations.switchMap(focusId) {
         repository.getChipIdentityLive(it)
     }
     private val parents: LiveData<List<ChipReference>> = Transformations.switchMap(focusId) {
@@ -43,7 +43,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChipId() = chip.value?.id
 
-    fun getChipImg() = chip.value?.repPath
+    fun getChipImg() = chip.value?.matPath
 
     fun getParents(): LiveData<List<ChipReference>> = parents
 

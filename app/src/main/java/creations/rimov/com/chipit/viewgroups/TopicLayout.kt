@@ -9,7 +9,7 @@ import android.widget.TextView
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.TopicChipAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipTopic
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import kotlinx.android.synthetic.main.topic.view.*
 
 class TopicLayout(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -26,10 +26,10 @@ class TopicLayout(context: Context, attrs: AttributeSet) : LinearLayout(context,
         View.inflate(context, R.layout.topic, this)
     }
 
-    fun setTopic(topic: ChipTopic) {
+    fun setTopic(topic: ChipIdentity) {
 
         topicLayoutTitle.text = topic.name
-        count.text = topic.counter.toString()
+        count.text = topic.numChildren.toString()
         topicLayoutDateUpdate.text = topic.date
         desc.text = topic.desc
     }

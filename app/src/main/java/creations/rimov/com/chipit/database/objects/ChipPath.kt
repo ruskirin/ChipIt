@@ -5,15 +5,22 @@ import androidx.room.ColumnInfo
 import creations.rimov.com.chipit.objects.CoordPoint
 
 data class ChipPath(
-      val id: Long,
-      @ColumnInfo(name = "rep_path") val repPath: String,
-      val vertices: List<CoordPoint>?) {
+  val id: Long,
+  @ColumnInfo(name = "material_type") val matType: Int,
+  @ColumnInfo(name = "material_path") val matPath: String,
+  val vertices: List<CoordPoint>?) : ChipConvert {
 
-    fun asChip(parentId: Long?) = Chip(id, parentId, repPath = repPath, vertices = vertices?.toMutableList())
+    override fun asChip(parentId: Long?) = Chip(
+      id,
+      parentId,
+      matType = matType,
+      matPath = matPath,
+      vertices = vertices?.toMutableList())
 
     /**
-     * @param drawing: make 2 copies of every value in the list except the first and last to allow drawing of continous shapes
-     *                  eg. vertices (a,b,c,d) will connect (a,b), (b,c), (c,d), (d,a)
+     * @param drawing: make 2 copies of every value in the list except the first
+     *   and last to allow drawing of continous shapes
+     *     eg. vertices (a,b,c,d) will connect (a,b), (b,c), (c,d), (d,a)
      * @return pixelized FloatArray of vertices
      */
     fun getVerticesFloatArray(drawing: Boolean,
@@ -24,9 +31,13 @@ data class ChipPath(
             return null
         }
 
-        if(viewWidth == 0 || viewHeight == 0 || imageWidth == 0 || imageHeight == 0) {
+        if(viewWidth == 0
+           || viewHeight == 0
+           || imageWidth == 0
+           || imageHeight == 0) {
 
-            Log.e("Chip.kt", "#getVerticesFloatArray(): invalid dimensions passed!")
+            Log.e("Chip.kt", "#getVerticesFloatArray(): " +
+                             "invalid dimensions passed!")
             return null
         }
 
@@ -34,13 +45,16 @@ data class ChipPath(
 
         val verticesF = FloatArray(
             if (drawing) {
-                (vertices.size - 2) * 4 + 4 //all but end elements are doubled, each one has 2 components + 2 * 2 end components
+                //all but end elements are doubled,
+                // each one has 2 components + 2 * 2 end components
+                (vertices.size - 2) * 4 + 4
             } else {
                 vertices.size * 2
             }
         )
 
-        val list = CoordPoint.pixelizeList(vertices, viewWidth, viewHeight, imageWidth, imageHeight)
+        val list = CoordPoint.pixelizeList(
+          vertices, viewWidth, viewHeight, imageWidth, imageHeight)
 
         if(!drawing) {
             list.forEach { point ->
@@ -104,8 +118,7 @@ data class ChipPath(
     /**Return point in vertices farthest (approximately) from point0**/
     private fun getFurthestPoint(point0: CoordPoint): CoordPoint? {
 
-        if(vertices == null)
-            return null
+        if(vertices == null) return null
 
         val distance: Int = vertices.size / 2
         val location: Int = vertices.indexOf(point0)

@@ -4,4 +4,19 @@
     <declare-styleable name="ToolbarDisplayView">
     </declare-styleable>
 
+    <declare-styleable name="PromptEditTextLayout">
+        <attr name="counterEnabled" format="boolean"/>
+        <attr name="counterMaxLength" format="integer"/>
+        <attr name="textInputType" format="string"/>
+        <attr name="textMaxLength" format="integer"/>
+        <attr name="textHint" format="reference|string"/>
+    </declare-styleable>
+
+    <declare-styleable name="EditorTextLayout">
+        <attr name="btnText" format="reference|string"/>
+        <attr name="text" format="reference|string"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textColor" format="color"/>
+    </declare-styleable>
+
 </resources>

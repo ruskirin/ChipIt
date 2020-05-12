@@ -9,20 +9,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
-import creations.rimov.com.chipit.database.objects.ChipTopic
-import creations.rimov.com.chipit.objects.ChipAction
+import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
-import kotlinx.android.synthetic.main.directory.view.*
+import kotlinx.android.synthetic.main.frag_directory.view.*
 
 class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
-    private lateinit var globalViewModel: GlobalViewModel
+    private lateinit var globalVM: GlobalViewModel
 
     //Fragment's own ViewModel
-    private val localViewModel: DirectoryViewModel by lazy {
+    private val localVM: DirectoryViewModel by lazy {
         ViewModelProvider(this).get(DirectoryViewModel::class.java)
     }
 
@@ -37,7 +36,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         Log.i("Life Event", "DirectoryFragment#onCreate()")
 
         activity?.let {
-            globalViewModel = ViewModelProvider(it)
+            globalVM = ViewModelProvider(it)
                 .get(GlobalViewModel::class.java)
 
             recyclerAdapter = DirectoryRecyclerAdapter(
@@ -49,7 +48,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(
-          R.layout.directory, container, false)
+          R.layout.frag_directory, container, false)
 
         view.dirRecycler.apply {
                 adapter = recyclerAdapter
@@ -60,11 +59,11 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         gestureDetector = GestureDetector(activity, TopicGestureDetector())
         gestureDetector.setIsLongpressEnabled(true)
 
-        localViewModel.getTopics().observe(viewLifecycleOwner, Observer { topics ->
+        localVM.getTopics().observe(viewLifecycleOwner, Observer { topics ->
             recyclerAdapter.setTopics(topics)
         })
 
-        localViewModel.getChildren().observe(viewLifecycleOwner, Observer { children ->
+        localVM.getChildren().observe(viewLifecycleOwner, Observer {children ->
             recyclerAdapter.setChildren(children)
         })
 
@@ -83,12 +82,19 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         findNavController().navigate(directions)
     }
 
-    override fun topicEdit(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.asChip(), MainActivity.EditorAction.EDIT))
+    override fun topicEdit(chip: ChipIdentity) {
+
+        findNavController().navigate(
+          DirectoryFragmentDirections
+              .actionDirectoryFragmentToEditorFragment(EditorConsts.EDIT, chip))
     }
 
-    override fun topicDelete(chip: ChipTopic) {
-        globalViewModel.setChipAction(ChipAction.instance(chip.asChip(), MainActivity.EditorAction.DELETE))
+    override fun topicDelete(chip: ChipIdentity) {
+
+        findNavController().navigate(
+          DirectoryFragmentDirections
+              .actionDirectoryFragmentToEditorFragment(EditorConsts.DELETE, chip)
+        )
     }
 
     inner class TopicGestureDetector : GestureDetector.SimpleOnGestureListener() {
@@ -110,7 +116,7 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
             recyclerAdapter.selectedTopic.topicChip.toggleDetail()
 
             if(recyclerAdapter.selectedTopic.isExpanded())
-                localViewModel.setTopicChildren(recyclerAdapter.getSelectedId())
+                localVM.setTopicChildren(recyclerAdapter.getSelectedId())
 
             return true
         }

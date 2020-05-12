@@ -26,9 +26,9 @@ class CardLayout(context: Context, attrs: AttributeSet) : CardView(context, attr
     fun setChip(chip: ChipCard) {
 
         name.text = chip.name
-        counter.text = chip.counter.toString()
+        counter.text = chip.numChildren.toString()
         Glide.with(image.context)
-            .load(chip.repPath)
+            .load(chip.matPath)
             .apply(RequestOptions()
                 .override(image.width, image.height))
             .into(image)

@@ -3,17 +3,16 @@ package creations.rimov.com.chipit.database.repos
 import android.os.AsyncTask
 import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.objects.ChipUpdateBasic
 import creations.rimov.com.chipit.extensions.getChipUpdateDate
 import java.util.*
 
 object DbAsyncTasks {
 
-    class AsyncChipUpdate(private val dao: ChipDao) : AsyncTask<ChipUpdateBasic, Void, Void>() {
+    class AsyncChipUpdate(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
-        override fun doInBackground(vararg params: ChipUpdateBasic): Void? {
+        override fun doInBackground(vararg params: Chip): Void? {
 
-            dao.updateChipBasic(params[0].id, params[0].name, params[0].desc, params[0].repPath)
+            dao.updateChipBasic(params[0].id, params[0].name, params[0].desc, params[0].matPath)
 
             return null
         }
@@ -26,7 +25,7 @@ object DbAsyncTasks {
             val date = Date().getChipUpdateDate()
 
             dao.insertChip(params[0])
-            dao.increaseCounter(params[0].parentId ?: return null, params[0].counter+1, date)
+            dao.increaseCounter(params[0].parentId ?: return null, params[0].numChildren + 1, date)
 
             return null
         }
@@ -40,7 +39,7 @@ object DbAsyncTasks {
 
             //TODO FUTURE: if you need to delete the stored, linked material as well then that has to be incorporated
             dao.deleteChipTree(params[0].id)
-            dao.decreaseCounter(params[0].parentId ?: return null, params[0].counter+1, date)
+            dao.decreaseCounter(params[0].parentId ?: return null, params[0].numChildren + 1, date)
 
             return null
         }

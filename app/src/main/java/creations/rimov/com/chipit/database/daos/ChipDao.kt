@@ -8,9 +8,12 @@ import creations.rimov.com.chipit.objects.CoordPoint
 @Dao
 interface ChipDao {
 
+    @Query("SELECT * FROM chips WHERE id = :id")
+    fun getChip(id: Long): Chip
+
     @Transaction
     @Query("SELECT * FROM chips WHERE parent_id = :parentId")
-    fun getChipsLive(parentId: Long): LiveData<List<Chip>>
+    fun getChipChildrenLive(parentId: Long): LiveData<List<Chip>>
 
     @Query("WITH RECURSIVE get_parents(id, parent_id, name, material_type, material_path) " +
             "AS (SELECT id, parent_id, name, material_type, material_path FROM chips WHERE id = :id " +

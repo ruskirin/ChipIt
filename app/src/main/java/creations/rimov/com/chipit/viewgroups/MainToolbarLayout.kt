@@ -62,7 +62,7 @@ class MainToolbarLayout(context: Context, attrs: AttributeSet)
 
         view?.let {
             if(position != 0) {
-                Log.i("Touch Event", "AppToolbar#onItemSelected(): " +
+                Log.i("MainToolbarLayout", "::onItemSelected(): " +
                         "prev selected id $prevSelected, selected id $id, position $position")
 
                 handler.setSelectedChip(adapter.getItem(position) ?: return)

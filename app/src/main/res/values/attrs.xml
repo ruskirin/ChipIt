@@ -14,7 +14,7 @@
 
     <declare-styleable name="EditorTextLayout">
         <attr name="btnText" format="reference|string"/>
-        <attr name="text" format="reference|string"/>
+        <attr name="btnTextSize" format="dimension"/>
         <attr name="textSize" format="dimension"/>
         <attr name="textColor" format="color"/>
     </declare-styleable>

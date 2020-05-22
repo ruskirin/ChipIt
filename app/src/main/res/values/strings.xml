@@ -13,8 +13,11 @@
     <string name="editor_detail_btn_delete">Delete</string>
 
     <string name="prompt_text_delete">Delete chip: %1$s ?</string>
+
     <string name="prompt_btn_text_yes">Yes</string>
     <string name="prompt_btn_text_no">No</string>
+    <string name="prompt_btn_text_save">Save</string>
+    <string name="prompt_btn_text_cancel">Cancel</string>
 
     <string name="prompt_btn_image">Image</string>
     <string name="prompt_btn_video">Video</string>

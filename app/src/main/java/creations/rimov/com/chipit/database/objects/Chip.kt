@@ -1,12 +1,10 @@
 package creations.rimov.com.chipit.database.objects
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.getChipCreateDate
 import creations.rimov.com.chipit.objects.CoordPoint
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Entity(

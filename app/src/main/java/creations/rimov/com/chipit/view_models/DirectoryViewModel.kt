@@ -7,8 +7,9 @@ import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.repos.AccessRepo
+import creations.rimov.com.chipit.database.repos.RepoHandler
 
-class DirectoryViewModel : ViewModel(), AccessRepo.RepoHandler {
+class DirectoryViewModel : ViewModel(), RepoHandler {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, this)
 

@@ -85,38 +85,30 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
 
         override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
-            if(event == null)
-                return false
+            if(event == null) return false
 
             when(view?.id) {
 
                 R.id.topicLayoutHeader -> {
-
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedTopic(this)
 
                     touchHandler.topicTouch(event)
                 }
-
                 R.id.topicLayoutBtnCount -> {
-
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedTopic(this)
 
                     if(event.action == MotionEvent.ACTION_UP)
                         touchHandler.topicToWeb()
                 }
-
                 R.id.cardEditorBtnEdit -> {
-
                     if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicEdit(topics[adapterPosition])
+                        touchHandler.topicEdit(topics[adapterPosition].id)
                 }
-
                 R.id.cardEditorBtnDelete -> {
-
                     if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.topicDelete(topics[adapterPosition])
+                        touchHandler.topicDelete(topics[adapterPosition].id)
                 }
             }
 
@@ -150,8 +142,8 @@ class DirectoryRecyclerAdapter(private val touchHandler: DirectoryAdapterHandler
 
         fun topicToWeb()
 
-        fun topicEdit(chip: ChipIdentity)
+        fun topicEdit(chipId: Long)
 
-        fun topicDelete(chip: ChipIdentity)
+        fun topicDelete(chipId: Long)
     }
 }

@@ -19,20 +19,23 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
 
 class WebFragment : Fragment(),
-    WebRecyclerAdapter.WebAdapterHandler, View.OnTouchListener, MotionLayout.TransitionListener {
+    WebRecyclerAdapter.WebAdapterHandler,
+    View.OnTouchListener,
+    MotionLayout.TransitionListener {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
     private lateinit var globalVM: GlobalViewModel
     private val localViewModel: WebViewModel by lazy {
-        ViewModelProvider(this).get(WebViewModel::class.java)
+        getViewModel<WebViewModel>()
     }
 
     private lateinit var motionLayout: MotionLayout
@@ -50,7 +53,7 @@ class WebFragment : Fragment(),
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalVM = ViewModelProvider(it).get(GlobalViewModel::class.java)
+            globalVM = it.getViewModel()
 
             gestureDetector = GestureDetector(it, ChipGestureDetector())
             gestureDetector.setIsLongpressEnabled(true)
@@ -63,24 +66,27 @@ class WebFragment : Fragment(),
     }
 
     override fun onCreateView(
-      inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(
-          R.layout.frag_web, container, false)
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?): View? {
+
+        val view = inflater.inflate(R.layout.frag_web, container, false)
 
         motionLayout = (view as MotionLayout)
         motionLayout.setTransitionListener(this)
 
         view.webChildrenView.apply {
             adapter = childrenAdapter
-            layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(
+              3, RecyclerView.VERTICAL)
             setHasFixedSize(true)
         }
 
         localViewModel.getChip().observe(viewLifecycleOwner, Observer {
-            Log.i("Touch Event",
-                  "WebFrag#Observer: currently displaying chip ${it?.id}")
+            Log.i("WebFrag", "chipObserver: currently displaying " +
+                             "chip ${it?.id}")
 
-            globalVM.setFocusChip(it?.asChip())
+            globalVM.setFocusChip(it?.asChip(), false)
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
@@ -127,8 +133,10 @@ class WebFragment : Fragment(),
 
     private fun loadChipper() {
 
-        val directions =
-            WebFragmentDirections.actionWebFragmentToChipperFragment(localViewModel.getChipId() ?: return)
+        val directions = WebFragmentDirections
+            .actionWebFragmentToChipperFragment(
+              localViewModel.getChipId() ?: return)
+
         findNavController().navigate(directions)
     }
 
@@ -160,12 +168,10 @@ class WebFragment : Fragment(),
     override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
 
         motionLayout?.let {
-
             when(id) {
                 R.id.motionSceneWebMax -> {
                     loadChipper()
                 }
-
                 R.id.motionSceneWebStart -> {
 
                 }

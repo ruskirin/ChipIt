@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginTop="?attr/actionBarSize"
+      android:layout_marginStart="@dimen/standard_margin_small"
+      android:layout_marginEnd="@dimen/standard_margin_small">
+
+    <creations.rimov.com.chipit.viewgroups.EditorTextLayout
+          android:id="@+id/matTitleLayout"
+          android:layout_width="0dp"
+          android:layout_height="@dimen/standard_touch_regularsize"
+          android:gravity="center"
+          app:layout_constraintVertical_chainStyle="spread"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toTopOf="@id/matPreviewLayout"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:paddingTop="@dimen/standard_margin_small"
+
+          app:btnText="@string/editor_btn_title"
+          app:btnTextSize="@dimen/standard_prompt_textsize"
+          app:textSize="@dimen/editor_name_textsize"
+          app:textColor="@color/colorPrimaryDark"/>
+
+    <creations.rimov.com.chipit.viewgroups.EditorMatPrevLayout
+          android:id="@+id/matPreviewLayout"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintVertical_weight="5"
+          app:layout_constraintTop_toBottomOf="@id/matTitleLayout"
+          app:layout_constraintBottom_toTopOf="@id/matDescLayout"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:paddingTop="@dimen/standard_margin_small"/>
+
+    <creations.rimov.com.chipit.viewgroups.EditorTextLayout
+          android:id="@+id/matDescLayout"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintVertical_weight="3"
+          app:layout_constraintTop_toBottomOf="@id/matPreviewLayout"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:paddingTop="@dimen/standard_margin_small"
+          android:paddingBottom="@dimen/standard_margin_small"
+
+          app:btnText="@string/editor_btn_desc"
+          app:btnTextSize="@dimen/standard_prompt_textsize"
+          app:textSize="@dimen/editor_desc_textsize"
+          app:textColor="@color/colorPrimaryDark"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

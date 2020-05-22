@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipReference
+import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.fragments.DirectoryFragmentDirections
 import creations.rimov.com.chipit.fragments.WebFragmentDirections
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private var screenW: Float = 0f
 
     private val globalVM: GlobalViewModel by lazy {
-        ViewModelProvider(this).get(GlobalViewModel::class.java)
+        getViewModel<GlobalViewModel>()
     }
 
     private val navHostFragment: NavHostFragment by lazy {
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(view?.id) {
             R.id.mainFab       -> {
                 if(navController.currentDestination?.id==R.id.editorFragment) {
-                    globalVM.setAction(EditorConsts.SAVE)
+                    globalVM.setEditAction(EditorConsts.SAVE)
                     return
                 }
 
@@ -181,10 +182,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     override fun setSelectedChip(chip: ChipReference) {
-        Log.i("Touch Event", "Main#setSelectedChip(): new primary " +
+        Log.i("MainActivity", "::setSelectedChip(): new primary " +
                              "chip ${chip.id}")
 
-        globalVM.setFocusChip(chip.asChip())
+        globalVM.setFocusChip(chip.asChip(), false)
     }
 
     private fun navigateTo(fragId: Int, args: Any?) {
@@ -197,6 +198,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                                    Toast.LENGTH_SHORT).show()
                     return
                 }
+
+                globalVM.setEditAction(args)
 
                 when(navController.currentDestination?.id) {
                     R.id.directoryFragment -> {
@@ -220,9 +223,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
             R.id.webFragment -> {
                 if(args !is Long) {
-                    Toast.makeText(this,
-                                   "Cannot navigate to fragment -- wrong arg passed",
-                                   Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                      this,
+                      "Cannot navigate to fragment -- wrong arg passed",
+                      Toast.LENGTH_SHORT).show()
+
                     return
                 }
                 navController.navigate(
@@ -230,9 +235,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             }
             R.id.chipperFragment -> {
                 if(args !is Long) {
-                    Toast.makeText(this,
-                                   "Cannot navigate to fragment -- wrong arg passed",
-                                   Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                      this,
+                      "Cannot navigate to fragment -- wrong arg passed",
+                      Toast.LENGTH_SHORT).show()
+
                     return
                 }
 

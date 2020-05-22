@@ -1,31 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:parentTag="creations.rimov.com.chipit.viewgroups.PromptConfirmLayout"
+      tools:layout_width="match_parent"
+      tools:layout_height="match_parent">
 
     <TextView
           android:id="@+id/textPromptConfirm"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
           android:gravity="center"
-          android:textColor="@color/colorAccent"/>
+          android:textSize="@dimen/standard_prompt_textsize"
+          android:textColor="@color/colorPrimaryDark"/>
 
     <Button
           android:id="@+id/btnConfirmYes"
-          android:layout_width="match_parent"
+          android:layout_width="@dimen/standard_touch_large"
           android:layout_height="@dimen/standard_touch_regularsize"
-          android:paddingBottom="@dimen/standard_margin_reg"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toStartOf="@id/btnConfirmNo"
+          app:layout_constraintTop_toBottomOf="@id/textPromptConfirm"
           android:gravity="center"
           android:text="@string/prompt_btn_text_yes"
-          android:textColor="@color/colorAccent"
-          android:backgroundTint="@android:color/darker_gray"/>
+          android:textColor="@color/colorAccent"/>
 
     <Button
           android:id="@+id/btnConfirmNo"
-          android:layout_width="match_parent"
+          android:layout_width="@dimen/standard_touch_large"
           android:layout_height="@dimen/standard_touch_regularsize"
-          android:paddingBottom="@dimen/standard_margin_reg"
+          app:layout_constraintStart_toEndOf="@id/btnConfirmYes"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/textPromptConfirm"
           android:gravity="center"
           android:text="@string/prompt_btn_text_no"
-          android:textColor="@color/colorAccent"
-          android:backgroundTint="@android:color/darker_gray"/>
+          android:textColor="@color/colorAccent"/>
 
 </merge>

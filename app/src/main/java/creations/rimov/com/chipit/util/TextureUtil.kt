@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
-import android.util.Log
+import creations.rimov.com.chipit.database.repos.AsyncHandler
 import java.io.InputStream
 
 object TextureUtil {

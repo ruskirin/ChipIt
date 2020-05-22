@@ -5,10 +5,34 @@ import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.extensions.getChipUpdateDate
 import java.util.*
+import kotlin.NoSuchElementException
 
 object DbAsyncTasks {
 
-    class AsyncChipUpdate(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
+    class AsyncGetChip (
+      private val dao: ChipDao,
+      private val handler: AsyncHandler) : AsyncTask<Long, Void, Chip>() {
+
+        override fun doInBackground(vararg params: Long?): Chip? {
+            params[0]?.let {
+                return dao.getChip(it)
+            }
+
+            return null
+        }
+
+        override fun onPostExecute(result: Chip?) {
+
+            result?.let {
+                handler.setData(it)
+                return
+            }
+
+            throw NoSuchElementException("No chip found with provided id")
+        }
+    }
+
+    class AsyncUpdateChip(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
 
@@ -18,7 +42,7 @@ object DbAsyncTasks {
         }
     }
 
-    class InsertChip(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
+    class AsyncInsertChip(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
 
@@ -31,7 +55,7 @@ object DbAsyncTasks {
         }
     }
 
-    class DeleteChipTree(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
+    class AsyncDeleteChipTree(private val dao: ChipDao) : AsyncTask<Chip, Void, Void>() {
 
         override fun doInBackground(vararg params: Chip): Void? {
 

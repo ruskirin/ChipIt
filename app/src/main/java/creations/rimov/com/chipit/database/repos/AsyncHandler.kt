@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.util
+package creations.rimov.com.chipit.database.repos
 
 interface AsyncHandler {
 

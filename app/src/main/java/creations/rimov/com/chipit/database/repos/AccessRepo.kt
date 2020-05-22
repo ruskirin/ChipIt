@@ -7,9 +7,8 @@ import creations.rimov.com.chipit.database.daos.ChipDao
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipReference
-import creations.rimov.com.chipit.util.AsyncHandler
 
-class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandler) {
+class AccessRepo(chipDb: ChipDatabase, private val handler: RepoHandler) {
 
     private val dao = chipDb.chipDao()
 
@@ -22,7 +21,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
     fun setParentIdentity(chipId: Long?) {
-        AsyncGetChipIdentity(dao, accessRepoHandler).execute(chipId)
+        AsyncGetChipIdentity(dao, handler).execute(chipId)
     }
 
     fun getChipTopics(id: Long) = dao.getChipIdentity(id)
@@ -32,7 +31,7 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         else dao.getChipIdentityLive(id)
 
     fun getChipCards(id: Long) {
-        AsyncGetChipCards(dao, accessRepoHandler).execute(id)
+        AsyncGetChipCards(dao, handler).execute(id)
     }
 
     fun getChipChildrenCardsLive(parentId: Long?): LiveData<List<ChipCard>> {
@@ -69,10 +68,5 @@ class AccessRepo(chipDb: ChipDatabase, private val accessRepoHandler: RepoHandle
         override fun onPostExecute(result: ChipIdentity?) {
             repoHandler.setData(result)
         }
-    }
-
-    interface RepoHandler : AsyncHandler {
-
-        fun <T> setDataList(data: List<T>)
     }
 }

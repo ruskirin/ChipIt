@@ -9,10 +9,12 @@ import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.database.repos.AccessRepo
+import creations.rimov.com.chipit.database.repos.RepoHandler
 
-class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
+class WebViewModel : ViewModel(), RepoHandler {
 
-    private val repository = AccessRepo(DatabaseApplication.database!!, this)
+    private val repository = AccessRepo(
+      DatabaseApplication.database!!, this)
 
     private val focusId: MutableLiveData<Long?> = MutableLiveData()
 
@@ -39,8 +41,6 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
 
     fun getChip() = chip
 
-    fun getAsChip() = chip.value?.asChip()
-
     fun getChipId() = chip.value?.id
 
     fun getChipImg() = chip.value?.matPath
@@ -50,7 +50,7 @@ class WebViewModel : ViewModel(), AccessRepo.RepoHandler {
     fun getChildren(): LiveData<List<ChipCard>> = children
 
     override fun <T> setData(data: T) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun <T> setDataList(data: List<T>) {

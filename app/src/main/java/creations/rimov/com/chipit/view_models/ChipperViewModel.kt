@@ -8,18 +8,20 @@ import creations.rimov.com.chipit.database.DatabaseApplication
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.database.objects.ChipPath
 import creations.rimov.com.chipit.database.repos.AccessRepo
+import creations.rimov.com.chipit.database.repos.RepoHandler
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.TextureUtil
 import kotlin.math.roundToInt
 
-class ChipperViewModel(application: Application,
-                       private val handler: AccessRepo.RepoHandler) : AndroidViewModel(application) {
+class ChipperViewModel(
+  application: Application,
+  private val handler: RepoHandler) : AndroidViewModel(application) {
 
     private val repository = AccessRepo(DatabaseApplication.database!!, handler)
 
     private val chipId: MutableLiveData<Long?> = MutableLiveData()
     //The chip currently viewed in the background and being worked on
-    private val chip: LiveData<ChipIdentity?> = Transformations.switchMap(chipId) {
+    private val chip: LiveData<ChipIdentity> = Transformations.switchMap(chipId) {
         repository.getChipIdentityLive(it)
     }
     //Children of the main chip
@@ -34,7 +36,7 @@ class ChipperViewModel(application: Application,
         this.chipId.postValue(id)
     }
 
-    fun getChip(): LiveData<ChipIdentity?> = chip
+    fun getChip(): LiveData<ChipIdentity> = chip
 
     fun getChildren(): LiveData<List<ChipPath>>? = children
 

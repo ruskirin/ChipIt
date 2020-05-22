@@ -1,6 +1,5 @@
 package creations.rimov.com.chipit.fragments
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,16 +12,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.activities.MainActivity
 import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.database.repos.AsyncHandler
+import creations.rimov.com.chipit.extensions.getStorageWritePermission
+import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.EditorViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -32,12 +32,11 @@ import kotlinx.android.synthetic.main.frag_editor.view.*
 
 class EditorFragment : Fragment(),
     EditorTextLayout.Handler,
-    EditorMatPrevLayout.Handler {
+    EditorMatPrevLayout.Handler,
+    AsyncHandler {
 
     private lateinit var globalVM: GlobalViewModel
-    private val localVM by lazy {
-        ViewModelProvider(this).get(EditorViewModel::class.java)
-    }
+    private lateinit var localVM: EditorViewModel
 
     private val passedArgs by navArgs<EditorFragmentArgs>()
 
@@ -47,17 +46,35 @@ class EditorFragment : Fragment(),
     private lateinit var desc: EditorTextLayout
     private lateinit var material: EditorMatPrevLayout
 
+    private var uri: Uri? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         activity?.let {
             packageManager = it.packageManager
-            globalVM = ViewModelProvider(it).get(GlobalViewModel::class.java)
+            globalVM = it.getViewModel()
+            localVM = getViewModel {EditorViewModel(this)}
         }
 
-        Log.i("LIFE CYCLE", "PromptFragment.onCreate() - passedArgs = $passedArgs")
+        Log.i("EditorFrag", "::onCreate(): passedArgs = $passedArgs")
 
-        globalVM.setAction(passedArgs.action)
+        passedArgs.action.let {
+            when(it) {
+                EditorConsts.CREATE ->
+                    startCreate()
+                EditorConsts.EDIT ->
+                    startEdit(passedArgs.chipId)
+                EditorConsts.DELETE -> {
+                    startEdit(passedArgs.chipId)
+
+                    findNavController().navigate(
+                      EditorFragmentDirections.actionEditorFragmentToPromptFragment(
+                        EditorConsts.DELETE)
+                    )
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -71,62 +88,84 @@ class EditorFragment : Fragment(),
             prepare(this@EditorFragment)
         }
 
-        passedArgs.chip.let {
-            name = v.matTitleLayout.apply {
-                prepare(this@EditorFragment,
-                        EditorTextLayout.Type.TITLE,
-                        it?.name)
-            }
-            desc = v.matDescLayout.apply {
-                prepare(this@EditorFragment,
-                        EditorTextLayout.Type.DESC,
-                        it?.desc)
-            }
+        name = v.matTitleLayout.apply {
+            prepare(this@EditorFragment,
+                    EditorTextLayout.Type.TITLE)
         }
 
-        globalVM.getAction().observe(viewLifecycleOwner, Observer { action ->
-            Log.i("EVENT", "PromptFrag: new globalVM action = $action")
+        desc = v.matDescLayout.apply {
+            prepare(this@EditorFragment,
+                    EditorTextLayout.Type.DESC)
+        }
+
+        globalVM.getFocusChip().observe(viewLifecycleOwner, Observer {
+
+            name.displayText(it?.name)
+            desc.displayText(it?.desc)
+            material.display(it?.matType, it?.matPath)
+        })
+
+        globalVM.getEditAction().observe(viewLifecycleOwner, Observer { action ->
             toggleVis(action)
 
             when(action) {
                 EditorConsts.SAVE -> {
-                    //TODO HIGH: test if all required fields were entered then save
-                }
-                EditorConsts.DELETE -> {
-                    //TODO HIGH: call delete from the repository
+
+                    globalVM.getFocusChip().value?.let {
+                        if(it.name.isBlank()) {
+                            Toast.makeText(
+                              context,
+                              "Please name the chip!",
+                              Toast.LENGTH_SHORT).show()
+
+                            findNavController().navigateUp()
+                            return@Observer
+                        }
+
+                        //TODO IMPORTANT: (potentially) unreliable way of checking
+                        //  if chip is new or not
+                        //All new Chips have id=0L before being put into database
+                        if(it.id==0L) localVM.saveNew(it)
+                        else localVM.saveEdit(it)
+
+                        findNavController().navigateUp()
+                    }
                 }
                 EditorConsts.CANCEL    -> {
-                    //TODO HIGH: (see if necessary)
-                    //  delete any material that was taken before cancellation
+
+//                    globalVM.loadSavedChip()
+                    findNavController().navigateUp()
                 }
-                EditorConsts.NEW_IMAGE -> {
-                    getImageFrom(EditorConsts.NEW)
+                EditorConsts.DELETE -> {
+
+                    globalVM.getFocusChip().value?.let {
+                        localVM.deleteChip(it)
+                    }
+
+//                    globalVM.loadSavedChip() //Set previous chip as focusChip
+                    findNavController().navigateUp()
                 }
-                EditorConsts.STOR_IMAGE -> {
-                    getImageFrom(EditorConsts.STORAGE)
-                }
-                EditorConsts.NEW_VIDEO -> {
-                    getVideoFrom(EditorConsts.NEW)
-                }
-                EditorConsts.STOR_VIDEO -> {
-                    getVideoFrom(EditorConsts.STORAGE)
-                }
-                EditorConsts.NEW_AUDIO -> {
-                    getAudioFrom(EditorConsts.NEW)
-                }
-                EditorConsts.STOR_AUDIO -> {
-                    getAudioFrom(EditorConsts.STORAGE)
-                }
-                EditorConsts.NEW_TEXT -> {
-                    getTextFrom(EditorConsts.NEW)
-                }
-                EditorConsts.STOR_TEXT  -> {
-                    getTextFrom(EditorConsts.STORAGE)
-                }
+                EditorConsts.NEW_IMAGE -> getImageFrom(EditorConsts.NEW)
+                EditorConsts.STOR_IMAGE -> getImageFrom(EditorConsts.STORAGE)
+
+                EditorConsts.NEW_VIDEO -> getVideoFrom(EditorConsts.NEW)
+                EditorConsts.STOR_VIDEO -> getVideoFrom(EditorConsts.STORAGE)
+
+                EditorConsts.NEW_AUDIO -> getAudioFrom(EditorConsts.NEW)
+                EditorConsts.STOR_AUDIO -> getAudioFrom(EditorConsts.STORAGE)
+
+                EditorConsts.NEW_TEXT -> getTextFrom(EditorConsts.NEW)
+                EditorConsts.STOR_TEXT  -> getTextFrom(EditorConsts.STORAGE)
             }
         })
 
         return v
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        globalVM.loadBufferChip()
     }
 
     private fun toggleVis(action: Int) {
@@ -151,6 +190,15 @@ class EditorFragment : Fragment(),
         }
     }
 
+    private fun startCreate() {
+        globalVM.setFocusChip(
+          Chip(0L, globalVM.getFocusId()), true)
+    }
+
+    private fun startEdit(id: Long) {
+        localVM.getChip(id)
+    }
+
     //PromptMatPrevLayout Handler------------------------------------------------------
     override fun promptAddMat() {
 
@@ -166,12 +214,12 @@ class EditorFragment : Fragment(),
             EditorTextLayout.Type.TITLE -> {
                 findNavController().navigate(
                   EditorFragmentDirections.actionEditorFragmentToPromptFragment(
-                    EditorConsts.EDIT_TITLE))
+                    EditorConsts.EDIT_TITLE, text))
             }
             EditorTextLayout.Type.DESC -> {
                 findNavController().navigate(
                   EditorFragmentDirections.actionEditorFragmentToPromptFragment(
-                    EditorConsts.EDIT_DESC))
+                    EditorConsts.EDIT_DESC, text))
             }
         }
     }
@@ -181,15 +229,14 @@ class EditorFragment : Fragment(),
     private fun getImageFrom(from: Int) {
 
         when(from) {
+            //Check if storage write permission has already been granted;
+            //  else request it
             EditorConsts.NEW  -> {
-                //Check if storage write permission has already been granted;
-                //  else request it
-                if(getStorageWritePermission())
-                    takePicture()
+                activity?.let {
+                    if(it.getStorageWritePermission()) takePicture()
+                }
             }
-            EditorConsts.STORAGE -> {
-                selectPicture()
-            }
+            EditorConsts.STORAGE -> selectPicture()
         }
     }
 
@@ -241,71 +288,38 @@ class EditorFragment : Fragment(),
         }
     }
 
-    private fun takePicture() {
-
-        val addChipCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        //Verifies that an application that can handle this intent exists
-        if(addChipCameraIntent.resolveActivity(packageManager)==null) {
-            Log.e("Touch Event", "Main#takePicture(): no app to handle " +
-                                 "ACTION_IMAGE_CAPTURE!")
-            return
-        }
-
-        var uri: Uri? = null
-
-        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val imageFile = CameraUtil.getImageFile() ?: return
-
-            activity?.let {
-                uri = CameraUtil.getImageUri(it.applicationContext, imageFile)
-            }
-        } else {
-            activity?.let {
-                uri = CameraUtil.getImageUriNew(it.applicationContext)
-            }
-        }
-
-        addChipCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        startActivityForResult(addChipCameraIntent, CameraUtil.CODE_TAKE_PICTURE)
-    }
-
-    private fun selectPicture() {
-
-        Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            type = "image/*"
-            resolveActivity(packageManager)?.let {
-                startActivityForResult(this, CameraUtil.CODE_GET_IMAGE)
-            }
-        }
+    /**
+     * AsyncHandler method
+     * Executed in onPostExecute in AsyncTask; retrieves Chip from repo
+     */
+    override fun <T> setData(data: T) {
+        globalVM.setFocusChip(data as Chip, true)
     }
 
     //After startActivityForResult()
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+      requestCode: Int, resultCode: Int, data: Intent?) {
+
         super.onActivityResult(requestCode, resultCode, data)
+
+        Log.i("EditorFrag", "onActivityResult(): resultCode is OK? " +
+                            "${resultCode==Activity.RESULT_OK}")
 
         if(resultCode != Activity.RESULT_OK) return
 
         when(requestCode) {
             CameraUtil.CODE_GET_IMAGE -> {
                 data?.let {
-                    material.setPreview(EditorConsts.IMAGE, it.data)
-
-                    localVM.setMat(
+                    globalVM.setMat(
                       EditorConsts.IMAGE,
                       it.data?.toString() ?: "") //Save
                 }
             }
             CameraUtil.CODE_TAKE_PICTURE -> {
                 data?.let {
-                    Log.i("EditorFragment",
-                          "onActivityResult(): picture taken! Intent extras " +
-                          "null? ${it.extras==null}. Intent data null? ${it.data==null}")
-
-                    material.setPreview(EditorConsts.IMAGE, it.extras?.get("data"))
-
-                    localVM.setMat(
+                    globalVM.setMat(
                       EditorConsts.IMAGE,
-                      it.data?.toString() ?: "") //Save
+                      uri.toString()) //Save
                 }
             }
         }
@@ -320,37 +334,44 @@ class EditorFragment : Fragment(),
                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 
                     takePicture()
-                //TODO FUTURE: storage write permission has not been granted, inform the user
+
+                //TODO FUTURE: storage write permission has not been granted,
+                //  inform the user
             }
         }
     }
 
-    //Since SDK 23(24?), permission must be requested at runtime if it has not
-    // already been granted
-    private fun getStorageWritePermission(): Boolean {
+    private fun takePicture() {
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        //Verifies that an application that can handle this intent exists
+        if(intent.resolveActivity(packageManager)==null)
+            throw UnsupportedOperationException("A camera is required for operation")
 
         activity?.let {
-            if(ContextCompat.checkSelfPermission(
-                it, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-              == PackageManager.PERMISSION_GRANTED) {
-                return true //Permission has already been granted
-            }
-
-            //Explain why you need the permission
-            if(ActivityCompat.shouldShowRequestPermissionRationale(
-                it, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                //TODO FUTURE: display rationale for this request
-                Toast.makeText(it, "Need permission please!",
-                               Toast.LENGTH_SHORT).show()
-            }
-
-            //Permission has not yet been granted, check onRequestPermissionResult()
-            ActivityCompat.requestPermissions(
-              it,
-              arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-              MainActivity.Constant.REQUEST_WRITE_EXTERNAL_STORAGE)
+            uri =
+                if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)
+                    CameraUtil.getImageUri(
+                      it.applicationContext,
+                      CameraUtil.getImageFile() ?: return)
+                else {
+                    CameraUtil.getImageUriNew(
+                      it.applicationContext)
+                }
         }
 
-        return false
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, CameraUtil.CODE_TAKE_PICTURE)
+    }
+
+    private fun selectPicture() {
+
+        Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "image/*"
+            resolveActivity(packageManager)?.let {
+                startActivityForResult(this, CameraUtil.CODE_GET_IMAGE)
+            }
+        }
     }
 }

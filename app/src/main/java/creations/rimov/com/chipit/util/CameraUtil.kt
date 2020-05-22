@@ -61,7 +61,7 @@ object CameraUtil {
         val resolver = context.contentResolver
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, IMG_FILENAME_PREFIX + Date().getChipFileDate())
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/ChipIt")
         }
 

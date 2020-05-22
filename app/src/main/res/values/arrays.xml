@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="prompt_addmat_array">
+        <item>@string/prompt_btn_image</item>
+        <item>@string/prompt_btn_video</item>
+        <item>@string/prompt_btn_audio</item>
+        <item>@string/prompt_btn_text</item>
+    </string-array>
+</resources>

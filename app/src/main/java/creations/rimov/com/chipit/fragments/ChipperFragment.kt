@@ -1,16 +1,15 @@
 package creations.rimov.com.chipit.fragments
 
-import android.app.Application
 import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.repos.AccessRepo
+import creations.rimov.com.chipit.database.repos.RepoHandler
+import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
@@ -19,7 +18,11 @@ import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.views.ChipperView
 import kotlinx.android.synthetic.main.frag_chipper.view.*
 
-class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListener, AccessRepo.RepoHandler {
+class ChipperFragment :
+    Fragment(),
+    ChipperView.ChipHandler,
+    View.OnTouchListener,
+    RepoHandler {
 
     private object Constant {
         //Buffer around surfaceview edge to trigger gesture swipe events
@@ -36,7 +39,7 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
     private lateinit var localViewModel: ChipperViewModel
 
     private val localTouchViewModel: ChipperTouchViewModel by lazy {
-        ViewModelProvider(this).get(ChipperTouchViewModel::class.java)
+        this.getViewModel {ChipperTouchViewModel()}
     }
 
     private lateinit var chipperView: ChipperView
@@ -54,11 +57,11 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalViewModel = ViewModelProvider(it).get(GlobalViewModel::class.java)
+            globalViewModel = it.getViewModel()
 
-            localViewModel = ViewModelProvider(
-              this, ChipperVmFactory(it.application, this))
-                .get(ChipperViewModel::class.java)
+            localViewModel = getViewModel {
+                ChipperViewModel(it.application, this)
+            }
         }
 
         globalViewModel.getFocusChip().observe(this, Observer {
@@ -240,7 +243,8 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
                 if(touchedChip != null) {
                     globalViewModel.setFocusChip(
-                          touchedChip.asChip(globalViewModel.getFocusChip().value?.id))
+                          touchedChip.asChip(globalViewModel.getFocusChip().value?.id),
+                          false)
                 }
             }
         }
@@ -277,16 +281,5 @@ class ChipperFragment : Fragment(), ChipperView.ChipHandler, View.OnTouchListene
 
         viewWidth = width
         viewHeight = height
-    }
-
-    /**
-     * ViewModel factory for passing the RepoHandler
-     */
-    class ChipperVmFactory(private val application: Application,
-                           private val handler: AccessRepo.RepoHandler) : ViewModelProvider.Factory {
-
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ChipperViewModel(application, handler) as T
-        }
     }
 }

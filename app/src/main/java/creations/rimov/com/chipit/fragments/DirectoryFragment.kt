@@ -12,17 +12,20 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipIdentity
+import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import kotlinx.android.synthetic.main.frag_directory.view.*
 
-class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterHandler {
+class DirectoryFragment
+    : Fragment(),
+      DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
     private lateinit var globalVM: GlobalViewModel
 
     //Fragment's own ViewModel
     private val localVM: DirectoryViewModel by lazy {
-        ViewModelProvider(this).get(DirectoryViewModel::class.java)
+        getViewModel<DirectoryViewModel>()
     }
 
     private lateinit var recyclerAdapter: DirectoryRecyclerAdapter
@@ -33,11 +36,10 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.i("Life Event", "DirectoryFragment#onCreate()")
+        Log.i("DirectoryFrag", "::onCreate()")
 
         activity?.let {
-            globalVM = ViewModelProvider(it)
-                .get(GlobalViewModel::class.java)
+            globalVM = it.getViewModel()
 
             recyclerAdapter = DirectoryRecyclerAdapter(
                   this@DirectoryFragment)
@@ -82,18 +84,22 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         findNavController().navigate(directions)
     }
 
-    override fun topicEdit(chip: ChipIdentity) {
+    override fun topicEdit(chipId: Long) {
 
+        //Necessary to set editAction here to avoid repeated, uncalled for actions
+        globalVM.setEditAction(EditorConsts.EDIT)
         findNavController().navigate(
           DirectoryFragmentDirections
-              .actionDirectoryFragmentToEditorFragment(EditorConsts.EDIT, chip))
+              .actionDirectoryFragmentToEditorFragment(EditorConsts.EDIT, chipId))
     }
 
-    override fun topicDelete(chip: ChipIdentity) {
+    override fun topicDelete(chipId: Long) {
 
+        //NOT setting editAction for delete because it first has to be confirmed
+        //  in the prompt; the prompt has the responsibility of setting action
         findNavController().navigate(
           DirectoryFragmentDirections
-              .actionDirectoryFragmentToEditorFragment(EditorConsts.DELETE, chip)
+              .actionDirectoryFragmentToEditorFragment(EditorConsts.DELETE, chipId)
         )
     }
 
@@ -101,14 +107,10 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
 
         //According to developer website, must override onDown to return true to ensure gestures are not ignored
         override fun onDown(event: MotionEvent?): Boolean {
-            Log.i("Touch Event", "onDown()!")
-
             return true
         }
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
-            Log.i("Touch Event", "onSingleTapUp()!")
-
             //Edit screen out, cannot click on the view till it's closed
             if(recyclerAdapter.selectedTopic.isEditing())
                 return false
@@ -122,7 +124,6 @@ class DirectoryFragment : Fragment(), DirectoryRecyclerAdapter.DirectoryAdapterH
         }
 
         override fun onLongPress(event: MotionEvent?) {
-            Log.i("Touch Event", "onLongPress()!")
 
             if(recyclerAdapter.selectedTopic.isEditing())
                 recyclerAdapter.selectedTopic.edit(false)

@@ -2,34 +2,27 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
-            android:id="@+id/webDetailImgLayout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/webChildrenView">
-
-        <ImageView
-                android:id="@+id/webDetailImg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:background="@android:color/black"/>
-
-    </FrameLayout>
+    <ImageView
+          android:id="@+id/webDetailImg"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintWidth_default="percent"
+          app:layout_constraintWidth_percent="0.4"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toTopOf="@id/webChildrenView"
+          android:adjustViewBounds="true"
+          android:background="@android:color/black"/>
 
     <TextView
             android:id="@+id/webDetailDesc"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:gravity="center"
-            app:layout_constraintStart_toEndOf="@id/webDetailImgLayout"
+            app:layout_constraintStart_toEndOf="@id/webDetailImg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/webDetailImgLayout"
+            app:layout_constraintBottom_toBottomOf="@id/webDetailImg"
             android:background="@color/colorPrimary"/>
 
 </merge>

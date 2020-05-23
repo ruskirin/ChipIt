@@ -13,6 +13,7 @@ import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import kotlinx.android.synthetic.main.frag_directory.view.*
@@ -81,14 +82,14 @@ class DirectoryFragment
 
         val directions =
             DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(recyclerAdapter.getSelectedId())
-        findNavController().navigate(directions)
+        findNavController().nav(directions)
     }
 
     override fun topicEdit(chipId: Long) {
 
         //Necessary to set editAction here to avoid repeated, uncalled for actions
         globalVM.setEditAction(EditorConsts.EDIT)
-        findNavController().navigate(
+        findNavController().nav(
           DirectoryFragmentDirections
               .actionDirectoryFragmentToEditorFragment(EditorConsts.EDIT, chipId))
     }
@@ -97,7 +98,7 @@ class DirectoryFragment
 
         //NOT setting editAction for delete because it first has to be confirmed
         //  in the prompt; the prompt has the responsibility of setting action
-        findNavController().navigate(
+        findNavController().nav(
           DirectoryFragmentDirections
               .actionDirectoryFragmentToEditorFragment(EditorConsts.DELETE, chipId)
         )

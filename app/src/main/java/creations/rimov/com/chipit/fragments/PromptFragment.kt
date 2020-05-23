@@ -79,7 +79,7 @@ class PromptFragment : DialogFragment(),
     override fun getMaterial(from: Int) {
 
         globalVM.setEditAction(from)
-        findNavController().navigateUp()
+        findNavController().popBackStack()
     }
 
     override fun finishEdit(type: Int, text: String) {
@@ -89,7 +89,7 @@ class PromptFragment : DialogFragment(),
             EditorConsts.EDIT_DESC -> globalVM.setDesc(text)
         }
 
-        findNavController().navigateUp()
+        findNavController().popBackStack()
     }
 
     /**
@@ -103,7 +103,7 @@ class PromptFragment : DialogFragment(),
                 if(accept) globalVM.setEditAction(passedArgs.action)
                 else globalVM.setEditAction(EditorConsts.CANCEL)
 
-                findNavController().navigateUp()
+                findNavController().popBackStack()
             }
         }
     }

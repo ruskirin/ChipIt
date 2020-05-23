@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.recycler_web_chip.view.*
 
 //TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
 
-class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
+class WebRecyclerAdapter(private val touchHandler: Handler)
     : RecyclerView.Adapter<WebRecyclerAdapter.WebViewHolder>() {
 
     private lateinit var chips: List<ChipCard>
@@ -52,11 +52,9 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
 
         private fun setSelectedChip(chip: WebViewHolder) {
 
-            if(!::selectedChip.isInitialized)
-                selectedChip = chip
+            if(!::selectedChip.isInitialized) selectedChip = chip
 
-            if(selectedChip.itemId == itemId)
-                return
+            if(selectedChip.itemId == itemId) return
 
             selectedChip.edit(false)
 
@@ -77,19 +75,15 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
                 return false
 
             when(view?.id) {
-
                 R.id.webRecyclerCard -> {
-
                     if(event.action == MotionEvent.ACTION_DOWN)
                         setSelectedChip(this)
 
                     touchHandler.chipTouch(event)
                 }
-
                 R.id.cardEditorBtnDelete -> {
-
                     if(event.action == MotionEvent.ACTION_UP)
-                        touchHandler.chipDelete(chips[adapterPosition])
+                        touchHandler.chipDelete(chips[adapterPosition].id)
                 }
             }
 
@@ -117,10 +111,11 @@ class WebRecyclerAdapter(private val touchHandler: WebAdapterHandler)
         holder.cardLayout.setChip(chips[position])
     }
 
-    interface WebAdapterHandler {
+
+    interface Handler {
 
         fun chipTouch(event: MotionEvent)
 
-        fun chipDelete(chip: ChipCard)
+        fun chipDelete(id: Long)
     }
 }

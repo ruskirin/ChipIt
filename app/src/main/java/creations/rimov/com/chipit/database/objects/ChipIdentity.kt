@@ -1,8 +1,6 @@
 package creations.rimov.com.chipit.database.objects
 
-import android.os.Parcelable
 import androidx.room.ColumnInfo
-import kotlinx.android.parcel.Parcelize
 
 data class ChipIdentity(
   val id: Long,

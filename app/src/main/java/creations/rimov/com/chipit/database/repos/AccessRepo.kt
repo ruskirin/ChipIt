@@ -12,6 +12,10 @@ class AccessRepo(chipDb: ChipDatabase, private val handler: RepoHandler) {
 
     private val dao = chipDb.chipDao()
 
+    fun getChipAsync(id: Long) {
+        DbAsyncTasks.AsyncGetChip(dao, handler).execute(id)
+    }
+
     fun getChipTopics() = dao.getChipTopicsLive()
 
     fun getChipReferenceParentTreeLive(id: Long?): LiveData<List<ChipReference>> = dao.getChipReferenceParentTreeLive(id)
@@ -20,7 +24,7 @@ class AccessRepo(chipDb: ChipDatabase, private val handler: RepoHandler) {
      * @param chipId: id of the object
      * @param useParent: true to use the parent of the chip whose id was passed, false to use the chip itself
      **/
-    fun setParentIdentity(chipId: Long?) {
+    fun setWebParent(chipId: Long?) {
         AsyncGetChipIdentity(dao, handler).execute(chipId)
     }
 

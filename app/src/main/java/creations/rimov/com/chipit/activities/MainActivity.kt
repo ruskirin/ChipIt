@@ -18,14 +18,17 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.fragments.DirectoryFragmentDirections
 import creations.rimov.com.chipit.fragments.WebFragmentDirections
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.viewgroups.MainToolbarLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-    View.OnClickListener, MainToolbarLayout.ToolbarHandler {
+class MainActivity : AppCompatActivity(),
+    NavController.OnDestinationChangedListener,
+    View.OnClickListener,
+    MainToolbarLayout.ToolbarHandler {
 
     object Constant {
         const val REQUEST_WRITE_EXTERNAL_STORAGE = 1000
@@ -49,7 +52,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val toolbar: MainToolbarLayout by lazy {mainToolbar}
 
     private val fab: FloatingActionButton by lazy {mainFab}
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,14 +132,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 when(navController.currentDestination?.id) {
                     R.id.editorFragment -> {
                         globalVM.setAction(EditorConsts.CANCEL)
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }
                     R.id.webFragment -> {
-                        navigateTo(R.id.directoryFragment, null)
+                        navController.navigateUp()
                         return true
                     }
                     R.id.chipperFragment -> {
-                        navigateTo(R.id.webFragment, globalVM.getFocusId() ?: -1L)
+                        navController.navigateUp()
                         return true
                     }
                 }
@@ -160,16 +162,21 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         invalidateOptionsMenu()
 
+        Log.i("MainActivity", "::onDestinationChanged(): " +
+                              "current ${destination.label}")
+
         when(destination.id) {
             R.id.editorFragment -> {
                 setFabEdit(true)
                 toolbar.vanishToolbar(false)
             }
             R.id.directoryFragment -> {
+                globalVM.setFocusChip(null, false) //Reset the focus chip
+
                 setFabEdit(false)
                 toolbar.vanishToolbar(false)
             }
-            R.id.webFragment       -> {
+            R.id.webFragment -> {
                 setFabEdit(false)
                 toolbar.vanishToolbar(false)
             }
@@ -203,12 +210,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                 when(navController.currentDestination?.id) {
                     R.id.directoryFragment -> {
-                        navController.navigate(
+                        navController.nav(
                           DirectoryFragmentDirections
                               .actionDirectoryFragmentToEditorFragment(args))
                     }
                     R.id.webFragment -> {
-                        navController.navigate(
+                        navController.nav(
                           WebFragmentDirections
                               .actionWebFragmentToEditorFragment(args))
                     }
@@ -216,10 +223,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                         //TODO: implement if needed
                     }
                 }
-            }
-            R.id.directoryFragment -> {
-                navController.navigate(
-                  WebFragmentDirections.actionWebFragmentToDirectoryFragment())
             }
             R.id.webFragment -> {
                 if(args !is Long) {
@@ -230,7 +233,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
                     return
                 }
-                navController.navigate(
+                navController.nav(
                   DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(args))
             }
             R.id.chipperFragment -> {
@@ -243,7 +246,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     return
                 }
 
-                navController.navigate(
+                navController.nav(
                   WebFragmentDirections.actionWebFragmentToChipperFragment(args))
             }
         }

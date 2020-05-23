@@ -37,9 +37,6 @@ class PromptConfirmLayout(context: Context, attrs: AttributeSet)
 
         this.handler = handler
         (opts[0] as? String)?.let {promptText.text = it}
-
-        Log.i("PromptConfirmLayout", "::prepare(): " +
-                                     "layout visible? ${this.isVisible}")
     }
 
     override fun onClick(v: View?) {

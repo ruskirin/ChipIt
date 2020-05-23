@@ -26,12 +26,10 @@ class GlobalViewModel : ViewModel() {
     fun setFocusChip(chip: Chip?, save: Boolean) {
 
         if(chip != focusChip.value) {
-            Log.i("GlobalVM", "::setFocusChip(): changing focusChip to " +
-                              "chip ${chip?.id}, buffering? $save")
-
             if(save) bufferChip = focusChip.value
 
-            Log.i("GlobalVM", "::setFocusChip(): buffering chip ${bufferChip}")
+            Log.i("GlobalVM", "::setFocusChip(): changing focusChip to " +
+                              "\"${chip?.name}\", bufferChip \"${bufferChip?.name}\"")
 
             focusChip.postValue(chip)
         }
@@ -62,7 +60,8 @@ class GlobalViewModel : ViewModel() {
     }
 
     fun loadBufferChip() {
-        Log.i("GlobalVM", "::loadSavedChip(): loading chip ${bufferChip}")
+        Log.i("GlobalVM", "::loadSavedChip(): loading " +
+                          "chip \"${bufferChip?.name}\"")
 
         focusChip.postValue(bufferChip)
         bufferChip = null

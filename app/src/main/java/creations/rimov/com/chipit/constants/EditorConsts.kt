@@ -4,7 +4,7 @@ object EditorConsts {
     const val CREATE = 8010
     const val EDIT = 8020
     const val DELETE = 8030
-    const val CONFIRM = 8040
+    const val IDLE = 8040
 
     const val SAVE: Int = 3000
     const val CANCEL: Int = 3010

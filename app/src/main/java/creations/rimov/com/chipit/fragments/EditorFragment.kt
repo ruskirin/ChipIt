@@ -23,6 +23,7 @@ import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.repos.AsyncHandler
 import creations.rimov.com.chipit.extensions.getStorageWritePermission
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.util.CameraUtil
 import creations.rimov.com.chipit.view_models.EditorViewModel
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -57,8 +58,6 @@ class EditorFragment : Fragment(),
             localVM = getViewModel {EditorViewModel(this)}
         }
 
-        Log.i("EditorFrag", "::onCreate(): passedArgs = $passedArgs")
-
         passedArgs.action.let {
             when(it) {
                 EditorConsts.CREATE ->
@@ -68,7 +67,7 @@ class EditorFragment : Fragment(),
                 EditorConsts.DELETE -> {
                     startEdit(passedArgs.chipId)
 
-                    findNavController().navigate(
+                    findNavController().nav(
                       EditorFragmentDirections.actionEditorFragmentToPromptFragment(
                         EditorConsts.DELETE)
                     )
@@ -110,6 +109,7 @@ class EditorFragment : Fragment(),
 
             when(action) {
                 EditorConsts.SAVE -> {
+                    Log.i("EditorFrag", "Observer: edit action = SAVE")
 
                     globalVM.getFocusChip().value?.let {
                         if(it.name.isBlank()) {
@@ -118,7 +118,7 @@ class EditorFragment : Fragment(),
                               "Please name the chip!",
                               Toast.LENGTH_SHORT).show()
 
-                            findNavController().navigateUp()
+                            findNavController().popBackStack()
                             return@Observer
                         }
 
@@ -128,22 +128,23 @@ class EditorFragment : Fragment(),
                         if(it.id==0L) localVM.saveNew(it)
                         else localVM.saveEdit(it)
 
-                        findNavController().navigateUp()
+                        findNavController().popBackStack()
                     }
                 }
                 EditorConsts.CANCEL    -> {
+                    Log.i("EditorFrag", "Observer: edit action = CANCEL")
 
-//                    globalVM.loadSavedChip()
-                    findNavController().navigateUp()
+                    if(findNavController().currentDestination?.id == R.id.editorFragment)
+                        findNavController().popBackStack()
                 }
                 EditorConsts.DELETE -> {
+                    Log.i("EditorFrag", "Observer: edit action = DELETE")
 
                     globalVM.getFocusChip().value?.let {
                         localVM.deleteChip(it)
                     }
 
-//                    globalVM.loadSavedChip() //Set previous chip as focusChip
-                    findNavController().navigateUp()
+                    findNavController().popBackStack()
                 }
                 EditorConsts.NEW_IMAGE -> getImageFrom(EditorConsts.NEW)
                 EditorConsts.STOR_IMAGE -> getImageFrom(EditorConsts.STORAGE)
@@ -198,33 +199,6 @@ class EditorFragment : Fragment(),
     private fun startEdit(id: Long) {
         localVM.getChip(id)
     }
-
-    //PromptMatPrevLayout Handler------------------------------------------------------
-    override fun promptAddMat() {
-
-        findNavController().navigate(
-          EditorFragmentDirections.actionEditorFragmentToPromptFragment(
-            EditorConsts.EDIT_RES))
-    }
-
-    //EditorTextLayout Handler---------------------------------------------------------
-    override fun promptEditText(type: Int, text: String) {
-
-        when(type) {
-            EditorTextLayout.Type.TITLE -> {
-                findNavController().navigate(
-                  EditorFragmentDirections.actionEditorFragmentToPromptFragment(
-                    EditorConsts.EDIT_TITLE, text))
-            }
-            EditorTextLayout.Type.DESC -> {
-                findNavController().navigate(
-                  EditorFragmentDirections.actionEditorFragmentToPromptFragment(
-                    EditorConsts.EDIT_DESC, text))
-            }
-        }
-    }
-
-    //---------------------------------------------------------------------------------
 
     private fun getImageFrom(from: Int) {
 
@@ -294,6 +268,31 @@ class EditorFragment : Fragment(),
      */
     override fun <T> setData(data: T) {
         globalVM.setFocusChip(data as Chip, true)
+    }
+
+    //PromptMatPrevLayout Handler------------------------------------------------------
+    override fun promptAddMat() {
+
+        findNavController().nav(
+          EditorFragmentDirections.actionEditorFragmentToPromptFragment(
+            EditorConsts.EDIT_RES))
+    }
+
+    //EditorTextLayout Handler---------------------------------------------------------
+    override fun promptEditText(type: Int, text: String) {
+
+        when(type) {
+            EditorTextLayout.Type.TITLE -> {
+                findNavController().nav(
+                  EditorFragmentDirections.actionEditorFragmentToPromptFragment(
+                    EditorConsts.EDIT_TITLE, text))
+            }
+            EditorTextLayout.Type.DESC -> {
+                findNavController().nav(
+                  EditorFragmentDirections.actionEditorFragmentToPromptFragment(
+                    EditorConsts.EDIT_DESC, text))
+            }
+        }
     }
 
     //After startActivityForResult()

@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
@@ -17,16 +16,18 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.view_models.GlobalViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
 
 class WebFragment : Fragment(),
-    WebRecyclerAdapter.WebAdapterHandler,
+    WebRecyclerAdapter.Handler,
     View.OnTouchListener,
     MotionLayout.TransitionListener {
 
@@ -34,7 +35,7 @@ class WebFragment : Fragment(),
     private val passedArgs by navArgs<WebFragmentArgs>()
 
     private lateinit var globalVM: GlobalViewModel
-    private val localViewModel: WebViewModel by lazy {
+    private val localVM: WebViewModel by lazy {
         getViewModel<WebViewModel>()
     }
 
@@ -59,10 +60,7 @@ class WebFragment : Fragment(),
             gestureDetector.setIsLongpressEnabled(true)
         }
 
-        val id = passedArgs.parentId
-
-        if(id == -1L) localViewModel.setFocusId(null)
-        else localViewModel.setFocusId(id)
+        localVM.setChip(passedArgs.parentId)
     }
 
     override fun onCreateView(
@@ -82,19 +80,19 @@ class WebFragment : Fragment(),
             setHasFixedSize(true)
         }
 
-        localViewModel.getChip().observe(viewLifecycleOwner, Observer {
+        localVM.getChip().observe(viewLifecycleOwner, Observer {
             Log.i("WebFrag", "chipObserver: currently displaying " +
-                             "chip ${it?.id}")
+                             "chip \"${it?.name}\"")
 
-            globalVM.setFocusChip(it?.asChip(), false)
+            globalVM.setFocusChip(it, false)
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
-        localViewModel.getParents().observe(viewLifecycleOwner, Observer {
+        localVM.getParents().observe(viewLifecycleOwner, Observer {
             globalVM.setWebParents(it)
         })
 
-        localViewModel.getChildren().observe(viewLifecycleOwner, Observer {
+        localVM.getChildren().observe(viewLifecycleOwner, Observer {
             childrenAdapter.setChips(it)
         })
 
@@ -112,7 +110,7 @@ class WebFragment : Fragment(),
         return true
     }
 
-    private fun setDetail(chip: ChipIdentity?) {
+    private fun setDetail(chip: Chip?) {
 
         if(chip?.parentId == null) {
             motionLayout.transitionToState(R.id.motionSceneNoDetail)
@@ -135,9 +133,9 @@ class WebFragment : Fragment(),
 
         val directions = WebFragmentDirections
             .actionWebFragmentToChipperFragment(
-              localViewModel.getChipId() ?: return)
+              localVM.getChip().value?.id ?: return)
 
-        findNavController().navigate(directions)
+        findNavController().nav(directions)
     }
 
     //RecyclerAdapter Handler ---------------------------------------------------------
@@ -145,10 +143,11 @@ class WebFragment : Fragment(),
         gestureDetector.onTouchEvent(event)
     }
 
-    override fun chipDelete(chip: ChipCard) {
-//        globalVM.setChipAction(
-//              ChipAction.instance(
-//                    chip.asChip(localViewModel.getChipId()), MainActivity.EditorAction.DELETE))
+    override fun chipDelete(id: Long) {
+
+        findNavController().nav(
+          WebFragmentDirections.actionWebFragmentToEditorFragment(
+            EditorConsts.DELETE, id))
     }
     //---------------------------------------------------------------------------------
 
@@ -191,7 +190,7 @@ class WebFragment : Fragment(),
 
         override fun onSingleTapUp(event: MotionEvent?): Boolean {
 
-            localViewModel.setFocusId(childrenAdapter.getSelectedId())
+            localVM.setChip(childrenAdapter.getSelectedId())
             return true
         }
 

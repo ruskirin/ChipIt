@@ -21,7 +21,7 @@
           android:layout_height="match_parent"
           android:visibility="gone"/>
 
-    <creations.rimov.com.chipit.viewgroups.EditorMatPrevVideoLayout
+    <creations.rimov.com.chipit.viewgroups.CustomVideoLayout
           android:id="@+id/matPreviewVideoLayout"
           android:layout_width="match_parent"
           android:layout_height="match_parent"

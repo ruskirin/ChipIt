@@ -18,7 +18,9 @@ class TopicChipAdapter : RecyclerView.Adapter<TopicChipAdapter.ChipViewHolder>()
     private lateinit var children: List<ChipCard>
 
     private val glideOptions by lazy {
-        RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
+        RequestOptions()
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
     }
 
     init {

@@ -8,6 +8,9 @@ import creations.rimov.com.chipit.database.objects.ChipReference
 
 class GlobalViewModel : ViewModel() {
 
+    //Pair(width, height)
+    var screenDimen: Pair<Int, Int> = Pair(0, 0)
+
     //Primary chip currently being viewed
     private val focusChip: MutableLiveData<Chip?> = MutableLiveData()
 
@@ -20,6 +23,7 @@ class GlobalViewModel : ViewModel() {
 
     private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
+
 
     fun getFocusChip() = focusChip
 

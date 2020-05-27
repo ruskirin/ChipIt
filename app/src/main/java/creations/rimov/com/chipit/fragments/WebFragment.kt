@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
@@ -16,9 +17,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.adapters.viewholders.web.WebTouchCallback
+import creations.rimov.com.chipit.adapters.viewholders.web.WebViewHolder
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.Chip
-import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.view_models.GlobalViewModel
@@ -26,10 +28,11 @@ import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
 
-class WebFragment : Fragment(),
-    WebRecyclerAdapter.Handler,
-    View.OnTouchListener,
-    MotionLayout.TransitionListener {
+class WebFragment
+    : Fragment(),
+      MotionLayout.TransitionListener,
+      View.OnTouchListener,
+      WebTouchCallback.Handler {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
@@ -41,13 +44,13 @@ class WebFragment : Fragment(),
 
     private lateinit var motionLayout: MotionLayout
 
-    private val detailImage: ImageView by lazy {webDetailImg}
-
-    private val childrenAdapter: WebRecyclerAdapter by lazy {
-        WebRecyclerAdapter(this@WebFragment)
+    private val touchHelper: ItemTouchHelper by lazy {
+        ItemTouchHelper(WebTouchCallback(this))
     }
 
-    private lateinit var gestureDetector: GestureDetector
+    private val detailImage: ImageView by lazy {webDetailImg}
+
+    private lateinit var childrenAdapter: WebRecyclerAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +58,7 @@ class WebFragment : Fragment(),
 
         activity?.let {
             globalVM = it.getViewModel()
-
-            gestureDetector = GestureDetector(it, ChipGestureDetector())
-            gestureDetector.setIsLongpressEnabled(true)
+            childrenAdapter = WebRecyclerAdapter(it.applicationContext)
         }
 
         localVM.setChip(passedArgs.parentId)
@@ -76,8 +77,10 @@ class WebFragment : Fragment(),
         view.webChildrenView.apply {
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(
-              3, RecyclerView.VERTICAL)
+              2, RecyclerView.VERTICAL)
             setHasFixedSize(true)
+
+            touchHelper.attachToRecyclerView(this)
         }
 
         localVM.getChip().observe(viewLifecycleOwner, Observer {
@@ -138,21 +141,17 @@ class WebFragment : Fragment(),
         findNavController().nav(directions)
     }
 
-    //RecyclerAdapter Handler ---------------------------------------------------------
-    override fun chipTouch(event: MotionEvent) {
-        gestureDetector.onTouchEvent(event)
-    }
-
-    override fun chipDelete(id: Long) {
+    //WebTouchCallback Handler -------------------------------------------------------------
+    override fun promptDelete(id: Long) {
 
         findNavController().nav(
           WebFragmentDirections.actionWebFragmentToEditorFragment(
             EditorConsts.DELETE, id))
     }
-    //---------------------------------------------------------------------------------
 
-    //MotionLayout.TransitionListener -------------------------------------------------
-    override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {
+    //MotionLayout.TransitionListener ------------------------------------------
+    override fun onTransitionChange(
+      motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {
 
         motionLayout?.let {
             if(startId == R.id.motionSceneWebStart && endId == R.id.motionSceneWebMax) {
@@ -164,7 +163,9 @@ class WebFragment : Fragment(),
             }
         }
     }
-    override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
+
+    override fun onTransitionCompleted(
+      motionLayout: MotionLayout?, id: Int) {
 
         motionLayout?.let {
             when(id) {
@@ -177,29 +178,12 @@ class WebFragment : Fragment(),
             }
         }
     }
-    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
-    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {}
-    //---------------------------------------------------------------------------------
 
-    inner class ChipGestureDetector : GestureDetector.SimpleOnGestureListener() {
+    override fun onTransitionTrigger(
+      p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
 
-        //Must return true to ensure gestures are not ignored
-        override fun onDown(event: MotionEvent?): Boolean {
-            return true
-        }
+    override fun onTransitionStarted(
+      p0: MotionLayout?, p1: Int, p2: Int) {}
 
-        override fun onSingleTapUp(event: MotionEvent?): Boolean {
-
-            localVM.setChip(childrenAdapter.getSelectedId())
-            return true
-        }
-
-        override fun onLongPress(event: MotionEvent?) {
-
-            if(childrenAdapter.selectedChip.isEditing())
-                childrenAdapter.selectedChip.edit(false)
-            else
-                childrenAdapter.selectedChip.edit(true)
-        }
-    }
+    //--------------------------------------------------------------------------
 }

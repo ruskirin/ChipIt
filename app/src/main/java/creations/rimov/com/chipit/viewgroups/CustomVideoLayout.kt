@@ -7,10 +7,10 @@ import android.widget.ImageButton
 import android.widget.VideoView
 import androidx.constraintlayout.widget.ConstraintLayout
 import creations.rimov.com.chipit.R
-import kotlinx.android.synthetic.main.editor_material_video.view.*
+import kotlinx.android.synthetic.main.viewgroup_video.view.*
 import kotlinx.android.synthetic.main.viewgroup_play_controls.view.*
 
-class EditorMatPrevVideoLayout(context: Context, attrs: AttributeSet)
+class CustomVideoLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs) {
 
     private val video: VideoView by lazy {promptPrevVideo}
@@ -20,6 +20,6 @@ class EditorMatPrevVideoLayout(context: Context, attrs: AttributeSet)
     private val btnRight: ImageButton by lazy {btnPlaybackRight}
 
     init {
-        View.inflate(context, R.layout.editor_material_video, this)
+        View.inflate(context, R.layout.viewgroup_video, this)
     }
 }

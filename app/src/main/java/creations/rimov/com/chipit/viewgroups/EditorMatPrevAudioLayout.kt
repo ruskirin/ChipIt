@@ -12,6 +12,6 @@ class EditorMatPrevAudioLayout(context: Context, attrs: AttributeSet)
     //TODO NOW: remember to change the image of play button dynamically
 
     init {
-        View.inflate(context, R.layout.editor_material_audio, this)
+        View.inflate(context, R.layout.viewgroup_audio, this)
     }
 }

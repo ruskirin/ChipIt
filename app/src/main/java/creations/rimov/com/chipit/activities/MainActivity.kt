@@ -34,10 +34,6 @@ class MainActivity : AppCompatActivity(),
         const val REQUEST_WRITE_EXTERNAL_STORAGE = 1000
     }
 
-    //TODO FUTURE: maybe move screen dimen to globalViewModel?
-    private var screenH: Float = 0f
-    private var screenW: Float = 0f
-
     private val globalVM: GlobalViewModel by lazy {
         getViewModel<GlobalViewModel>()
     }
@@ -270,7 +266,10 @@ class MainActivity : AppCompatActivity(),
 
         val displayMetrics = resources.displayMetrics
 
-        screenH = displayMetrics.heightPixels.toFloat()
-        screenW = displayMetrics.widthPixels.toFloat()
+        globalVM.screenDimen = globalVM.screenDimen.copy(
+          displayMetrics.widthPixels,
+          displayMetrics.heightPixels)
+
+        Log.i("MainActivity", "::initScreen(): setting dimen to: ${globalVM.screenDimen}")
     }
 }

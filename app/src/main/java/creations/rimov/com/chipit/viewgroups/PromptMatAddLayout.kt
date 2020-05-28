@@ -21,7 +21,7 @@ class PromptMatAddLayout(context: Context, attrs: AttributeSet)
     private val btnNew by lazy {btnPromptAddNew}
     private val btnStorage by lazy {btnPromptAddStorage}
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private var type: Int = 0
 

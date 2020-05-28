@@ -20,7 +20,7 @@ class EditorMatPrevLayout(context: Context, attrs: AttributeSet)
       CustomView<EditorMatPrevLayout.Handler>,
       View.OnClickListener {
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private val btnAddMat: Button by lazy {btnAddMatPrev}
     private val img: ImageView by lazy {promptPreviewImg}

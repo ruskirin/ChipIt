@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
       xmlns:android="http://schemas.android.com/apk/res/android"
-      android:layout_width="match_parent" android:layout_height="match_parent">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <creations.rimov.com.chipit.viewgroups.CustomVideoLayout
+          android:id="@+id/cardAudio"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:layout_gravity="center"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toStartOf="@id/cardGuide"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:adjustViewBounds="true"/>
+
+    <include
+          layout="@layout/recycler_web_card_viewgroup"
+          app:layout_constraintStart_toStartOf="@id/cardAudio"
+          app:layout_constraintEnd_toEndOf="@id/cardAudio"
+          app:layout_constraintTop_toTopOf="@id/cardAudio"
+          app:layout_constraintBottom_toBottomOf="@id/cardAudio"/>
+
+    <androidx.constraintlayout.widget.Guideline
+          android:id="@+id/cardGuide"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:layout_constraintGuide_percent="1"
+          android:orientation="vertical"/>
+
+    <Button
+          android:id="@+id/btnCardEdit"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:gravity="center"
+          app:layout_constraintStart_toEndOf="@id/cardGuide"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="@id/cardAudio"
+          app:layout_constraintBottom_toBottomOf="@id/cardAudio"
+          android:backgroundTint="@color/colorAccent"
+          android:drawableStart="@drawable/ic_edit"
+          android:text="@string/editor_detail_btn_edit"
+          android:textColor="@color/colorPrimaryDark"
+          android:visibility="gone"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

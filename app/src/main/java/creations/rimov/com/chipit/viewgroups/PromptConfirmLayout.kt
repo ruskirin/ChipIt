@@ -20,7 +20,7 @@ class PromptConfirmLayout(context: Context, attrs: AttributeSet)
 
     private val promptText: TextView by lazy {textPromptConfirm}
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     init {
         View.inflate(context, R.layout.prompt_confirm, this)

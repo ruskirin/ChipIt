@@ -25,7 +25,7 @@ class PromptEditTextLayout(context: Context, attrs: AttributeSet)
         const val TEXTMULTI = 20001
     }
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private var type: Int = 0 //EditorConsts.EDIT_TITLE | EditorConsts.EDIT_DESC
 

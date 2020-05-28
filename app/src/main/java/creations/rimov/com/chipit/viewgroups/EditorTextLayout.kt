@@ -26,7 +26,7 @@ class EditorTextLayout(context: Context, attrs: AttributeSet)
     }
 
     private var type: Int = Type.TITLE
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private val btnAddText: Button by lazy {btnEditorText}
     private val textLayout: ScrollView by lazy {editorTextLayout}

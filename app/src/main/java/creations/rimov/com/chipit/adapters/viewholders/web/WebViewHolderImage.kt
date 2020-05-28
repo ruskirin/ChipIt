@@ -10,15 +10,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.adapters.ViewHolderHandler
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.extensions.gone
-import creations.rimov.com.chipit.extensions.visible
 import kotlinx.android.synthetic.main.recycler_web_card_image.view.*
+import kotlinx.android.synthetic.main.recycler_web_card_viewgroup.view.*
 
 class WebViewHolderImage(itemView: View)
     : WebViewHolder(itemView),
       View.OnTouchListener {
 
-    val content: ImageView = itemView.cardImage
+    val image: ImageView = itemView.cardImage
     override val name: TextView = itemView.cardName
     override val desc: TextView = itemView.cardDesc
     override val counter: TextView = itemView.cardCounter
@@ -47,20 +46,6 @@ class WebViewHolderImage(itemView: View)
         }
     }
 
-    //TODO ANIMATE
-    override fun toggleEdit(edit: Boolean) {
-
-        if(edit) btnEdit.visible()
-        else btnEdit.gone()
-    }
-
-    //TODO ANIMATE
-    override fun toggleDetail() {
-
-        if(desc.isVisible) desc.gone()
-        else desc.visible()
-    }
-
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
         when(event?.action) {
@@ -71,13 +56,13 @@ class WebViewHolderImage(itemView: View)
         return true
     }
 
-    private fun displayChip(chip: ChipCard) {
+    override fun displayChip(chip: ChipCard) {
 
-        Glide.with(content.context)
+        Glide.with(image.context)
             .load(chip.matPath)
             .apply(RequestOptions()
-                       .override(content.width, content.height))
-            .into(content)
+                       .override(image.width, image.height))
+            .into(image)
 
         name.text = chip.name
         desc.text = chip.desc

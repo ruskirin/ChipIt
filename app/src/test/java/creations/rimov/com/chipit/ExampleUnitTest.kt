@@ -1,5 +1,6 @@
 package creations.rimov.com.chipit
 
+import android.util.Log
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +13,18 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        val inone = 3
+        val intwo = 2
+
+        var match = false
+
+        val ONE = 1
+        val TWO = 2
+
+        when(inone or intwo) {
+            ONE, TWO -> match = true
+        }
+
+        assertEquals(true, match)
     }
 }

@@ -1,27 +1,27 @@
-package creations.rimov.com.chipit.viewgroups
+package creations.rimov.com.chipit.viewgroups.prompt
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
+import creations.rimov.com.chipit.viewgroups.custom.CustomView
 import kotlinx.android.synthetic.main.prompt_add_material.view.*
 
 class PromptMatAddLayout(context: Context, attrs: AttributeSet)
     : FrameLayout(context, attrs),
       View.OnClickListener,
-      CustomView<PromptMatAddLayout.Handler> {
+    CustomView<PromptMatAddLayout.Handler> {
 
     private val layoutPromptAddFrom by lazy {layoutBtnAddFrom}
 
     private val btnNew by lazy {btnPromptAddNew}
     private val btnStorage by lazy {btnPromptAddStorage}
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private var type: Int = 0
 

@@ -1,11 +1,14 @@
 package creations.rimov.com.chipit.extensions
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun Date.getChipUpdateDate() = SimpleDateFormat("MM-dd-yy '@' HH:mm:ss").format(this)
+//TODO FUTURE: see DateTimeFormatter alternative that is threadsafe
+fun Date.getChipUpdateDate(): String
+  = SimpleDateFormat("MM-dd-yy '@' HH:mm:ss").format(this)
 
-fun Date.getChipCreateDate() = SimpleDateFormat("MM-dd-yy").format(this)
+fun Date.getChipCreateDate(): String
+  = SimpleDateFormat("MM-dd-yy").format(this)
 
-fun Date.getChipFileDate() = SimpleDateFormat("yyyyMMdd'at'HHmmss").format(this)
+fun Date.getChipFileDate(): String
+  = SimpleDateFormat("yyyyMMdd'at'HHmmss").format(this)

@@ -1,6 +1,8 @@
-package creations.rimov.com.chipit.viewgroups
+package creations.rimov.com.chipit.viewgroups.custom
 
-interface CustomView<in T> {
+interface CustomView<T> {
+
+    var handler: T
 
     /** Way of initializing a custom viewgroup with a communication interface
      * @param handler: instance of an interface for communication with parent

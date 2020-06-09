@@ -11,17 +11,19 @@ class EditorViewModel(handler: AsyncHandler) : ViewModel() {
 
     private val repository = EditRepo(DatabaseApplication.database!!, handler)
 
+    var chipBackup: Chip? = null
+
     fun getChip(chipId: Long) {
         repository.getChip(chipId)
     }
 
     fun saveNew(chip: Chip) {
-        Log.i("EditorVM", "::saveNew(): saving new chip (id = ${chip.id})")
+        Log.i("EditorVM", "::saveNew(): saving new chip $chip)")
         repository.insertChip(chip)
     }
     //Finished editing; update flags and update the DB
     fun saveEdit(chip: Chip) {
-        Log.i("EditorVM", "::saveEdit(): updating chip (id = ${chip.id})")
+        Log.i("EditorVM", "::saveEdit(): updating chip $chip)")
         repository.updateChip(chip)
     }
 

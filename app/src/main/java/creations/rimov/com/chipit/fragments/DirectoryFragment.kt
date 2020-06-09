@@ -5,23 +5,22 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.constants.EditorConsts
-import creations.rimov.com.chipit.database.objects.ChipIdentity
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.view_models.DirectoryViewModel
-import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.view_models.CommsViewModel
 import kotlinx.android.synthetic.main.frag_directory.view.*
 
 class DirectoryFragment
     : Fragment(),
       DirectoryRecyclerAdapter.DirectoryAdapterHandler {
 
-    private lateinit var globalVM: GlobalViewModel
+    private lateinit var commsVM: CommsViewModel
 
     //Fragment's own ViewModel
     private val localVM: DirectoryViewModel by lazy {
@@ -39,7 +38,7 @@ class DirectoryFragment
         Log.i("DirectoryFrag", "::onCreate()")
 
         activity?.let {
-            globalVM = it.getViewModel()
+            commsVM = it.getViewModel()
 
             recyclerAdapter = DirectoryRecyclerAdapter(
                   this@DirectoryFragment)
@@ -81,14 +80,14 @@ class DirectoryFragment
 
         val directions =
             DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(recyclerAdapter.getSelectedId())
-        findNavController().navigate(directions)
+        findNavController().nav(directions)
     }
 
     override fun topicEdit(chipId: Long) {
 
         //Necessary to set editAction here to avoid repeated, uncalled for actions
-        globalVM.setEditAction(EditorConsts.EDIT)
-        findNavController().navigate(
+        commsVM.setEditAction(EditorConsts.EDIT)
+        findNavController().nav(
           DirectoryFragmentDirections
               .actionDirectoryFragmentToEditorFragment(EditorConsts.EDIT, chipId))
     }
@@ -97,7 +96,7 @@ class DirectoryFragment
 
         //NOT setting editAction for delete because it first has to be confirmed
         //  in the prompt; the prompt has the responsibility of setting action
-        findNavController().navigate(
+        findNavController().nav(
           DirectoryFragmentDirections
               .actionDirectoryFragmentToEditorFragment(EditorConsts.DELETE, chipId)
         )

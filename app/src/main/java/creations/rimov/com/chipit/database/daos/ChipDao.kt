@@ -25,15 +25,15 @@ interface ChipDao {
     fun getChipReferenceParentTreeLive(id: Long?): LiveData<List<ChipReference>>
 
     @Transaction
-    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, description, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
     fun getChipCards(parentId: Long): List<ChipCard>
 
     @Transaction
-    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
+    @Query("SELECT id, name, description, num_children, material_type, material_path FROM chips WHERE parent_id = :parentId")
     fun getChipCardsLive(parentId: Long): LiveData<List<ChipCard>>
 
     @Transaction
-    @Query("SELECT id, name, num_children, material_type, material_path FROM chips WHERE parent_id IS NULL")
+    @Query("SELECT id, name, description, num_children, material_type, material_path FROM chips WHERE parent_id IS NULL")
     fun getChipCardsOfNullLive(): LiveData<List<ChipCard>>
 
     @Query("SELECT id, parent_id, name, description, date, num_children, material_type, material_path FROM chips WHERE id = :id")

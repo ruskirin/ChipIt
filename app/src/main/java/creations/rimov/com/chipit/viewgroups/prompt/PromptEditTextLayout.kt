@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.viewgroups
+package creations.rimov.com.chipit.viewgroups.prompt
 
 import android.content.Context
 import android.util.AttributeSet
@@ -9,11 +9,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.viewgroups.custom.CustomView
 import kotlinx.android.synthetic.main.prompt_text.view.*
 
 class PromptEditTextLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs),
-      CustomView<PromptEditTextLayout.Handler>,
+    CustomView<PromptEditTextLayout.Handler>,
       View.OnClickListener {
 
     /**
@@ -25,7 +26,7 @@ class PromptEditTextLayout(context: Context, attrs: AttributeSet)
         const val TEXTMULTI = 20001
     }
 
-    private lateinit var handler: Handler
+    override lateinit var handler: Handler
 
     private var type: Int = 0 //EditorConsts.EDIT_TITLE | EditorConsts.EDIT_DESC
 
@@ -59,14 +60,16 @@ class PromptEditTextLayout(context: Context, attrs: AttributeSet)
                 EditorConsts.EDIT_TITLE -> {
                     editTextParent.counterMaxLength = resources.getInteger(
                       R.integer.editor_title_maxlength)
-                    editText.inputType = InputTypes.TEXT
+                    editText.inputType =
+                        InputTypes.TEXT
                     editText.hint = resources.getString(
                       R.string.editor_title_def)
                 }
                 EditorConsts.EDIT_DESC -> {
                     editTextParent.counterMaxLength = resources.getInteger(
                       R.integer.editor_desc_maxlength)
-                    editText.inputType = InputTypes.TEXTMULTI
+                    editText.inputType =
+                        InputTypes.TEXTMULTI
                     editText.hint = resources.getString(
                       R.string.editor_desc_def)
                 }

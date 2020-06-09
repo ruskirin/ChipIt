@@ -9,22 +9,73 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.FileProvider
+import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.getChipFileDate
-import creations.rimov.com.chipit.extensions.getChipUpdateDate
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 object CameraUtil {
 
-    private const val IMAGE_PROVIDER_AUTHORITY = "com.rimov.creations.chipit.fileprovider"
-    private const val IMG_FILENAME_PREFIX = "ChipIt_IMG_"
+    private const val IMAGE_PROVIDER_AUTHORITY =
+        "com.rimov.creations.chipit.fileprovider"
 
-    const val CODE_TAKE_PICTURE = 100
-    const val CODE_GET_IMAGE = 200
+    private const val IMG_PREFIX = "ChipIt_IMG_"
+    private const val VIDEO_PREFIX = "ChipIt_VID_"
 
-    //
+    const val CAPTURE_PIC = 100
+    const val FIND_PIC = 110
+
+    const val CAPTURE_VID = 200
+    const val FIND_VID = 210
+
+    @JvmStatic
+    fun intentCaptureMedia(appContext: Context, uri: Uri?, type: Int): Intent? {
+
+        val intent = if(type==EditorConsts.IMAGE)
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                     else if(type==EditorConsts.VIDEO)
+            Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                     else null
+
+        return intent?.apply {
+            //Verifies that an application that can handle this intent exists
+            if(this.resolveActivity(appContext.packageManager)==null)
+                throw UnsupportedOperationException("A camera is required for operation")
+
+            putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        }
+    }
+
+    @JvmStatic
+    fun intentFindMedia(appContext: Context, type: Int): Intent {
+
+        return Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            this.type = if(type==EditorConsts.IMAGE)
+                "image/*"
+                   else if(type==EditorConsts.VIDEO)
+                "video/*"
+                   else null
+
+            //Verifies that an application that can handle this intent exists
+            if(this.resolveActivity(appContext.packageManager)==null)
+                throw UnsupportedOperationException("A camera is required for operation")
+        }
+    }
+
+    @JvmStatic
+    fun getCameraUri(appContext: Context, type: Int): Uri? {
+
+        return if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)
+                 getCameraUriOld(
+                   appContext,
+                   getImageFile() ?: return null)
+               else {
+                 getCameraUriNew(
+                   appContext, getDirections(type))
+        }
+    }
+
     @JvmStatic
     fun getImageFile(storageDir: File? = null): File? {
 
@@ -51,37 +102,62 @@ object CameraUtil {
         }
     }
 
-    @JvmStatic
-    fun getImageUri(context: Context, imageFile: File): Uri =
-        FileProvider.getUriForFile(context, IMAGE_PROVIDER_AUTHORITY, imageFile)
-
-    @JvmStatic
-    fun getImageUriNew(context: Context): Uri? {
-
-        val resolver = context.contentResolver
-        val values = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, IMG_FILENAME_PREFIX + Date().getChipFileDate())
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/ChipIt")
-        }
-
-        return resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-    }
-
-    //TODO: consider adding a verification method to ensure no unintended files are somehow deleted
+    //TODO: consider adding a verification method to ensure no unintended files
+    //  are somehow deleted
     @JvmStatic
     fun deleteImageFile(imagePath: String) = File(imagePath).delete()
 
-    @JvmStatic
+    private fun getDirections(type: Int): Map<String, String> {
+
+        return when(type) {
+            EditorConsts.IMAGE -> {
+                mapOf("mime" to "image/jpeg", "prefix" to IMG_PREFIX)
+            }
+            EditorConsts.VIDEO -> {
+                mapOf("mime" to "video/mp4", "prefix" to VIDEO_PREFIX)
+            }
+            else -> {
+                mapOf("mime" to "image/jpeg", "prefix" to IMG_PREFIX)
+            }
+        }
+    }
+
+    private fun getCameraUriOld(
+      context: Context, file: File): Uri =
+        FileProvider.getUriForFile(context, IMAGE_PROVIDER_AUTHORITY, file)
+
+    private fun getCameraUriNew(
+      context: Context, directions: Map<String, String>): Uri? {
+
+        val resolver = context.contentResolver
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME,
+                directions["prefix"] + Date().getChipFileDate())
+            put(MediaStore.MediaColumns.MIME_TYPE,
+                directions["mime"])
+            put(MediaStore.MediaColumns.RELATIVE_PATH,
+                "DCIM/ChipIt")
+        }
+
+        return when(directions["prefix"]) {
+            IMG_PREFIX ->
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            VIDEO_PREFIX ->
+                resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+            else ->
+                null
+        }
+    }
+
     private fun createImageFile(storageDir: File): File {
 
         //TODO: consider modifying locale based on phone location
         val time = Date().getChipFileDate() //Part of the file name
-        val file = File(storageDir, "$IMG_FILENAME_PREFIX$time.jpg")
+        val file = File(storageDir, "$IMG_PREFIX$time.jpg")
 
         return file
     }
 
-    @JvmStatic
-    private fun isExternalStorageAvailable(): Boolean = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+    private fun isExternalStorageAvailable(): Boolean
+      = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
 }

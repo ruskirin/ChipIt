@@ -22,9 +22,6 @@
         <action android:id="@+id/action_webFragment_to_chipperFragment" app:destination="@id/chipperFragment"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
                 app:popUpTo="@id/webFragment" app:popUpToInclusive="true"/>
-        <action android:id="@+id/action_webFragment_to_directoryFragment" app:destination="@id/directoryFragment"
-                app:popUpToInclusive="true" app:popUpTo="@id/directoryFragment"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <argument android:name="parentId" app:argType="long" android:defaultValue="-1L"/>
         <action
               android:id="@+id/action_webFragment_to_editorFragment"
@@ -35,9 +32,6 @@
     <fragment android:id="@+id/chipperFragment" android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
               android:label="ChipperFragment">
         <argument android:name="chipId" app:argType="long" android:defaultValue="-1L"/>
-        <action android:id="@+id/action_chipperFragment_to_webFragment" app:destination="@id/webFragment"
-                app:popUpTo="@id/webFragment" app:popUpToInclusive="true"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment
           android:id="@+id/editorFragment"
@@ -49,7 +43,8 @@
               android:defaultValue="8010" />
         <action
               android:id="@+id/action_editorFragment_to_promptFragment"
-              app:destination="@id/promptFragment" />
+              app:destination="@id/promptFragment"
+              app:launchSingleTop="true" />
         <argument
               android:name="chipId"
               app:argType="long"

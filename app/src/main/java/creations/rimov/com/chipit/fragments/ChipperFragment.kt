@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.database.repos.RepoHandler
 import creations.rimov.com.chipit.extensions.getViewModel
@@ -14,7 +13,7 @@ import creations.rimov.com.chipit.objects.CoordPoint
 import creations.rimov.com.chipit.util.RenderUtil
 import creations.rimov.com.chipit.view_models.ChipperTouchViewModel
 import creations.rimov.com.chipit.view_models.ChipperViewModel
-import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.view_models.CommsViewModel
 import creations.rimov.com.chipit.views.ChipperView
 import kotlinx.android.synthetic.main.frag_chipper.view.*
 
@@ -35,7 +34,7 @@ class ChipperFragment :
         const val NAV_CHIP = 500
     }
 
-    private lateinit var globalViewModel: GlobalViewModel
+    private lateinit var commsVM: CommsViewModel
     private lateinit var localViewModel: ChipperViewModel
 
     private val localTouchViewModel: ChipperTouchViewModel by lazy {
@@ -57,14 +56,14 @@ class ChipperFragment :
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalViewModel = it.getViewModel()
+            commsVM = it.getViewModel()
 
             localViewModel = getViewModel {
                 ChipperViewModel(it.application, this)
             }
         }
 
-        globalViewModel.getFocusChip().observe(this, Observer {
+        commsVM.getFocusChip().observe(this, Observer {
             localViewModel.setChipId(it?.id)
         })
     }
@@ -242,9 +241,9 @@ class ChipperFragment :
                     CoordPoint(x, y).normalize(viewWidth, viewHeight, backgroundRect.width(), backgroundRect.height()))
 
                 if(touchedChip != null) {
-                    globalViewModel.setFocusChip(
-                          touchedChip.asChip(globalViewModel.getFocusChip().value?.id),
-                          false)
+                    commsVM.setFocusChip(
+                      touchedChip.asChip(commsVM.getFocusChip().value?.id),
+                      false)
                 }
             }
         }

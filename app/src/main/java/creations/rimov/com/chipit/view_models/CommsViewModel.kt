@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModel
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 
-class GlobalViewModel : ViewModel() {
+class CommsViewModel : ViewModel() {
+
+    //Pair(width, height)
+    var screenDimen: Pair<Int, Int> = Pair(0, 0)
 
     //Primary chip currently being viewed
     private val focusChip: MutableLiveData<Chip?> = MutableLiveData()
-
-    //Flags for different scenarios
-    private val action: MutableLiveData<Int> = MutableLiveData(0)
-    private val editAction: MutableLiveData<Int> = MutableLiveData()
-
     //Backup slot for chips
     private var bufferChip: Chip? = null
+
+    //Flags for different scenarios
+    private val editAction: MutableLiveData<Int> = MutableLiveData()
 
     private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
@@ -26,12 +27,11 @@ class GlobalViewModel : ViewModel() {
     fun setFocusChip(chip: Chip?, save: Boolean) {
 
         if(chip != focusChip.value) {
-            Log.i("GlobalVM", "::setFocusChip(): changing focusChip to " +
-                              "chip ${chip?.id}, buffering? $save")
-
             if(save) bufferChip = focusChip.value
 
-            Log.i("GlobalVM", "::setFocusChip(): buffering chip ${bufferChip}")
+            Log.i("CommsVM",
+                  "#setFocusChip(): focusChip $chip " +
+                  "bufferChip $bufferChip")
 
             focusChip.postValue(chip)
         }
@@ -42,14 +42,14 @@ class GlobalViewModel : ViewModel() {
     fun getFocusImgPath() = focusChip.value?.matPath
 
     fun setName(text: String) {
-        Log.i("GlobalVM", "::setName(): changing name to $text")
+        Log.i("CommsVM", "::setName(): changing name to $text")
 
         focusChip.postValue(
           focusChip.value?.copy(name = text))
     }
 
     fun setDesc(text: String) {
-        Log.i("GlobalVM", "::setDesc(): changing desc to $text")
+        Log.i("CommsVM", "::setDesc(): changing desc to $text")
 
         focusChip.postValue(
           focusChip.value?.copy(desc = text))
@@ -62,22 +62,17 @@ class GlobalViewModel : ViewModel() {
     }
 
     fun loadBufferChip() {
-        Log.i("GlobalVM", "::loadSavedChip(): loading chip ${bufferChip}")
+        Log.i("CommsVM", "::loadSavedChip(): loading " +
+                          "chip $bufferChip")
 
         focusChip.postValue(bufferChip)
         bufferChip = null
     }
 
-    fun getAction() = action
-
-    fun setAction(action: Int) {
-        this.action.postValue(action)
-    }
-
     fun getEditAction() = editAction
 
     fun setEditAction(action: Int) {
-        Log.i("GlobalVM", "::setEditAction(): setting action $action")
+        Log.i("CommsVM", "::setEditAction(): setting action $action")
 
         editAction.postValue(action)
     }

@@ -1,5 +1,6 @@
 package creations.rimov.com.chipit.activities
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -9,7 +10,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -18,25 +18,24 @@ import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipReference
 import creations.rimov.com.chipit.extensions.getViewModel
+import creations.rimov.com.chipit.extensions.nav
 import creations.rimov.com.chipit.fragments.DirectoryFragmentDirections
 import creations.rimov.com.chipit.fragments.WebFragmentDirections
-import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.view_models.CommsViewModel
 import creations.rimov.com.chipit.viewgroups.MainToolbarLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-    View.OnClickListener, MainToolbarLayout.ToolbarHandler {
+class MainActivity : AppCompatActivity(),
+    NavController.OnDestinationChangedListener,
+    View.OnClickListener,
+    MainToolbarLayout.ToolbarHandler {
 
     object Constant {
         const val REQUEST_WRITE_EXTERNAL_STORAGE = 1000
     }
 
-    //TODO FUTURE: maybe move screen dimen to globalViewModel?
-    private var screenH: Float = 0f
-    private var screenW: Float = 0f
-
-    private val globalVM: GlobalViewModel by lazy {
-        getViewModel<GlobalViewModel>()
+    private val commsVM: CommsViewModel by lazy {
+        getViewModel<CommsViewModel>()
     }
 
     private val navHostFragment: NavHostFragment by lazy {
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private val fab: FloatingActionButton by lazy {mainFab}
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,11 +61,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         fab.setOnClickListener(this)
 
-        globalVM.getWebTransition().observe(this, Observer { forward ->
+        commsVM.getWebTransition().observe(this, Observer {forward ->
             //TODO FUTURE: see if this is necessary
         })
 
-        globalVM.getWebParents().observe(this, Observer {
+        commsVM.getWebParents().observe(this, Observer {
             toolbar.setParents(it)
         })
     }
@@ -77,7 +75,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         when(view?.id) {
             R.id.mainFab       -> {
                 if(navController.currentDestination?.id==R.id.editorFragment) {
-                    globalVM.setEditAction(EditorConsts.SAVE)
+                    commsVM.setEditAction(EditorConsts.SAVE)
                     return
                 }
 
@@ -129,15 +127,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             android.R.id.home -> {
                 when(navController.currentDestination?.id) {
                     R.id.editorFragment -> {
-                        globalVM.setAction(EditorConsts.CANCEL)
-                        navController.popBackStack()
+                        commsVM.setEditAction(EditorConsts.CANCEL)
+                        navController.navigateUp()
                     }
                     R.id.webFragment -> {
-                        navigateTo(R.id.directoryFragment, null)
+                        navController.navigateUp()
                         return true
                     }
                     R.id.chipperFragment -> {
-                        navigateTo(R.id.webFragment, globalVM.getFocusId() ?: -1L)
+                        navController.navigateUp()
                         return true
                     }
                 }
@@ -160,16 +158,21 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         invalidateOptionsMenu()
 
+        Log.i("MainActivity", "::onDestinationChanged(): " +
+                              "current ${destination.label}")
+
         when(destination.id) {
             R.id.editorFragment -> {
                 setFabEdit(true)
                 toolbar.vanishToolbar(false)
             }
             R.id.directoryFragment -> {
+                commsVM.setFocusChip(null, false) //Reset the focus chip
+
                 setFabEdit(false)
                 toolbar.vanishToolbar(false)
             }
-            R.id.webFragment       -> {
+            R.id.webFragment -> {
                 setFabEdit(false)
                 toolbar.vanishToolbar(false)
             }
@@ -185,7 +188,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         Log.i("MainActivity", "::setSelectedChip(): new primary " +
                              "chip ${chip.id}")
 
-        globalVM.setFocusChip(chip.asChip(), false)
+        commsVM.setFocusChip(chip.asChip(), false)
     }
 
     private fun navigateTo(fragId: Int, args: Any?) {
@@ -199,16 +202,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     return
                 }
 
-                globalVM.setEditAction(args)
+                commsVM.setEditAction(args)
 
                 when(navController.currentDestination?.id) {
                     R.id.directoryFragment -> {
-                        navController.navigate(
+                        navController.nav(
                           DirectoryFragmentDirections
                               .actionDirectoryFragmentToEditorFragment(args))
                     }
                     R.id.webFragment -> {
-                        navController.navigate(
+                        navController.nav(
                           WebFragmentDirections
                               .actionWebFragmentToEditorFragment(args))
                     }
@@ -216,22 +219,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                         //TODO: implement if needed
                     }
                 }
-            }
-            R.id.directoryFragment -> {
-                navController.navigate(
-                  WebFragmentDirections.actionWebFragmentToDirectoryFragment())
-            }
-            R.id.webFragment -> {
-                if(args !is Long) {
-                    Toast.makeText(
-                      this,
-                      "Cannot navigate to fragment -- wrong arg passed",
-                      Toast.LENGTH_SHORT).show()
-
-                    return
-                }
-                navController.navigate(
-                  DirectoryFragmentDirections.actionDirectoryFragmentToWebFragment(args))
             }
             R.id.chipperFragment -> {
                 if(args !is Long) {
@@ -243,7 +230,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     return
                 }
 
-                navController.navigate(
+                navController.nav(
                   WebFragmentDirections.actionWebFragmentToChipperFragment(args))
             }
         }
@@ -267,7 +254,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         val displayMetrics = resources.displayMetrics
 
-        screenH = displayMetrics.heightPixels.toFloat()
-        screenW = displayMetrics.widthPixels.toFloat()
+        commsVM.screenDimen = commsVM.screenDimen.copy(
+          displayMetrics.widthPixels,
+          displayMetrics.heightPixels)
+
+        Log.i("MainActivity", "::initScreen(): setting dimen to: ${commsVM.screenDimen}")
     }
 }

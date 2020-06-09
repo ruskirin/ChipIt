@@ -8,26 +8,26 @@
         app:layoutDescription="@xml/web_motionscene">
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/webGuide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintGuide_percent="0.4"
-            android:orientation="horizontal"/>
+          android:id="@+id/webGuide"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:layout_constraintGuide_percent="0.4"
+          android:orientation="horizontal"/>
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/webChildrenView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
-            app:layout_constraintTop_toBottomOf="@id/webGuide"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:nestedScrollingEnabled="false"
-            android:clipToPadding="false"/>
+          android:id="@+id/webChildrenView"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
+          app:layout_constraintTop_toBottomOf="@id/webGuide"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:nestedScrollingEnabled="false"
+          android:clipToPadding="false"/>
 
     <include
-            android:id="@+id/webDetailLayout"
-            layout="@layout/web_detail"/>
+          android:id="@+id/webDetailLayout"
+          layout="@layout/web_detail"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

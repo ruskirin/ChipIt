@@ -12,6 +12,6 @@ class CustomAudioLayout(context: Context, attrs: AttributeSet)
     //TODO NOW: remember to change the image of play button dynamically
 
     init {
-        View.inflate(context, R.layout.viewgroup_audio, this)
+
     }
 }

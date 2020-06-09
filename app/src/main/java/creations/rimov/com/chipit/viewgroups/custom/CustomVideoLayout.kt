@@ -63,15 +63,20 @@ class CustomVideoLayout(context: Context, attrs: AttributeSet)
       seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
 
         seekbar?.let {
+            Log.i("CustomVideoLayout", "#onProgressChanged(): " +
+                                       "seekbar touch from user? $fromUser. " +
+                                       "Seeking to $progress")
             if(fromUser) handler.videoSeekTo(progress*1000)
         }
     }
 
     override fun onStartTrackingTouch(seekbar: SeekBar?) {
+        Log.i("CustomVideoLayout", "#onStartTrackingTouch()")
         handler.videoAction(MediaConsts.PAUSE)
     }
 
     override fun onStopTrackingTouch(seekbar: SeekBar?) {
+        Log.i("CustomVideoLayout", "#onStopTrackingTouch()")
         handler.videoAction(MediaConsts.PLAY)
     }
 

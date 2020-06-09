@@ -1,10 +1,8 @@
 package creations.rimov.com.chipit.view_models
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.test.espresso.idling.CountingIdlingResource
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.database.objects.ChipReference
 
@@ -23,15 +21,6 @@ class CommsViewModel : ViewModel() {
 
     private val webTransition: MutableLiveData<Boolean> = MutableLiveData()
     private val webParents: MutableLiveData<List<ChipReference>> = MutableLiveData()
-
-    private val idlingRes: MutableLiveData<CountingIdlingResource>
-      = MutableLiveData()
-
-    fun setIdlingRes(res: CountingIdlingResource?) {
-        res?.let {idlingRes.postValue(res)}
-    }
-
-    fun getIdlingRes() = idlingRes
 
     fun getFocusChip() = focusChip
 

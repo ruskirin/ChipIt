@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
-import androidx.test.espresso.idling.CountingIdlingResource
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.constants.MediaConsts
@@ -40,7 +39,6 @@ class EditorMatPrevLayout(context: Context, attrs: AttributeSet)
     override lateinit var handler: Handler
 
     private val threadHandler: android.os.Handler by lazy {Handler()}
-    private lateinit var controlsRunnable: Runnable
 
     private var player: MediaPlayer? = MediaPlayer()
     private var playerState: Int = MediaConsts.IDLE
@@ -85,13 +83,10 @@ class EditorMatPrevLayout(context: Context, attrs: AttributeSet)
 
     override fun videoSeekTo(time: Int) {
 
-        if(playerState != MediaConsts.PREPARED
-           && playerState != MediaConsts.COMPLETED)
+        Log.i("EditorMatPrevLayout",
+              "#videoSeekTo(): seeking to $time")
 
-            Log.i("EditorMatPrevLayout",
-                  "#videoSeekTo(): seeking to $time")
-
-            player?.seekTo(time)
+        player?.seekTo(time)
     }
 
     override fun videoAction(action: Int) {
@@ -112,9 +107,6 @@ class EditorMatPrevLayout(context: Context, attrs: AttributeSet)
                                     it.currentPosition/1000)
 
                                   threadHandler.postDelayed(this, 500)
-
-                                  Log.i("EditorMatPrevLayout",
-                                            "#videoAction(): updating seekbar")
                               }
                           }
                       })

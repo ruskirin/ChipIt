@@ -5,7 +5,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <creations.rimov.com.chipit.viewgroups.CustomVideoLayout
+    <creations.rimov.com.chipit.viewgroups.custom.CustomVideoLayout
           android:id="@+id/cardAudio"
           android:layout_width="0dp"
           android:layout_height="0dp"

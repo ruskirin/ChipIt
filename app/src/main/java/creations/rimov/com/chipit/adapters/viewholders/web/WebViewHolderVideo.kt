@@ -7,9 +7,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import creations.rimov.com.chipit.adapters.ViewHolderHandler
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.extensions.gone
-import creations.rimov.com.chipit.extensions.visible
-import creations.rimov.com.chipit.viewgroups.CustomVideoLayout
+import creations.rimov.com.chipit.viewgroups.custom.CustomVideoLayout
 import kotlinx.android.synthetic.main.recycler_web_card_video.view.*
 import kotlinx.android.synthetic.main.recycler_web_card_viewgroup.view.*
 

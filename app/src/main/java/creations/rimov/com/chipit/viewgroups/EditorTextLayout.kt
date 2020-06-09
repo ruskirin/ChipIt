@@ -2,7 +2,6 @@ package creations.rimov.com.chipit.viewgroups
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -13,11 +12,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
+import creations.rimov.com.chipit.viewgroups.custom.CustomView
 import kotlinx.android.synthetic.main.editor_text.view.*
 
 class EditorTextLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs),
-      CustomView<EditorTextLayout.Handler>,
+    CustomView<EditorTextLayout.Handler>,
       View.OnTouchListener {
 
     object Type {

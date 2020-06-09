@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.viewgroups
+package creations.rimov.com.chipit.viewgroups.custom
 
 interface CustomView<T> {
 

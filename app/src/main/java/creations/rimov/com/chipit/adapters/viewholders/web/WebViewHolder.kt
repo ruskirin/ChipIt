@@ -9,11 +9,11 @@ import creations.rimov.com.chipit.adapters.ViewHolderHandler
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import creations.rimov.com.chipit.viewgroups.CustomView
+import creations.rimov.com.chipit.viewgroups.custom.CustomView
 
 abstract class WebViewHolder(itemView: View)
     : RecyclerView.ViewHolder(itemView),
-      CustomView<ViewHolderHandler> {
+    CustomView<ViewHolderHandler> {
 
     override lateinit var handler: ViewHolderHandler
 

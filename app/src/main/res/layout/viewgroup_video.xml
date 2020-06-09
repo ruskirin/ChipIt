@@ -2,22 +2,26 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:parentTag="creations.rimov.com.chipit.viewgroups.CustomVideoLayout"
+      tools:parentTag="creations.rimov.com.chipit.viewgroups.custom.CustomVideoLayout"
       tools:layout_width="match_parent"
-      tools:layout_height="match_parent">
+      tools:layout_height="wrap_content">
 
-    <VideoView
-        android:id="@+id/promptPrevVideo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <SurfaceView
+          android:id="@+id/videoSurface"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
 
-    <include
-          android:id="@+id/promptPrevVideoControls"
-          layout="@layout/viewgroup_play_controls"
-          android:elevation="2dp"
-          app:layout_constraintStart_toStartOf="@id/promptPrevVideo"
-          app:layout_constraintEnd_toEndOf="@id/promptPrevVideo"
-          app:layout_constraintTop_toTopOf="@id/promptPrevVideo"
-          app:layout_constraintBottom_toBottomOf="@id/promptPrevVideo"/>
+    <creations.rimov.com.chipit.viewgroups.custom.CustomPlaybackControls
+          android:id="@+id/playbackControls"
+          android:layout_width="0dp"
+          android:layout_height="@dimen/standard_touch_smallsize"
+          android:elevation="@dimen/elevation_def"
+          app:layout_constraintStart_toStartOf="@id/videoSurface"
+          app:layout_constraintEnd_toEndOf="@id/videoSurface"
+          app:layout_constraintBottom_toBottomOf="@id/videoSurface"
+          android:background="@color/background_opaque_50"/>
 
 </merge>

@@ -11,6 +11,8 @@ class EditorViewModel(handler: AsyncHandler) : ViewModel() {
 
     private val repository = EditRepo(DatabaseApplication.database!!, handler)
 
+    var chipBackup: Chip? = null
+
     fun getChip(chipId: Long) {
         repository.getChip(chipId)
     }

@@ -12,10 +12,10 @@ import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.extensions.gone
 import creations.rimov.com.chipit.extensions.visible
-import creations.rimov.com.chipit.view_models.GlobalViewModel
-import creations.rimov.com.chipit.viewgroups.PromptConfirmLayout
-import creations.rimov.com.chipit.viewgroups.PromptMatAddLayout
-import creations.rimov.com.chipit.viewgroups.PromptEditTextLayout
+import creations.rimov.com.chipit.view_models.CommsViewModel
+import creations.rimov.com.chipit.viewgroups.prompt.PromptConfirmLayout
+import creations.rimov.com.chipit.viewgroups.prompt.PromptMatAddLayout
+import creations.rimov.com.chipit.viewgroups.prompt.PromptEditTextLayout
 import kotlinx.android.synthetic.main.frag_prompt.view.*
 
 class PromptFragment : DialogFragment(),
@@ -23,7 +23,7 @@ class PromptFragment : DialogFragment(),
     PromptEditTextLayout.Handler,
     PromptConfirmLayout.Handler {
 
-    private lateinit var globalVM: GlobalViewModel
+    private lateinit var commsVM: CommsViewModel
     private val passedArgs by navArgs<PromptFragmentArgs>()
 
     private lateinit var matAddLayout: PromptMatAddLayout
@@ -38,7 +38,7 @@ class PromptFragment : DialogFragment(),
         val v: View = inflater.inflate(R.layout.frag_prompt, container, true)
 
         activity?.let {
-            globalVM = it.getViewModel()
+            commsVM = it.getViewModel()
         }
 
         matAddLayout = v.promptMatAddLayout
@@ -69,7 +69,7 @@ class PromptFragment : DialogFragment(),
                   this,
                   resources.getString(
                     R.string.prompt_text_delete,
-                    globalVM.getFocusChip().value?.name))
+                    commsVM.getFocusChip().value?.name))
             }
         }
 
@@ -78,15 +78,15 @@ class PromptFragment : DialogFragment(),
 
     override fun getMaterial(from: Int) {
 
-        globalVM.setEditAction(from)
+        commsVM.setEditAction(from)
         findNavController().popBackStack()
     }
 
     override fun finishEdit(type: Int, text: String) {
 
         when(type) {
-            EditorConsts.EDIT_TITLE -> globalVM.setName(text)
-            EditorConsts.EDIT_DESC -> globalVM.setDesc(text)
+            EditorConsts.EDIT_TITLE -> commsVM.setName(text)
+            EditorConsts.EDIT_DESC -> commsVM.setDesc(text)
         }
 
         findNavController().popBackStack()
@@ -100,8 +100,8 @@ class PromptFragment : DialogFragment(),
 
         when(passedArgs.action) {
             EditorConsts.DELETE -> {
-                if(accept) globalVM.setEditAction(passedArgs.action)
-                else globalVM.setEditAction(EditorConsts.CANCEL)
+                if(accept) commsVM.setEditAction(passedArgs.action)
+                else commsVM.setEditAction(EditorConsts.CANCEL)
 
                 findNavController().popBackStack()
             }

@@ -1,21 +1,17 @@
-package creations.rimov.com.chipit.viewgroups
+package creations.rimov.com.chipit.viewgroups.prompt
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.database.objects.Chip
+import creations.rimov.com.chipit.viewgroups.custom.CustomView
 import kotlinx.android.synthetic.main.prompt_confirm.view.*
 
 class PromptConfirmLayout(context: Context, attrs: AttributeSet)
     : ConstraintLayout(context, attrs),
-      CustomView<PromptConfirmLayout.Handler>,
+    CustomView<PromptConfirmLayout.Handler>,
       View.OnClickListener {
 
     private val promptText: TextView by lazy {textPromptConfirm}

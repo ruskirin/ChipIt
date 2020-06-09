@@ -1,35 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <ImageButton
-          android:id="@+id/btnPlaybackLeft"
-          android:layout_width="@dimen/standard_touch_smallsize"
-          android:layout_height="@dimen/standard_touch_smallsize"
-          app:layout_constraintHorizontal_chainStyle="spread"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toStartOf="@id/btnPlaybackPlay"
-          app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"
-          android:src="@drawable/ic_rewind"/>
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:parentTag="creations.rimov.com.chipit.viewgroups.custom.CustomPlaybackControls"
+      tools:layout_width="match_parent"
+      tools:layout_height="match_parent">
 
     <ImageButton
           android:id="@+id/btnPlaybackPlay"
           android:layout_width="@dimen/standard_touch_smallsize"
-          android:layout_height="@dimen/standard_touch_smallsize"
-          app:layout_constraintStart_toEndOf="@id/btnPlaybackLeft"
-          app:layout_constraintEnd_toStartOf="@id/btnPlaybackRight"
+          android:layout_height="0dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="@id/playbackTimeCurrent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:background="@color/background_transparent"
+          android:adjustViewBounds="true"
+          android:src="@drawable/ic_play"/>
+
+    <TextView
+          android:id="@+id/playbackTimeCurrent"
+          android:layout_width="wrap_content"
+          android:layout_height="0dp"
+          android:gravity="center"
+          app:layout_constraintStart_toEndOf="@id/btnPlaybackPlay"
+          app:layout_constraintEnd_toStartOf="@id/playbackSeekbar"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:background="@color/background_transparent"
+          android:text="--:--"
+          android:textColor="@color/colorAccent"/>
+
+    <SeekBar
+          android:id="@+id/playbackSeekbar"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:background="@color/background_transparent"
+          app:layout_constraintStart_toEndOf="@id/btnPlaybackPlay"
+          app:layout_constraintEnd_toStartOf="@id/playbackTimeTotal"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <TextView
+          android:id="@+id/playbackTimeTotal"
+          android:layout_width="wrap_content"
+          android:layout_height="0dp"
+          android:gravity="center"
+          app:layout_constraintStart_toEndOf="@id/playbackSeekbar"
+          app:layout_constraintEnd_toStartOf="@id/btnPlaybackExtra"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:background="@color/background_transparent"
+          android:text="--:--"
+          android:textColor="@color/colorAccent"/>
+
     <ImageButton
-          android:id="@+id/btnPlaybackRight"
+          android:id="@+id/btnPlaybackExtra"
           android:layout_width="@dimen/standard_touch_smallsize"
-          android:layout_height="@dimen/standard_touch_smallsize"
-          app:layout_constraintStart_toEndOf="@id/btnPlaybackPlay"
+          android:layout_height="0dp"
+          app:layout_constraintStart_toEndOf="@id/playbackTimeTotal"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
-          android:src="@drawable/ic_forward"/>
+          android:background="@color/background_transparent"
+          android:adjustViewBounds="true"
+          android:visibility="gone"/>
 
 </merge>

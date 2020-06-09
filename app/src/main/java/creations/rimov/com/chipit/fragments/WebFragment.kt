@@ -18,12 +18,11 @@ import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
 import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
 import creations.rimov.com.chipit.adapters.viewholders.web.WebTouchCallback
-import creations.rimov.com.chipit.adapters.viewholders.web.WebViewHolder
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.extensions.nav
-import creations.rimov.com.chipit.view_models.GlobalViewModel
+import creations.rimov.com.chipit.view_models.CommsViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
@@ -37,7 +36,7 @@ class WebFragment
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
 
-    private lateinit var globalVM: GlobalViewModel
+    private lateinit var commsVM: CommsViewModel
     private val localVM: WebViewModel by lazy {
         getViewModel<WebViewModel>()
     }
@@ -57,7 +56,7 @@ class WebFragment
         super.onCreate(savedInstanceState)
 
         activity?.let {
-            globalVM = it.getViewModel()
+            commsVM = it.getViewModel()
             childrenAdapter = WebRecyclerAdapter(it.applicationContext)
         }
 
@@ -87,12 +86,12 @@ class WebFragment
             Log.i("WebFrag", "chipObserver: currently displaying " +
                              "chip \"${it?.name}\"")
 
-            globalVM.setFocusChip(it, false)
+            commsVM.setFocusChip(it, false)
             setDetail(it)
         })
         //Parents to display in toolbar from MainActivity
         localVM.getParents().observe(viewLifecycleOwner, Observer {
-            globalVM.setWebParents(it)
+            commsVM.setWebParents(it)
         })
 
         localVM.getChildren().observe(viewLifecycleOwner, Observer {
@@ -158,8 +157,8 @@ class WebFragment
 
                 //TODO FUTURE: preload the bitmap here based on progress of transition
 
-                if(progress > 0.5f) globalVM.setWebTransition(true)
-                else globalVM.setWebTransition(false)
+                if(progress > 0.5f) commsVM.setWebTransition(true)
+                else commsVM.setWebTransition(false)
             }
         }
     }

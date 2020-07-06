@@ -4,7 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/directory_recycler_margin">
+        android:layout_margin="@dimen/space_standard_small">
 
     <creations.rimov.com.chipit.viewgroups.TopicLayout
             android:id="@+id/dirRecyclerTopic"

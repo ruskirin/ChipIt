@@ -8,15 +8,15 @@
           android:id="@+id/layoutBtnAddMat"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:paddingStart="@dimen/standard_touch_regularsize"
-          android:paddingEnd="@dimen/standard_touch_regularsize"
+          android:paddingStart="@dimen/size_touch_standard_reg"
+          android:paddingEnd="@dimen/size_touch_standard_reg"
           android:layout_gravity="center"
           android:orientation="vertical">
 
         <Button
               android:id="@+id/btnPromptAddImage"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:gravity="center"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"
@@ -27,7 +27,7 @@
         <Button
               android:id="@+id/btnPromptAddVideo"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:gravity="center"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"
@@ -38,7 +38,7 @@
         <Button
               android:id="@+id/btnPromptAddAudio"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:gravity="center"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"
@@ -49,7 +49,7 @@
         <Button
               android:id="@+id/btnPromptAddText"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:gravity="center"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"
@@ -71,7 +71,7 @@
         <Button
               android:id="@+id/btnPromptAddNew"
               android:layout_width="0dp"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:layout_weight="1"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"
@@ -80,7 +80,7 @@
         <Button
               android:id="@+id/btnPromptAddStorage"
               android:layout_width="0dp"
-              android:layout_height="@dimen/standard_touch_regularsize"
+              android:layout_height="@dimen/size_touch_standard_reg"
               android:layout_weight="1"
               android:adjustViewBounds="true"
               android:backgroundTint="@android:color/darker_gray"

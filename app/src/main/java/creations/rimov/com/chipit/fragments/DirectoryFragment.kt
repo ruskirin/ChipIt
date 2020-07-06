@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.adapters.DirectoryRecyclerAdapter
+import creations.rimov.com.chipit.recyclers.adapters.DirectoryRecyclerAdapter
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.extensions.nav

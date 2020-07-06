@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+          android:id="@+id/btnCardEdit"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:gravity="center"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toTopOf="@id/btnCardDelete"
+          android:background="?android:selectableItemBackgroundBorderless"
+          android:drawableStart="@drawable/ic_edit"
+          android:text="@string/editor_detail_btn_edit"
+          android:textColor="@color/colorPrimaryDark"
+          android:textSize="@dimen/textsize_editor_desc"/>
+
+    <Button
+          android:id="@+id/btnCardDelete"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:gravity="center"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/btnCardEdit"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:background="?android:selectableItemBackgroundBorderless"
+          android:drawableStart="@drawable/ic_delete"
+          android:text="@string/editor_detail_btn_delete"
+          android:textColor="@color/colorPrimaryDark"
+          android:textSize="@dimen/textsize_editor_desc"/>
+
+</merge>

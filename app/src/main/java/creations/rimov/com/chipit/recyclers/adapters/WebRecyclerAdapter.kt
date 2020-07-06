@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.adapters
+package creations.rimov.com.chipit.recyclers.adapters
 
 import android.content.Context
 import android.util.Log
@@ -6,14 +6,14 @@ import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.adapters.viewholders.web.*
+import creations.rimov.com.chipit.recyclers.adapters.viewholders.web.*
 import creations.rimov.com.chipit.constants.EditorConsts
 import creations.rimov.com.chipit.database.objects.ChipCard
 
-//TODO (FUTURE): images can be linked through either a file path or as bitmap, both have pros and cons
+//TODO FUTURE: images can be linked through either a file path or as bitmap,
+//  both have pros and cons
 
 class WebRecyclerAdapter(appContext: Context)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
@@ -22,6 +22,8 @@ class WebRecyclerAdapter(appContext: Context)
     private lateinit var chips: List<ChipCard>
     //Reference to the touched chip
     private lateinit var selectedChip: WebViewHolder
+
+    var touchI: Pair<Float, Float> = Pair(0f, 0f)
 
     private val gestureDetector: GestureDetector by lazy {
         GestureDetector(appContext, WebGestureDetector())
@@ -50,6 +52,8 @@ class WebRecyclerAdapter(appContext: Context)
     fun getSelectedChip() =
         if(::selectedChip.isInitialized) selectedChip
         else null
+
+    fun isEditing(): Boolean = getSelectedChip()?.isEditing ?: true
 
     override fun getItemCount() =
         if (::chips.isInitialized) chips.size
@@ -131,21 +135,14 @@ class WebRecyclerAdapter(appContext: Context)
 
     inner class WebGestureDetector : GestureDetector.SimpleOnGestureListener() {
 
-        override fun onDown(e: MotionEvent?): Boolean = true
+        override fun onDown(e: MotionEvent?): Boolean {
 
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
-
-            //TODO NOW: either set selectedChip to detailView
-            //  OR just advance to its children
-            Log.i("WebGestureDetector", "::onDoubleTap(): " +
-                                        "display chip children")
+            e?.let {touchI = Pair(it.rawX, it.rawY)}
             return true
         }
 
-        override fun onSingleTapUp(e: MotionEvent?): Boolean {
-
-            selectedChip.toggleDetail()
-            return true
+        override fun onLongPress(e: MotionEvent?) {
+            super.onLongPress(e)
         }
     }
 }

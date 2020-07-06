@@ -8,7 +8,7 @@
 
     <ImageButton
           android:id="@+id/btnPlaybackPlay"
-          android:layout_width="@dimen/standard_touch_smallsize"
+          android:layout_width="@dimen/size_touch_standard_small"
           android:layout_height="0dp"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toStartOf="@id/playbackTimeCurrent"
@@ -56,7 +56,7 @@
 
     <ImageButton
           android:id="@+id/btnPlaybackExtra"
-          android:layout_width="@dimen/standard_touch_smallsize"
+          android:layout_width="@dimen/size_touch_standard_small"
           android:layout_height="0dp"
           app:layout_constraintStart_toEndOf="@id/playbackTimeTotal"
           app:layout_constraintEnd_toEndOf="parent"

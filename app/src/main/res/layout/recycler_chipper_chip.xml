@@ -4,9 +4,9 @@
         android:id="@+id/chipperRecyclerImage"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/web_recycler_chips_margin_horiz"
-        android:layout_marginEnd="@dimen/web_recycler_chips_margin_horiz"
-        android:layout_marginBottom="@dimen/web_recycler_chips_margin_vert"
-        android:layout_marginTop="@dimen/web_recycler_chips_margin_vert"
+        android:layout_marginStart="@dimen/space_h_web_recyclerchips"
+        android:layout_marginEnd="@dimen/space_h_web_recyclerchips"
+        android:layout_marginBottom="@dimen/space_v_web_recyclerchips"
+        android:layout_marginTop="@dimen/space_v_web_recyclerchips"
         xmlns:android="http://schemas.android.com/apk/res/android"/>
 

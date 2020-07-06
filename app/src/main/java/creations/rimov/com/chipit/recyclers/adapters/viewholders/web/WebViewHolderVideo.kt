@@ -1,27 +1,21 @@
-package creations.rimov.com.chipit.adapters.viewholders.web
+package creations.rimov.com.chipit.recyclers.adapters.viewholders.web
 
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.view.isVisible
-import creations.rimov.com.chipit.adapters.ViewHolderHandler
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import creations.rimov.com.chipit.recyclers.adapters.ViewHolderHandler
 import creations.rimov.com.chipit.database.objects.ChipCard
-import creations.rimov.com.chipit.viewgroups.custom.CustomVideoLayout
 import kotlinx.android.synthetic.main.recycler_web_card_video.view.*
-import kotlinx.android.synthetic.main.recycler_web_card_viewgroup.view.*
 
 class WebViewHolderVideo(itemView: View)
     : WebViewHolder(itemView),
       View.OnTouchListener {
 
-    val video: CustomVideoLayout = itemView.cardVideo
-    override val name: TextView = itemView.cardName
-    override val desc: TextView = itemView.cardDesc
-    override val counter: TextView = itemView.cardCounter
-    override val btnEdit: Button = itemView.btnCardEdit
+    val thumbnail: ImageView = itemView.cardThumbnail
 
-    override var isEditing: Boolean = btnEdit.isVisible
+    override var isEditing: Boolean = false
 
     override fun prepare(handler: ViewHolderHandler, vararg opts: Any?) {
 
@@ -46,9 +40,14 @@ class WebViewHolderVideo(itemView: View)
     }
 
     override fun displayChip(chip: ChipCard) {
+        super.displayChip(chip)
 
-        name.text = chip.name
-        desc.text = chip.desc
-        counter.text = chip.numChildren.toString()
+        Glide.with(thumbnail.context)
+            .asBitmap()
+            .load(chip.matPath)
+            .apply(
+              RequestOptions()
+                       .override(thumbnail.width, thumbnail.height))
+            .into(thumbnail)
     }
 }

@@ -16,22 +16,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.adapters.WebRecyclerAdapter
-import creations.rimov.com.chipit.adapters.viewholders.web.WebTouchCallback
-import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.recyclers.adapters.WebRecyclerAdapter
+import creations.rimov.com.chipit.recyclers.adapters.viewholders.web.WebTouchCallback
 import creations.rimov.com.chipit.database.objects.Chip
 import creations.rimov.com.chipit.extensions.getViewModel
 import creations.rimov.com.chipit.extensions.nav
+import creations.rimov.com.chipit.recyclers.decorators.MarginDecorator
 import creations.rimov.com.chipit.view_models.CommsViewModel
 import creations.rimov.com.chipit.view_models.WebViewModel
 import kotlinx.android.synthetic.main.frag_web.view.*
 import kotlinx.android.synthetic.main.web_detail.*
+import kotlin.math.abs
 
 class WebFragment
     : Fragment(),
       MotionLayout.TransitionListener,
-      View.OnTouchListener,
-      WebTouchCallback.Handler {
+      View.OnTouchListener {
 
     //Passed Bundle from DirectoryFragment
     private val passedArgs by navArgs<WebFragmentArgs>()
@@ -43,8 +43,11 @@ class WebFragment
 
     private lateinit var motionLayout: MotionLayout
 
+    private lateinit var touchCallback: WebTouchCallback
     private val touchHelper: ItemTouchHelper by lazy {
-        ItemTouchHelper(WebTouchCallback(this))
+
+        touchCallback = WebTouchCallback()
+        ItemTouchHelper(touchCallback)
     }
 
     private val detailImage: ImageView by lazy {webDetailImg}
@@ -77,8 +80,15 @@ class WebFragment
             adapter = childrenAdapter
             layoutManager = StaggeredGridLayoutManager(
               2, RecyclerView.VERTICAL)
+                .apply {
+                    gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+            }
             setHasFixedSize(true)
+            addItemDecoration(
+              MarginDecorator(
+                resources.getDimension(R.dimen.space_standard_reg).toInt()))
 
+            setOnTouchListener(this@WebFragment)
             touchHelper.attachToRecyclerView(this)
         }
 
@@ -103,13 +113,19 @@ class WebFragment
 
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
 
-        if(event == null) return false
+        when(event?.action) {
+            MotionEvent.ACTION_MOVE -> {
+                if(!childrenAdapter.isEditing()
+                   && abs(childrenAdapter.touchI.first - event.rawX)  >= 80)
 
-        when(view?.id) {
-            //TODO FUTURE: see if anything needs to be done here
+                    return false
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                touchCallback.revertSwiped = true
+            }
         }
 
-        return true
+        return false
     }
 
     private fun setDetail(chip: Chip?) {
@@ -138,14 +154,6 @@ class WebFragment
               localVM.getChip().value?.id ?: return)
 
         findNavController().nav(directions)
-    }
-
-    //WebTouchCallback Handler -------------------------------------------------------------
-    override fun promptDelete(id: Long) {
-
-        findNavController().nav(
-          WebFragmentDirections.actionWebFragmentToEditorFragment(
-            EditorConsts.DELETE, id))
     }
 
     //MotionLayout.TransitionListener ------------------------------------------

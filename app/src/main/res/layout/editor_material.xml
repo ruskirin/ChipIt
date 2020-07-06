@@ -11,7 +11,7 @@
           android:layout_height="match_parent"
           android:text="@string/editor_btn_mat"
           android:textColor="@color/colorPrimaryDark"
-          android:textSize="@dimen/standard_prompt_textsize"
+          android:textSize="@dimen/textsize_prompt_standard"
           android:background="@color/colorAccent"/>
 
     <include

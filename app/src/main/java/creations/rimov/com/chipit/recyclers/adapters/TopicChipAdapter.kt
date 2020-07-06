@@ -1,4 +1,4 @@
-package creations.rimov.com.chipit.adapters
+package creations.rimov.com.chipit.recyclers.adapters
 
 import android.view.LayoutInflater
 import android.view.View

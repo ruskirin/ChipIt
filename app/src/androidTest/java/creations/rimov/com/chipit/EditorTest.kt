@@ -34,7 +34,6 @@ class EditorTest {
         onView(withId(R.id.btnAddMatPrev)).perform(click())
         onView(withId(R.id.btnPromptAddVideo)).perform(click())
         onView(withId(R.id.btnPromptAddStorage)).perform(click())
-        onView(withId(R.id.btnPromptAddStorage)).perform()
 
         device.findObject(
           UiSelector()

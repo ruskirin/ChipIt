@@ -1,60 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="elevation_def">4dp</dimen>
-    <dimen name="elevation_small">2dp</dimen>
+    <dimen name="elevation_standard_normal">4dp</dimen>
+    <dimen name="elevation_standard_small">2dp</dimen>
+    <dimen name="elevation_card">1dp</dimen>
 
-    <dimen name="standard_margin_reg">8dp</dimen>
-    <dimen name="standard_margin_small">4dp</dimen>
+    <dimen name="space_standard_small">4dp</dimen>
+    <dimen name="space_standard_reg">8dp</dimen>
 
-    <dimen name="standard_touch_smallsize">48dp</dimen>
-    <dimen name="standard_touch_regularsize">64dp</dimen>
-    <dimen name="standard_touch_regularsize_neg">-64dp</dimen>
-    <dimen name="standard_touch_large">128dp</dimen>
+    <dimen name="size_touch_standard_mini">24dp</dimen>
+    <dimen name="size_touch_standard_small">48dp</dimen>
+    <dimen name="size_touch_standard_reg">64dp</dimen>
+    <dimen name="size_touch_standard_large">128dp</dimen>
 
-    <dimen name="standard_prompt_textsize">20sp</dimen>
-    <dimen name="standard_info_textsize">16sp</dimen>
+    <dimen name="textsize_prompt_standard">20sp</dimen>
+    <dimen name="textsize_description_standard">16sp</dimen>
 
-    <dimen name="tab_height">40dp</dimen>
-    <dimen name="tab_icon_size">32dp</dimen>
-    <dimen name="tab_padding_horiz">16dp</dimen>
+    <dimen name="space_fab">8dp</dimen>
 
-    <dimen name="fab_margin">8dp</dimen>
+    <dimen name="size_web_recyclerchip_counter">24dp</dimen>
 
-    <dimen name="editor_name_textsize">22sp</dimen>
-    <dimen name="editor_desc_textsize">18sp</dimen>
+    <dimen name="textsize_editor_title">22sp</dimen>
+    <dimen name="textsize_editor_desc">18sp</dimen>
 
-    <dimen name="editor_image_maxheight">192dp</dimen>
-    <dimen name="editor_button_margin_horiz">4dp</dimen>
-    <dimen name="editor_button_delete_margin_start">32dp</dimen>
-    <dimen name="editor_button_negmargin_bot">-24dp</dimen>
-    <dimen name="editor_margin_horiz">16dp</dimen>
-    <dimen name="editor_desc_padding_top">8dp</dimen>
-    <dimen name="editor_desc_padding_horiz">8dp</dimen>
+    <dimen name="space_h_editor">16dp</dimen>
+    <dimen name="space_v_editor_desc">8dp</dimen>
+    <dimen name="space_h_editor_desc">8dp</dimen>
 
-    <dimen name="directory_recycler_margin">4dp</dimen>
+    <dimen name="space_v_web_recyclerchips">8dp</dimen>
+    <dimen name="space_h_web_recyclerchips">4dp</dimen>
 
-    <dimen name="web_pathpanel_button_side">48dp</dimen>
-    <dimen name="web_button_recycler_vis_width">32dp</dimen>
-    <dimen name="web_button_recycler_vis_height">40dp</dimen>
-    <dimen name="web_pathpanel_button_margin_horiz">4dp</dimen>
-    <dimen name="web_pathpanel_button_margin_vert">2dp</dimen>
-    <dimen name="web_recycler_chips_margin_vert">8dp</dimen>
-    <dimen name="web_recycler_chips_margin_horiz">4dp</dimen>
-
-    <dimen name="web_detail_image_height">400dp</dimen>
-    <dimen name="web_detail_desc_height">150dp</dimen>
-    <dimen name="web_detail_sibling_height">100dp</dimen>
-
-    <dimen name="album_recycler_button_expand_margin">8dp</dimen>
-    <dimen name="album_recycler_button_expand_side">32dp</dimen>
-
-    <dimen name="card_counter_width">24dp</dimen>
-
-    <dimen name="topic_name_textsize">20sp</dimen>
-    <dimen name="topic_date_textsize">12sp</dimen>
-    <dimen name="topic_btn_expand_side">24dp</dimen>
-    <dimen name="topic_counter_side">32dp</dimen>
-    <dimen name="topic_desc_padding">8dp</dimen>
-    <dimen name="topic_expand_margin_horiz">16dp</dimen>
-    <dimen name="topic_children_height">100dp</dimen>
+    <dimen name="textsize_topic_title">20sp</dimen>
+    <dimen name="textsize_topic_date">12sp</dimen>
+    <dimen name="size_topic_btn_expand">24dp</dimen>
+    <dimen name="size_topic_counter">32dp</dimen>
+    <dimen name="space_topic_desc">8dp</dimen>
 </resources>

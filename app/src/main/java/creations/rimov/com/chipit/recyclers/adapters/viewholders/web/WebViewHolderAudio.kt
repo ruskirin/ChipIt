@@ -1,25 +1,15 @@
-package creations.rimov.com.chipit.adapters.viewholders.web
+package creations.rimov.com.chipit.recyclers.adapters.viewholders.web
 
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.view.isVisible
-import creations.rimov.com.chipit.adapters.ViewHolderHandler
+import creations.rimov.com.chipit.recyclers.adapters.ViewHolderHandler
 import creations.rimov.com.chipit.database.objects.ChipCard
-import kotlinx.android.synthetic.main.recycler_web_card_audio.view.*
-import kotlinx.android.synthetic.main.recycler_web_card_viewgroup.view.*
 
 class WebViewHolderAudio(itemView: View)
     : WebViewHolder(itemView),
       View.OnTouchListener {
 
-    override val name: TextView = itemView.cardName
-    override val desc: TextView = itemView.cardDesc
-    override val counter: TextView = itemView.cardCounter
-    override val btnEdit: Button = itemView.btnCardEdit
-
-    override var isEditing: Boolean = btnEdit.isVisible
+    override var isEditing: Boolean = false
 
     override fun prepare(handler: ViewHolderHandler, vararg opts: Any?) {
 
@@ -44,9 +34,6 @@ class WebViewHolderAudio(itemView: View)
     }
 
     override fun displayChip(chip: ChipCard) {
-
-        name.text = chip.name
-        desc.text = chip.desc
-        counter.text = chip.numChildren.toString()
+        super.displayChip(chip)
     }
 }

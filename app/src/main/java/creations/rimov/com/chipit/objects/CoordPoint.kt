@@ -40,7 +40,15 @@ class CoordPoint(val x: Float, val y: Float) {
      */
     override fun toString() = x.toString().plus(',').plus(y.toString())
 
-    fun distanceTo(coordPoint: CoordPoint): Float = sqrt((coordPoint.x - x)*(coordPoint.x - x) + (coordPoint.y - y)*(coordPoint.y - y))
+    fun distanceTo(coordPoint: CoordPoint): Float
+      = sqrt(
+      (coordPoint.x - x)*(coordPoint.x - x)
+         + (coordPoint.y - y)*(coordPoint.y - y))
+
+    fun distanceTo(x: Float, y: Float): Float
+      = sqrt(
+      (x - this.x)*(x - this.x)
+         + (y - this.y)*(y - this.y))
 
     /**
      * @see NOTE unlike regular normalization, top left of screen is considered (-1, -1)

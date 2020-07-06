@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import creations.rimov.com.chipit.R
-import creations.rimov.com.chipit.adapters.TopicChipAdapter
+import creations.rimov.com.chipit.recyclers.adapters.TopicChipAdapter
 import creations.rimov.com.chipit.database.objects.ChipCard
 import creations.rimov.com.chipit.database.objects.ChipIdentity
 import kotlinx.android.synthetic.main.topic.view.*

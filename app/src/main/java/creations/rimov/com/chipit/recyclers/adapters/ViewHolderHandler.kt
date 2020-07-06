@@ -1,7 +1,7 @@
-package creations.rimov.com.chipit.adapters
+package creations.rimov.com.chipit.recyclers.adapters
 
 import android.view.MotionEvent
-import creations.rimov.com.chipit.adapters.viewholders.web.WebViewHolder
+import creations.rimov.com.chipit.recyclers.adapters.viewholders.web.WebViewHolder
 
 interface ViewHolderHandler {
 

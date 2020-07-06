@@ -3,56 +3,55 @@
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-            android:id="@+id/topicLayoutHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_orange_dark"
-            android:elevation="@dimen/elevation_small">
+          android:id="@+id/topicLayoutHeader"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/colorPrimary"
+          android:elevation="@dimen/elevation_standard_small">
 
         <TextView
-                android:id="@+id/topicLayoutTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/topicLayoutChildCount"
-                android:textSize="@dimen/topic_name_textsize"/>
+              android:id="@+id/topicLayoutTitle"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentStart="true"
+              android:layout_toStartOf="@id/topicLayoutChildCount"
+              android:textColor="@color/colorSecondaryLight"
+              android:textSize="@dimen/textsize_topic_title"/>
 
         <TextView
-                android:id="@+id/topicLayoutChildCount"
-                android:layout_width="@dimen/topic_counter_side"
-                android:layout_height="@dimen/topic_counter_side"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:background="@drawable/button_round"/>
+              android:id="@+id/topicLayoutChildCount"
+              android:layout_width="@dimen/size_topic_counter"
+              android:layout_height="@dimen/size_topic_counter"
+              android:layout_alignParentEnd="true"
+              android:gravity="center"
+              android:textColor="@color/colorSecondaryLight"/>
 
         <ImageButton
-                android:id="@+id/topicLayoutBtnCount"
-                android:layout_width="@dimen/topic_counter_side"
-                android:layout_height="@dimen/topic_counter_side"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/button_round"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_arrow_forward"
-                android:visibility="gone"/>
+              android:id="@+id/topicLayoutBtnCount"
+              android:layout_width="@dimen/size_topic_counter"
+              android:layout_height="@dimen/size_topic_counter"
+              android:layout_alignParentEnd="true"
+              android:layout_alignParentTop="true"
+              android:background="?android:selectableItemBackground"
+              android:adjustViewBounds="true"
+              android:src="@drawable/ic_arrow_forward"
+              android:visibility="gone"/>
 
         <TextView
-                android:id="@+id/topicLayoutDateUpdate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/topicLayoutTitle"
-                android:layout_toStartOf="@id/topicLayoutChildCount"
-                android:textSize="@dimen/topic_date_textsize"/>
+              android:id="@+id/topicLayoutDateUpdate"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/topicLayoutTitle"
+              android:textSize="@dimen/textsize_topic_date"/>
 
     </RelativeLayout>
 
     <TextView
-            android:id="@+id/topicLayoutDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/topic_desc_padding"
-            android:visibility="gone"/>
+          android:id="@+id/topicLayoutDesc"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/space_topic_desc"
+          android:visibility="gone"/>
 
 </merge>

@@ -9,7 +9,7 @@
     <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/promptTextParent"
           android:layout_width="0dp"
-          android:layout_height="@dimen/standard_touch_regularsize"
+          android:layout_height="@dimen/size_touch_standard_reg"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:counterEnabled="true">
@@ -19,7 +19,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center"
-              android:textSize="@dimen/standard_prompt_textsize"
+              android:textSize="@dimen/textsize_prompt_standard"
               android:textColor="@color/colorPrimaryDark"
               android:background="@color/colorAccent"/>
 
@@ -27,8 +27,8 @@
 
     <Button
           android:id="@+id/btnPromptTextSave"
-          android:layout_width="@dimen/standard_touch_large"
-          android:layout_height="@dimen/standard_touch_regularsize"
+          android:layout_width="@dimen/size_touch_standard_large"
+          android:layout_height="@dimen/size_touch_standard_reg"
           android:gravity="center"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintEnd_toStartOf="@id/btnPromptTextCancel"
@@ -37,8 +37,8 @@
 
     <Button
           android:id="@+id/btnPromptTextCancel"
-          android:layout_width="@dimen/standard_touch_large"
-          android:layout_height="@dimen/standard_touch_regularsize"
+          android:layout_width="@dimen/size_touch_standard_large"
+          android:layout_height="@dimen/size_touch_standard_reg"
           android:gravity="center"
           app:layout_constraintStart_toEndOf="@id/btnPromptTextSave"
           app:layout_constraintEnd_toEndOf="parent"

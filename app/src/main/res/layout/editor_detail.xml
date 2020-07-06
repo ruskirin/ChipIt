@@ -11,25 +11,25 @@
     <TextView
             android:id="@+id/detailEditorBtnEdit"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/standard_touch_smallsize"
+            android:layout_height="@dimen/size_touch_standard_small"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/standard_margin_reg"
+            android:layout_marginBottom="@dimen/space_standard_reg"
             android:drawableStart="@drawable/ic_edit"
             android:background="?attr/selectableItemBackground"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/standard_prompt_textsize"
+            android:textSize="@dimen/textsize_prompt_standard"
             android:text="@string/editor_detail_btn_edit"/>
 
     <TextView
             android:id="@+id/detailEditorBtnDelete"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/standard_touch_smallsize"
+            android:layout_height="@dimen/size_touch_standard_small"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/standard_margin_reg"
+            android:layout_marginBottom="@dimen/space_standard_reg"
             android:drawableStart="@drawable/ic_delete"
             android:background="?attr/selectableItemBackground"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/standard_prompt_textsize"
+            android:textSize="@dimen/textsize_prompt_standard"
             android:text="@string/editor_detail_btn_delete"/>
 
 </LinearLayout>

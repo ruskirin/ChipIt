@@ -9,7 +9,7 @@
           android:id="@+id/btnEditorText"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:textSize="@dimen/standard_prompt_textsize"
+          android:textSize="@dimen/textsize_prompt_standard"
           android:gravity="center"
           android:background="@color/colorAccent"/>
 

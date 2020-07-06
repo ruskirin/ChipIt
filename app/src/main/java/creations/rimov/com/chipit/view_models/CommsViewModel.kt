@@ -39,8 +39,6 @@ class CommsViewModel : ViewModel() {
 
     fun getFocusId() = focusChip.value?.id
 
-    fun getFocusImgPath() = focusChip.value?.matPath
-
     fun setName(text: String) {
         Log.i("CommsVM", "::setName(): changing name to $text")
 

@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:parentTag="creations.rimov.com.chipit.viewgroups.prompt.PromptEditTextLayout"
+      tools:parentTag="creations.rimov.com.chipit.ui.prompt.PromptEditTextLayout"
       tools:layout_width="match_parent"
       tools:layout_height="match_parent">
 

@@ -8,9 +8,10 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
-import creations.rimov.com.chipit.constants.EditorConsts
-import creations.rimov.com.chipit.extensions.getChipFileDate
+import creations.rimov.com.chipit.util.constants.EditorConsts
+import creations.rimov.com.chipit.extension.getChipFileDate
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -22,12 +23,14 @@ object CameraUtil {
 
     private const val IMG_PREFIX = "ChipIt_IMG_"
     private const val VIDEO_PREFIX = "ChipIt_VID_"
+    private const val AUDIO_PREFIX = "Chipit_AUD_"
 
     const val CAPTURE_PIC = 100
     const val FIND_PIC = 110
 
     const val CAPTURE_VID = 200
     const val FIND_VID = 210
+    const val FIND_AUDIO = 220
 
     @JvmStatic
     fun intentCaptureMedia(appContext: Context, uri: Uri?, type: Int): Intent? {
@@ -36,12 +39,15 @@ object CameraUtil {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                      else if(type==EditorConsts.VIDEO)
             Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                     else if(type==EditorConsts.AUDIO)
+            Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION )
                      else null
 
         return intent?.apply {
             //Verifies that an application that can handle this intent exists
             if(this.resolveActivity(appContext.packageManager)==null)
-                throw UnsupportedOperationException("A camera is required for operation")
+                throw UnsupportedOperationException(
+                  "Unsupported operation")
 
             putExtra(MediaStore.EXTRA_OUTPUT, uri)
         }
@@ -55,11 +61,16 @@ object CameraUtil {
                 "image/*"
                    else if(type==EditorConsts.VIDEO)
                 "video/*"
+                   else if(type==EditorConsts.AUDIO)
+                "audio/*"
                    else null
 
             //Verifies that an application that can handle this intent exists
             if(this.resolveActivity(appContext.packageManager)==null)
-                throw UnsupportedOperationException("A camera is required for operation")
+                Toast.makeText(
+                  appContext,
+                  "Error retrieving format!",
+                  Toast.LENGTH_SHORT).show()
         }
     }
 

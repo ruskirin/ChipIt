@@ -14,7 +14,7 @@
           app:navGraph="@navigation/main_navgraph"
           app:defaultNavHost="true"/>
 
-    <creations.rimov.com.chipit.viewgroups.MainToolbarLayout
+    <creations.rimov.com.chipit.ui.toolbar.ToolbarLayout
           android:id="@+id/mainToolbar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"

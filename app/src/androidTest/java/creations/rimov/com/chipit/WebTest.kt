@@ -13,10 +13,9 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
-import creations.rimov.com.chipit.activities.MainActivity
-import creations.rimov.com.chipit.recyclers.adapters.DirectoryRecyclerAdapter
-import creations.rimov.com.chipit.recyclers.adapters.viewholders.web.WebViewHolder
-import creations.rimov.com.chipit.constants.EditorConsts
+import creations.rimov.com.chipit.ui.directory.DirectoryRecyclerAdapter
+import creations.rimov.com.chipit.ui.web.adapters.viewholders.web.WebViewHolder
+import creations.rimov.com.chipit.util.constants.EditorConsts
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

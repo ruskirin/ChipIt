@@ -4,7 +4,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <creations.rimov.com.chipit.views.ChipperView
+    <creations.rimov.com.chipit.ui.chipper.ChipperView
             android:id="@+id/chipperSurfaceView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

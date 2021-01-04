@@ -6,7 +6,7 @@
 
     <fragment
             android:id="@+id/directoryFragment"
-            android:name="creations.rimov.com.chipit.fragments.DirectoryFragment"
+            android:name="creations.rimov.com.chipit.ui.directory.DirectoryFragment"
             android:label="DirectoryFragment">
         <action android:id="@+id/action_directoryFragment_to_webFragment" app:destination="@id/webFragment"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
@@ -17,7 +17,7 @@
               app:enterAnim="@anim/fragment_fade_enter"
               app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
-    <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.fragments.WebFragment"
+    <fragment android:id="@+id/webFragment" android:name="creations.rimov.com.chipit.ui.web.WebFragment"
               android:label="WebFragment">
         <action android:id="@+id/action_webFragment_to_chipperFragment" app:destination="@id/chipperFragment"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
@@ -29,13 +29,13 @@
               app:enterAnim="@anim/fragment_fade_enter"
               app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
-    <fragment android:id="@+id/chipperFragment" android:name="creations.rimov.com.chipit.fragments.ChipperFragment"
+    <fragment android:id="@+id/chipperFragment" android:name="creations.rimov.com.chipit.ui.chipper.ChipperFragment"
               android:label="ChipperFragment">
         <argument android:name="chipId" app:argType="long" android:defaultValue="-1L"/>
     </fragment>
     <fragment
           android:id="@+id/editorFragment"
-          android:name="creations.rimov.com.chipit.fragments.EditorFragment"
+          android:name="creations.rimov.com.chipit.ui.editor.EditorFragment"
           android:label="EditorFragment" >
         <argument
               android:name="action"
@@ -52,7 +52,7 @@
     </fragment>
     <dialog
           android:id="@+id/promptFragment"
-          android:name="creations.rimov.com.chipit.fragments.PromptFragment"
+          android:name="creations.rimov.com.chipit.ui.prompt.PromptFragment"
           android:label="PromptFragment" >
         <argument
               android:name="action"

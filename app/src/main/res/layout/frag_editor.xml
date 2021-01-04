@@ -8,7 +8,7 @@
       android:layout_marginStart="@dimen/space_standard_small"
       android:layout_marginEnd="@dimen/space_standard_small">
 
-    <creations.rimov.com.chipit.viewgroups.EditorTextLayout
+    <creations.rimov.com.chipit.ui.editor.TextLayout
           android:id="@+id/matTitleLayout"
           android:layout_width="0dp"
           android:layout_height="@dimen/size_touch_standard_reg"
@@ -25,7 +25,7 @@
           app:textSize="@dimen/textsize_editor_title"
           app:textColor="@color/colorPrimaryDark"/>
 
-    <creations.rimov.com.chipit.viewgroups.EditorMatPrevLayout
+    <creations.rimov.com.chipit.ui.editor.MatPrevLayout
           android:id="@+id/matPreviewLayout"
           android:layout_width="0dp"
           android:layout_height="0dp"
@@ -36,7 +36,7 @@
           app:layout_constraintEnd_toEndOf="parent"
           android:paddingTop="@dimen/space_standard_small"/>
 
-    <creations.rimov.com.chipit.viewgroups.EditorTextLayout
+    <creations.rimov.com.chipit.ui.editor.TextLayout
           android:id="@+id/matDescLayout"
           android:layout_width="0dp"
           android:layout_height="0dp"

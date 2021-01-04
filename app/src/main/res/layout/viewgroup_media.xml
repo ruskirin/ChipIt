@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:parentTag="creations.rimov.com.chipit.ui.custom.VideoLayout"
+      tools:layout_width="match_parent"
+      tools:layout_height="match_parent">
+
+    <SurfaceView
+          android:id="@+id/videoSurface"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <creations.rimov.com.chipit.ui.custom.PlaybackControls
+          android:id="@+id/playbackControls"
+          android:layout_width="0dp"
+          android:layout_height="@dimen/size_touch_standard_small"
+          android:elevation="@dimen/elevation_standard_normal"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:background="@color/background_opaque_50"/>
+
+</merge>

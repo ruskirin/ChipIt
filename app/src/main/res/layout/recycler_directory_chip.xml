@@ -6,13 +6,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/space_standard_small">
 
-    <creations.rimov.com.chipit.viewgroups.TopicLayout
+    <creations.rimov.com.chipit.ui.TopicLayout
             android:id="@+id/dirRecyclerTopic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"/>
 
-    <creations.rimov.com.chipit.viewgroups.CardEditorLayout
+    <creations.rimov.com.chipit.ui.editor.CardLayout
             android:id="@+id/dirRecyclerTopicEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,6 +21,6 @@
             android:background="@android:drawable/screen_background_dark_transparent"
             android:visibility="gone">
 
-    </creations.rimov.com.chipit.viewgroups.CardEditorLayout>
+    </creations.rimov.com.chipit.ui.editor.CardLayout>
 
 </androidx.cardview.widget.CardView>

@@ -5,17 +5,17 @@
       android:layout_height="match_parent"
       android:padding="@dimen/space_standard_reg">
 
-    <creations.rimov.com.chipit.viewgroups.prompt.PromptMatAddLayout
+    <creations.rimov.com.chipit.ui.prompt.PromptMatAddLayout
           android:id="@+id/promptMatAddLayout"
           android:layout_width="match_parent"
           android:layout_height="match_parent"/>
 
-    <creations.rimov.com.chipit.viewgroups.prompt.PromptConfirmLayout
+    <creations.rimov.com.chipit.ui.prompt.PromptConfirmLayout
           android:id="@+id/promptConfirmLayout"
           android:layout_width="match_parent"
           android:layout_height="match_parent"/>
 
-    <creations.rimov.com.chipit.viewgroups.prompt.PromptEditTextLayout
+    <creations.rimov.com.chipit.ui.prompt.PromptEditTextLayout
           android:id="@+id/promptEditTextLayout"
           android:layout_width="match_parent"
           android:layout_height="match_parent"/>

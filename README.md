@@ -1,6 +1,8 @@
 <h2>ChipIt</h2>
 
-**Note**: First attempt at a marketable app.
+**Status**: abandonded. First, similar apps exist on the market. Second, project was built as I was learning, so the code-base is unnecessarily big and clunky due to poor practices. Addressing those issues is a large undertaking, so I chalked it off as an educational experience that has served its purpose.
+
+**Note**: The app is not currently functioning. Android updates made a lot of the code outdated -- attempts at updating it quickly became too time-consuming. Will maybe hammer everything together to serve as a functioning show-piece but will be just for posterity. 
 
 <h2>Goal</h2>
 
